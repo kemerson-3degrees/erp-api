@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:powershell="http://www.mulesoft.org/schema/mule/powershell"
+	
+	xmlns:vm="http://www.mulesoft.org/schema/mule/vm" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:smb="http://www.mulesoft.org/schema/mule/smb"
+	xmlns:salesforce-pub-sub="http://www.mulesoft.org/schema/mule/salesforce-pub-sub" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:xero-accounting="http://www.mulesoft.org/schema/mule/xero-accounting" xmlns:error-handler-plugin="http://www.mulesoft.org/schema/mule/error-handler-plugin" xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
+http://www.mulesoft.org/schema/mule/error-handler-plugin http://www.mulesoft.org/schema/mule/error-handler-plugin/current/mule-error-handler-plugin.xsd
+http://www.mulesoft.org/schema/mule/xero-accounting http://www.mulesoft.org/schema/mule/xero-accounting/current/mule-xero-accounting.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/salesforce-pub-sub http://www.mulesoft.org/schema/mule/salesforce-pub-sub/current/mule-salesforce-pub-sub.xsd
+http://www.mulesoft.org/schema/mule/smb http://www.mulesoft.org/schema/mule/smb/current/mule-smb.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsdhttp://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+http://www.mulesoft.org/schema/mule/powershell http://www.mulesoft.org/schema/mule/powershell/current/mule-powershell.xsd">
+	<configuration-properties doc:description="COMMON" doc:name="Configuration properties" doc:id="61f76e7a-39f2-4a4f-ad5c-d513eac70f59" file="properties/common.properties" />
+	<configuration-properties doc:description="ENVIRONMENT" doc:name="Configuration properties" doc:id="b27a4442-d302-49ce-9ccd-c8412780f171" file="properties/${mule.dev}}.properties" />
+	<secure-properties:config doc:description="ENVIRONMENT" name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="6170e24c-3ba3-48ee-87e3-c9aaa7c43a7f" file="properties/${mule.env}-secure.properties" key="${mule.key}" encoding="UTF-8" >
+		<secure-properties:encrypt algorithm="Blowfish" />
+	</secure-properties:config>
+	
+	<tls:context name="TLS_Context_Inbound"
+		doc:name="TLS Context" doc:id="c1fbc80b-9429-46fb-8bd8-71563c0c4b07">
+		<tls:key-store type="jks"
+			path="${https.listener.keystore.path}"
+			keyPassword="${secure::https.listener.keystore.keyPassword}"
+			password="${secure::https.listener.keystore.password}" />
+	</tls:context>
+	
+	<http:listener-config name="HTTPS_Listener_Default" doc:description="DEFAULT" doc:name="HTTP Listener config" doc:id="5b910441-ebaf-4f12-8da4-94519e69add2">
+		<http:listener-connection
+			host="${https.listener.host}" port="${https.listener.port}">
+		</http:listener-connection>
+	</http:listener-config>
+	
+	<http:request-config name="HTTP_Request_ArtemisAPI" doc:description="ARTEMIS API" doc:name="HTTP Request configuration" doc:id="192a5b0b-956f-49f9-9970-1cd228c3372f" basePath="${artemis.api.https.request.basePath}" responseTimeout="${artemis.api.https.request.responseTimeout}" >
+		<http:request-connection protocol="HTTPS" host="${artemis.api.https.request.host}" port="${artemis.api.https.request.port}" connectionIdleTimeout="${artemis.api.https.request.connectionTimeout}" >
+			<reconnection failsDeployment="true" >
+				<reconnect frequency="${artemis.api.retry.timePeriod}" count="${artemis.api.retry.maxRetries}" />
+			</reconnection>
+			<tls:context >
+				<tls:trust-store insecure="true" />
+			</tls:context>
+		</http:request-connection>
+		<http:default-headers >
+			<http:default-header key="ClientId" value="${secure::artemis.api.https.request.conn.headers.clientId}" />
+			<http:default-header key="ClientSecret" value="${secure::artemis.api.https.request.conn.headers.clientSecret}" />
+		</http:default-headers>
+	</http:request-config>
+	<salesforce:sfdc-config name="Salesforce_Config" doc:description="SALESFORCE" doc:name="Salesforce Config" doc:id="2541eafd-72fe-4cdd-b40c-bbc971eb295e" >
+		<salesforce:jwt-connection consumerKey="${secure::salesforce.oauth.jwt.consumerKey}" storePassword="${secure::salesforce.oauth.jwt.keystorePassword}" certificateAlias="${secure::salesforce.oauth.jwt.certificateAlias}" principal="${salesforce.principal}" tokenEndpoint="${salesforce.token.endpoint}" keyStore="${salesforce.keystore.path}" audienceUrl="${salesforce.audience.url}"/>
+	</salesforce:sfdc-config>
+	<smb:config name="SMB_Connector_Atlantis_R"  doc:description="NETWORK DRIVE" doc:name="SMB Connector Config" doc:id="a2ace15b-0115-42cb-a949-aaf6ce55864b" >
+		<smb:connection domain="${secure::smb.atlantis.r.domain}" host="${secure::smb.atlantis.r.host}" share="${secure::smb.atlantis.r.share}" username="${secure::smb.atlantis.r.username}" password="${secure::smb.atlantis.r.password}" />
+	</smb:config>
+	<api-gateway:autodiscovery apiId="${secure::api.autodiscovery.id}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="494daf76-06a7-45e5-906d-9636f256dfa1" flowRef="main" />
+	<validation:config name="Validation_Config" doc:name="Validation Config" doc:id="be54fcf3-8259-4916-98cb-286278542deb" />
+	<salesforce-pub-sub:pubsub-config name="Salesforce_PubSub_Config" doc:name="Salesforce PubSub Config" doc:id="08db614b-93f9-4fc3-8e94-da25c4265e57" >
+		<salesforce-pub-sub:jwt-connection consumerKey="${secure::salesforce.oauth.jwt.consumerKey}" keyStore="${salesforce.keystore.path}" storePassword="${secure::salesforce.oauth.jwt.keystorePassword}" certificateAlias="${secure::salesforce.oauth.jwt.certificateAlias}" principal="${salesforce.principal}" tokenEndpoint="${salesforce.token.endpoint}" audienceUrl="${salesforce.audience.url}" />
+	</salesforce-pub-sub:pubsub-config>
+
+
+</mule>

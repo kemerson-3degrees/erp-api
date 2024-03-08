@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:salesforce-pub-sub="http://www.mulesoft.org/schema/mule/salesforce-pub-sub" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce-pub-sub http://www.mulesoft.org/schema/mule/salesforce-pub-sub/current/mule-salesforce-pub-sub.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<flow name="account_opportunity_list_get" doc:id="83119aa6-c401-4b15-9d0d-347940e98777" >
+		<salesforce:query doc:name="Opportunity" doc:id="42d1fa6b-9140-4236-888e-085e35c40d6b" config-ref="Salesforce_Config" target="opportunityResponse" >
+			<salesforce:salesforce-query ><![CDATA[SELECT Id
+FROM Opportunity 
+WHERE AccountId IN(':accountIds')
+AND IsWon = true
+AND CloseDate >= 2013-01-01
+AND RecordTypeId IN('0120W000001QG9SQAW','0120W000001lEv3QAE','0120W000002AORfQAO','0120W000002AOUAQA4','0120W000002AORkQAO')
+]]></salesforce:salesforce-query>
+			<salesforce:parameters ><![CDATA[#[output application/java
+---
+{
+	accountIds : payload
+}]]]></salesforce:parameters>
+		</salesforce:query>
+		<choice doc:name="Choice" doc:id="9c32a0be-2e92-4253-8f78-cc979aa30007" >
+			<when expression="#[sizeOf(vars.opportunityResponse) &lt;=1]">
+				<ee:transform doc:name="OpportunityId" doc:id="dddfc7e8-8872-4689-b498-84c776b63986" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output text/plain
+---
+vars.opportunityResponse[0].Id default ""]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="OpportuniityId List" doc:id="27e5a2c5-2009-4c71-a09a-d64b870da389">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output text/plain
+---
+(vars.opportunityResponse map (item) -> {
+	Id: "'" ++ item.Id as String ++ "'"
+}).Id joinBy(",")]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			</otherwise>
+		</choice>
+	</flow>
+	<flow name="opportunity_documents_get" doc:id="3e1d5899-25b3-4dc8-81e6-a89dd87e92be" initialState="stopped">
+		<scheduler doc:name="Scheduler" doc:id="a7b98a8d-843e-441a-acda-0e1a690677a0" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="1" timeUnit="DAYS" />
+			</scheduling-strategy>
+		</scheduler>
+		<set-variable value='#[output application/json&#10;---&#10;{&#10;	CounterpartyID: "8192"&#10;}]' doc:name="request" doc:id="c1d62bb3-afb9-418a-bdd9-fd9227bdd69e" variableName="request"/>
+		<flow-ref doc:name="Company Services" doc:id="24448094-c7d4-4359-a64e-7a016cbde3ec" name="company_services_get"/>
+		<choice doc:name="Choice1" doc:id="fd681ec7-a45d-4395-a1c3-442ef3f9aa16">
+			<when expression="#[sizeOf(payload) &lt;=1]">
+				<ee:transform doc:name="OpportunityId" doc:id="a9c5a8ec-9a51-47b7-b142-a1f2abbee5d1">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output text/plain
+---
+payload[0].Id default ""]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise>
+				<ee:transform doc:name="OpportuniityId List" doc:id="fa17a8d4-65c8-44ef-ac84-07089e8de3de">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output text/plain
+---
+(payload map (item) -> {
+	Id: "'" ++ item.OpportunityID as String ++ "'"
+}).Id joinBy(",")]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<try doc:name="Try" doc:id="1ee64947-3a5a-484f-9ef7-480df7f4562a" >
+			<salesforce:query doc:name="Get Entity DocumentIds" doc:id="55b35fcb-5e05-4296-aa6c-49747645fe89" config-ref="Salesforce_Config" target="entityDocumentResponse" >
+				<salesforce:salesforce-query ><![CDATA[SELECT ContentDocumentId
+FROM ContentDocumentLink
+WHERE LinkedEntityId IN(:opportunityIds)]]></salesforce:salesforce-query>
+				<salesforce:parameters ><![CDATA[#[output application/java
+---
+{
+	opportunityIds : payload
+}]]]></salesforce:parameters>
+			</salesforce:query>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="fb841974-83d6-47b2-822c-d341eea361b8" type="ANY" >
+					<logger level="ERROR" doc:name="Logger" doc:id="d5191691-ae62-47bb-a447-7ccd9a28e8b2" message="#[output application/json&#10;---&#10;{&#10;	Message: error&#10;}]" />
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<choice doc:name="Choice" doc:id="015eb75f-ba26-447f-b62d-22834e369260">
+			<when expression="sizeOf(vars.contentDocumentResponse) == 0">
+				<ee:transform doc:name="Transform Message" doc:id="34e839fb-4e6b-409e-9bb1-6da79cc93be4">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+""]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<when expression="sizeOf(vars.contentDocumentResponse) == 1">
+				<ee:transform doc:name="Document Id" doc:id="2edd5ec1-e2ba-4485-b9d8-7b54e08ff0d8">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output text/plain
+---
+vars.entityDocumentResponse[0].ContentDocumentId]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise>
+				<ee:transform doc:name="Document Id List" doc:id="8905a8c5-6476-40a0-b74d-71770b7114fd">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output text/plain
+---
+(vars.entityDocumentResponse map (item) -> {
+	Id: "'" ++ item.ContentDocumentId as String ++ "'"
+}).Id joinBy(",")]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			</otherwise>
+		</choice>
+		<try doc:name="Try1" doc:id="e3e2bc21-94cf-476d-8567-ff1f5b674f47" >
+			<salesforce:query doc:name="Documents" doc:id="dbfb5b1a-6ba1-4533-8007-897f9186a351" config-ref="Salesforce_Config" >
+				<salesforce:salesforce-query ><![CDATA[SELECT FirstPublishLocationId, ContentDocumentId, PathOnClient, FileExtension, FileType, ContentSize, CreatedDate, VersionDataUrl, VersionData, IsLatest, PublishStatus, SharingPrivacy, SharingOption
+FROM ContentVersion
+WHERE ContentDocumentId IN(:DocumentIds)]]></salesforce:salesforce-query>
+				<salesforce:parameters ><![CDATA[#[output application/java
+---
+{
+	DocumentIds : payload
+}]]]></salesforce:parameters>
+			</salesforce:query>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="96c1e764-4a2a-4442-93f4-a826d426ae7d" type="ANY" >
+					<logger level="ERROR" doc:name="Logger" doc:id="5f6f77c2-32f8-433e-a7be-6c809b77b714" message="#[output application/json&#10;---&#10;{&#10;	Message: error&#10;}]" />
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<ee:transform doc:name="response" doc:id="959c9517-353e-4ab7-8117-e3833fa147b6" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+import today from dw::core::Dates
+output application/json
+---
+payload filter $.IsLatest ~= true and $.FileExtension ~= "pdf" map ( item , index ) -> {
+	project_id: index,
+	filename: item.PathOnClient default "",
+	filesize: floor(item.ContentSize default 0),
+	mimetype: ("application/" ++ item.FileExtension as String default ""),
+	created_at: item.CreatedDate default today(),
+	document_guid: item.ContentDocumentId,
+	document_type: "Salesforce" as String
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="b7be1ca1-9797-4f79-99c6-5186a5d2fd1e" message="#[payload]"/>
+	</flow>
+	<flow name="etl_staging_opportunity-closed-won_initial_load" doc:id="f6779397-e485-4f46-9b3b-1ff929ce395d" initialState="stopped">
+		<scheduler doc:name="Scheduler" doc:id="e9adf6cf-ed51-4416-850b-bd7048537178" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="1" timeUnit="DAYS"/>
+			</scheduling-strategy>
+		</scheduler>
+		<salesforce:query doc:name="Opportunity" doc:id="15cbb960-ece6-4066-85b9-cb890e85ab74" config-ref="Salesforce_Config" >
+			<salesforce:salesforce-query ><![CDATA[SELECT Id, RecordTypeId, Case_Safe_ID__c, Name, IsWon, CloseDate, Total_Contract_Value__c, Artemis_Confirm_ID__c, Consulting_Project_ID__c, AccountId, Counterparty_Name__c, OwnerId, Opportunity_Owner_Name__c, Opportunity_Owner_Active__c
+FROM Opportunity
+WHERE IsWon = true
+AND CloseDate >= 2013-01-01
+AND RecordTypeId IN('0120W000001QG9SQAW','0120W000001lEv3QAE','0120W000002AORfQAO','0120W000002AOUAQA4','0120W000002AORkQAO')
+]]></salesforce:salesforce-query>
+		</salesforce:query>
+		<ee:transform doc:name="payload" doc:id="2cbcf43e-2136-47d1-9c7a-3ae93cfdba9e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[import * from dw::core::Arrays
+output application/json
+---
+payload map(o) -> {
+	OpportunityID: o.Id as String default "",
+	CaseSafeID: o.Case_Safe_ID__c as String default "",
+	RecordTypeID: o.RecordTypeId as String default "",
+	OpportunityName: o.Name as String default "",
+	IsWon: o.IsWon as String default "",
+	CloseDate: o.CloseDate as Date,
+	TotalContractValue: o.Total_Contract_Value__c as Number,
+	ConfirmID: o.Artemis_Confirm_ID__c as String default "",
+	ProjectID: o.Consulting_Project_ID__c as String default "",
+	OpportunityOwnerID: o.OwnerId as String default "",
+	OpportunityOwnerName: o.Opportunity_Owner_Name__c as String default "",
+	OpportunityOwnerIsActive: o.Opportunity_Owner_Active__c as String default "",
+	AccountID: o.AccountId as String default "",
+	CounterpartyName: o.Counterparty_Name__c as String default "",
+	CorrelationID: correlationId
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="batches" doc:id="08ffb924-92df-4d50-9eaa-2239c1fc8d02" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+import * from dw::core::Arrays
+output application/json
+---
+payload divideBy 500]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<foreach doc:name="For Each" doc:id="425a41f1-ae7f-49a7-8b40-a482762a5d8b" collection="#[payload]" >
+			<try doc:name="Try" doc:id="208b772d-8815-4792-85f9-92f52f25cc3c" >
+				<ee:transform doc:name="payload" doc:id="f3154e47-2772-4f3b-affd-d8dc07f91d58" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<http:request method="POST" doc:name="INSERT Closed Won Opportunities" doc:id="5b2f7674-9439-4f55-8055-acd3721fb615" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" correlationId="#[correlationId]" outputMimeType="text/plain" sendBodyMode="ALWAYS" target="artemisResponse" >
+					<http:body ><![CDATA[#[%dw 2.0
+output application/json
+---
+[
+    {
+        "database": "Artemis",
+        "schema": "sh",
+        "table": "Staging_Opportunity_ClosedWon",
+        "value": payload
+    }
+]]]]></http:body>
+					<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"schema" : "dbo",
+	"objectName" : "tdp_Web_API_Insert",
+	"database" : "Artemis_API"
+}]]]></http:query-params>
+				</http:request>
+				<logger level="INFO" doc:name="Logger" doc:id="d05e9e52-0c17-4ebf-b592-e872b63b568e" message='#[output application/json&#10;---&#10;{&#10;	Message: read(vars.artemisResponse,"application/JSON").Table&#10;}]' />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="e1fac762-7e2a-4f69-9bef-b8cfe5ccb03f" >
+						<logger level="INFO" doc:name="Logger" doc:id="b0be9c77-8bf0-4bbe-8ae7-95a74b87aaef" message="#[output application/json&#10;---&#10;{&#10;	Message: error&#10;}]" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</foreach>
+	</flow>
+	<flow name="etl_staging_opportunity-closed-won_change_load" doc:id="7db120b3-a15f-4a41-8d90-fe3fe0a81a75" initialState="stopped">
+		<salesforce:replay-channel-listener streamingChannel="/data/OpportunityChangeEvent" replayOption="FROM_LAST_REPLAY_ID" doc:name="Replay channel listener" doc:id="f7274a9a-db8c-45a9-bd4b-ff696b42f26d" config-ref="Salesforce_Config" />
+		<set-variable value="#[output application/java&#10;---&#10;payload.data.payload.ChangeEventHeader.recordIds as Array&lt;String&gt;]" doc:name="recordIds" doc:id="8ec0b0a8-9c19-4fa1-b5b0-658d1d0dfa76" variableName="recordIds" />
+		<set-variable value="#[output application/java&#10;---&#10;payload.data.event.replayId]" doc:name="replayId" doc:id="8982e08d-ae74-4cac-9afe-d607a68dfe8f" variableName="replayId" />
+		<foreach doc:name="For Each RecordId" doc:id="fb55a296-7617-43f4-849e-7df97521efdb" collection="#[vars.recordIds]">
+			<salesforce:query doc:name="Opportunity" doc:id="417d9b7a-3df0-43d6-8702-31c48c034853" config-ref="Salesforce_Config" target="opportunityResponse">
+			<salesforce:salesforce-query><![CDATA[SELECT Id, RecordTypeId, Case_Safe_ID__c, Name, IsWon, CloseDate, Total_Contract_Value__c, Artemis_Confirm_ID__c, Consulting_Project_ID__c, AccountId, Counterparty_Name__c, OwnerId, Opportunity_Owner_Name__c, Opportunity_Owner_Active__c
+FROM Opportunity
+WHERE 
+Id = ':recordId'
+AND IsWon = true
+AND CloseDate >= 2013-01-01
+AND RecordTypeId IN('0120W000001QG9SQAW','0120W000001lEv3QAE','0120W000002AORfQAO','0120W000002AOUAQA4','0120W000002AORkQAO')
+]]></salesforce:salesforce-query>
+			<salesforce:parameters><![CDATA[#[output application/java
+---
+{
+	recordId : payload
+}]]]></salesforce:parameters>
+		</salesforce:query>
+			<ee:transform doc:name="payload" doc:id="fec9fbc9-0860-422b-8c5b-306e54e887fd">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+vars.opportunityResponse map(o) -> {
+	OpportunityID: o.Id as String default "",
+	CaseSafeID: o.Case_Safe_ID__c as String default "",
+	RecordTypeID: o.RecordTypeId as String default "",
+	OpportunityName: o.Name as String default "",
+	IsWon: o.IsWon as String default "",
+	CloseDate: o.CloseDate as Date,
+	TotalContractValue: o.Total_Contract_Value__c as Number,
+	ConfirmID: o.Artemis_Confirm_ID__c as String default "",
+	ProjectID: o.Consulting_Project_ID__c as String default "",
+	OpportunityOwnerID: o.OwnerId as String default "",
+	OpportunityOwnerName: o.Opportunity_Owner_Name__c as String default "",
+	OpportunityOwnerIsActive: o.Opportunity_Owner_Active__c as String default "",
+	AccountID: o.AccountId as String default "",
+	CounterpartyName: o.Counterparty_Name__c as String default "",
+	CorrelationID: correlationId,
+	ReplayID: vars.replayId
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<choice doc:name="Choice" doc:id="8af600a9-4abe-4459-aeb2-16f274d70b4b">
+				<when expression="#[isEmpty(payload)]">
+					<logger level="INFO" doc:name="Logger" doc:id="f46186d2-6c67-4162-8910-d9ad1dfe0e89" message='#[output application/json&#10;---&#10;{&#10;	Message: "NOT CLOSED WON OPPORTUNITY"&#10;}]' />
+				</when>
+				<otherwise>
+					<try doc:name="Try" doc:id="d26afe15-960a-4fbd-b634-78c826b56392">
+				<http:request method="POST" doc:name="INSERT sh_Staging_Opportunity_ClosedWon" doc:id="63eff63a-9da4-4f3b-b687-27da66b865df" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" outputMimeType="text/plain" sendBodyMode="ALWAYS" target="artemisResponse">
+					<http:body><![CDATA[#[%dw 2.0
+output application/json
+---
+[
+    {
+        "database": "Artemis",
+        "schema": "sh",
+        "table": "Staging_Opportunity_ClosedWon",
+        "value": payload
+    }
+]]]]></http:body>
+					<http:query-params><![CDATA[#[output application/java
+---
+{
+	"schema" : "dbo",
+	"objectName" : "tdp_Web_API_Insert",
+	"database" : "Artemis_API"
+}]]]></http:query-params>
+				</http:request>
+				<logger level="INFO" doc:name="Logger" doc:id="84c85663-912c-482e-bac4-a0e583bbd203" message="#[output application/json&#10;---&#10;{&#10;	Message: vars.artemisResponse&#10;}]" />
+				<error-handler>
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="29537113-1e73-4ca2-b53c-ac0d4cb0a812">
+						<logger level="INFO" doc:name="Logger" doc:id="1bdc3915-ff16-4b35-9334-5df378a01e50" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+				</otherwise>
+			</choice>
+		</foreach>
+	</flow>
+
+</mule>

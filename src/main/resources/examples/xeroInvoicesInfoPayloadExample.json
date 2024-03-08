@@ -1,0 +1,15 @@
+[
+    {
+        "invoice_id": "INVOICE_ID",
+        "invoice_number": "INVOICE_NUMBER",
+        "contact": {
+            "contact_id": "CONTACT_ID",
+            "contact_name": "CONTACT_NAME"
+        },
+        "invoice_documents": [
+            {
+                "url": "INVOICE_URL"
+            }
+        ]
+    }
+]

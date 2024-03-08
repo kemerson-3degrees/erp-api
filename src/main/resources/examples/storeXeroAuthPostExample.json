@@ -1,0 +1,30 @@
+[
+    {
+        "key": "grant_type",
+        "value": "refresh_token"
+    },
+    {
+        "key": "scopes",
+        "value": "offline_access accounting.transactions files openid profile email accounting.contacts accounting.settings"
+    },
+    {
+        "key": "tenant_id",
+        "value": "TENANT_ID"
+    },
+    {
+        "key": "client_id",
+        "value": "CLIENT_ID"
+    },
+    {
+        "key": "client_secret",
+        "value": "CLIENT_SECRET"
+    },
+    {
+        "key": "refresh_token",
+        "value": "REFRESH_TOKE"
+    },
+    {
+        "key": "access_token",
+        "value": "ACCESS_TOKEN"
+    }
+]

@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:smb="http://www.mulesoft.org/schema/mule/smb"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/smb http://www.mulesoft.org/schema/mule/smb/current/mule-smb.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<flow name="restore_DocumentObjects" doc:id="3ee4d4d1-03c7-4883-ab08-e7473ac02819" >
+		<http:request method="GET" doc:name="EXEC sh.tdp_DocumentObjectsRestore" doc:id="b135515a-1305-4624-b170-3b7908a8a9fe" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" sendBodyMode="NEVER" target="artemisResponse">
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"schema" : "sh",
+	"objectType" : "StoredProcedure",
+	"objectName" : "tdp_DocumentObjectsRestore",
+	"parameters" : vars.parameters,
+	"database" : "Artemis"
+}]]]></http:query-params>
+		</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="712cbadc-6377-4b71-91f9-fcccd3012e75" message="#[output application/json&#10;---&#10;{&#10;	Message: vars.artemisResponse&#10;}]"/>
+	</flow>
+	<flow name="restore_sh-Staging-CounterpartiesObject" doc:id="4dfb7c26-40c4-42e9-914d-f003ef270a63" >
+		<http:request method="GET" doc:name="EXEC sh.tdp_StagingCounterpartiesRestore" doc:id="c3b8e46d-91fa-4f95-9dcb-60416f28d608" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" sendBodyMode="NEVER" target="artemisResponse" >
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"schema" : "sh",
+	"objectType" : "StoredProcedure",
+	"objectName" : "tdp_StagingCounterpartiesObjectRestore",
+	"database" : "Artemis"
+}]]]></http:query-params>
+		</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="d8e9a8db-40d0-4015-8613-ff044cababea" message="#[output application/json&#10;---&#10;{&#10;	Message: vars.artemisResponse&#10;}]" />
+	</flow>
+	<flow name="restore_erp-tdt-Invoices-ConfirmObject" doc:id="53d70c32-0a14-46a9-bb2f-376c221c66bb">
+		<http:request method="GET" doc:name="EXEC sh.tdp_StagingCounterpartiesRestore" doc:id="1458eaa3-6dea-430e-8304-7531513ea7fb" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" sendBodyMode="NEVER" target="artemisResponse">
+			<http:query-params><![CDATA[#[output application/java
+---
+{
+	"schema" : "sh",
+	"objectType" : "StoredProcedure",
+	"objectName" : "tdp_InvoicesConfirmObjectRestore",
+	"database" : "Artemis"
+}]]]></http:query-params>
+		</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="bf0a2f48-f664-440b-994f-933a718c91fa" message="#[output application/json&#10;---&#10;{&#10;	Message: vars.artemisResponse&#10;}]" />
+	</flow>
+	<flow name="restore_sh-DocumentType" doc:id="b16f8849-7558-4a55-a167-33f1b7168148" initialState="stopped">
+		<scheduler doc:name="Scheduler" doc:id="4d360d37-48c1-4815-b0c5-d0cfeddbd223" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="1" timeUnit="DAYS"/>
+			</scheduling-strategy>
+		</scheduler>
+		<smb:file-read doc:name="File Read" doc:id="bbcca785-6ed4-4dbe-b780-23300a6a251d" config-ref="SMB_Connector_Atlantis_R" fileName="backup_sh-DocumentType.json" dirName="CP_Files\Backups\data"/>
+		<ee:transform doc:name="payload" doc:id="450b43eb-d348-4854-9ac3-251849789046" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+var data = read(payload,"application/JSON")
+output application/json
+---
+data]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-variable value='#[output text/plain&#10;---&#10;"@TableName=sh.DocumentType" ++&#10;"@SetValue=ON"]' doc:name="parameters" doc:id="2024da53-b1e8-41b1-ab9e-32445c88c286" variableName="parameters" />
+		<http:request method="GET" doc:name="IDENTITY_INSERT ON" doc:id="980010e3-4ddd-4e98-9bf8-bb7248b886c6" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" sendBodyMode="NEVER">
+				<http:query-params><![CDATA[#[output application/java
+---
+{
+	"schema" : "sh",
+	"objectType" : "StoredProcedure",
+	"objectName" : "tdp_SetIdentityInsert",
+	"parameters" : vars.parameters,
+	"database" : "Artemis"
+}]]]></http:query-params>
+			</http:request>
+		<set-variable value='#[output text/plain&#10;---&#10;"@TableName=sh.DocumentType" ++&#10;"@SetValue=OFF"]' doc:name="parameters" doc:id="baa65504-16f6-40b1-9108-a74229c2b291" variableName="parameters" />
+		<http:request method="POST" doc:name="INSERT Data" doc:id="cf1fec92-f4c6-45bc-8990-f0095bf9ce27" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" outputMimeType="text/plain" sendBodyMode="ALWAYS" target="artemisResponse">
+			<http:body><![CDATA[#[%dw 2.0
+output application/json
+---
+[
+    {
+        "database": "Artemis",
+        "schema": "sh",
+        "table": "DocumentType",
+        "value": payload
+    }
+]]]]></http:body>
+			<http:query-params><![CDATA[#[output application/java
+---
+{
+	"schema" : "dbo",
+	"objectName" : "tdp_Web_API_Insert",
+	"database" : "Artemis_API"
+}]]]></http:query-params>
+		</http:request>
+		<choice doc:name="Is Successful insert?" doc:id="073b4c81-337c-4105-ae42-c4d0dfd18b76">
+				<when expression='#[vars.artemisResponse contains("rolled back")]'>
+				<http:request method="GET" doc:name="IDENTITY_INSERT OFF" doc:id="9223ba0a-f000-4c79-8e67-a841c331ddcc" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" sendBodyMode="NEVER">
+					<http:query-params><![CDATA[#[output application/java
+---
+{
+	"schema" : "sh",
+	"objectType" : "StoredProcedure",
+	"objectName" : "tdp_SetIdentityInsert",
+	"parameters" : vars.parameters,
+	"database" : "Artemis"
+}]]]></http:query-params>
+				</http:request>
+				<logger level="INFO" doc:name="Logger" doc:id="ea8edfe0-e544-4b11-8899-e8fd0f537b5c" message="#[output application/json&#10;---&#10;{&#10;	Message: vars.artemisResponse&#10;}]"/>
+				</when>
+				<otherwise>
+				<http:request method="GET" doc:name="IDENTITY_INSERT OFF" doc:id="7868bdd2-e7f4-437b-b0e7-7236c0895782" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" sendBodyMode="NEVER">
+				<http:query-params><![CDATA[#[output application/java
+---
+{
+	"schema" : "sh",
+	"objectType" : "StoredProcedure",
+	"objectName" : "tdp_SetIdentityInsert",
+	"parameters" : vars.parameters,
+	"database" : "Artemis"
+}]]]></http:query-params>
+			</http:request>
+				<logger level="INFO" doc:name="Logger" doc:id="50fdb4ae-eb51-44a8-9cc9-1926495316d2" message='#[output application/json&#10;---&#10;{&#10;	Message: "sh.DocumentType Successfully Restored."&#10;}]' />
+				</otherwise>
+			</choice>
+	</flow>
+	<flow name="restore_sh-DocumentContext" doc:id="0602ffdf-d8cd-4517-8efe-d17e896b2177" initialState="stopped">
+		<scheduler doc:name="Scheduler" doc:id="591c6e3f-aed7-42c7-95fa-fc76b9b6d848" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="1" timeUnit="DAYS" />
+			</scheduling-strategy>
+		</scheduler>
+		<smb:file-read doc:name="File Read" doc:id="bf25b8e3-6d2a-4495-b515-3577bc7b1505" config-ref="SMB_Connector_Atlantis_R" fileName="backup_sh-DocumentContext.json" dirName="CP_Files\Backups\data" />
+		<ee:transform doc:name="payload" doc:id="95827176-de6c-424b-a043-e1330f0b7e59" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+var data = read(payload,"application/JSON")
+output application/json
+---
+data]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-variable value='#[output text/plain&#10;---&#10;"@TableName=sh.DocumentContext" ++&#10;"@SetValue=ON"]' doc:name="parameters" doc:id="3ab50f6c-5cde-4c2f-91f9-7befde2ea2ef" variableName="parameters" />
+		<http:request method="GET" doc:name="IDENTITY_INSERT ON" doc:id="a4260661-e09c-4251-90a0-b9ec89b30e62" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" sendBodyMode="NEVER" >
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"schema" : "sh",
+	"objectType" : "StoredProcedure",
+	"objectName" : "tdp_SetIdentityInsert",
+	"parameters" : vars.parameters,
+	"database" : "Artemis"
+}]]]></http:query-params>
+		</http:request>
+		<set-variable value='#[output text/plain&#10;---&#10;"@TableName=sh.DocumentContext" ++&#10;"@SetValue=OFF"]' doc:name="parameters" doc:id="7fdec37c-6bb3-4a0a-9a39-d94e8b0c3982" variableName="parameters" />
+		<http:request method="POST" doc:name="INSERT Data" doc:id="fc055c54-47c2-4082-94e1-34384cc3ff7f" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" outputMimeType="text/plain" sendBodyMode="ALWAYS" target="artemisResponse" >
+			<http:body ><![CDATA[#[%dw 2.0
+output application/json
+---
+[
+    {
+        "database": "Artemis",
+        "schema": "sh",
+        "table": "DocumentContext",
+        "value": payload
+    }
+]]]]></http:body>
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"schema" : "dbo",
+	"objectName" : "tdp_Web_API_Insert",
+	"database" : "Artemis_API"
+}]]]></http:query-params>
+		</http:request>
+		<choice doc:name="Is Successful insert?" doc:id="86e26653-01c6-4b2a-a9bf-c46879c54f81" >
+			<when expression='#[vars.artemisResponse contains("rolled back")]' >
+				<http:request method="GET" doc:name="IDENTITY_INSERT OFF" doc:id="c3239f73-cf0d-4b4a-a021-a7c6b790620d" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" sendBodyMode="NEVER" >
+					<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"schema" : "sh",
+	"objectType" : "StoredProcedure",
+	"objectName" : "tdp_SetIdentityInsert",
+	"parameters" : vars.parameters,
+	"database" : "Artemis"
+}]]]></http:query-params>
+				</http:request>
+				<logger level="INFO" doc:name="Logger" doc:id="ab99aa64-5540-4b52-b02f-af2dadf7f933" message="#[output application/json&#10;---&#10;{&#10;	Message: vars.artemisResponse&#10;}]" />
+			</when>
+			<otherwise >
+				<http:request method="GET" doc:name="IDENTITY_INSERT OFF" doc:id="edd68f2f-d05d-4825-a279-fe375e80fc4f" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" sendBodyMode="NEVER" >
+					<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"schema" : "sh",
+	"objectType" : "StoredProcedure",
+	"objectName" : "tdp_SetIdentityInsert",
+	"parameters" : vars.parameters,
+	"database" : "Artemis"
+}]]]></http:query-params>
+				</http:request>
+				<logger level="INFO" doc:name="Logger" doc:id="a27c5a78-28a9-4718-a976-4dbf92823746" message='#[output application/json&#10;---&#10;{&#10;	Message: "sh.DocumentContext Successfully Restored."&#10;}]' />
+			</otherwise>
+		</choice>
+	</flow>
+	<flow name="restore_sh-DocumentSource" doc:id="594d55a3-fb77-46ad-acbd-8b9a8427716f" initialState="stopped">
+		<scheduler doc:name="Scheduler" doc:id="8fc6f8ef-5aec-416d-999b-2523e0a0a731" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="1" timeUnit="DAYS" />
+			</scheduling-strategy>
+		</scheduler>
+		<smb:file-read doc:name="File Read" doc:id="9e369f88-d3bb-4766-91d0-970c253e47c6" config-ref="SMB_Connector_Atlantis_R" fileName="backup_sh-DocumentSource.json" dirName="CP_Files\Backups\data" />
+		<ee:transform doc:name="payload" doc:id="96719fe6-bf94-48e9-9491-a52a7cfb0ccd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+var data = read(payload,"application/JSON")
+output application/json
+---
+data]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-variable value='#[output text/plain&#10;---&#10;"@TableName=sh.DocumentSource" ++&#10;"@SetValue=ON"]' doc:name="parameters" doc:id="3c233f4c-7eb4-4465-9cbb-19e6a49f2e21" variableName="parameters" />
+		<http:request method="GET" doc:name="IDENTITY_INSERT ON" doc:id="b7926e76-4678-4b0b-9d0e-bfac1959102f" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" sendBodyMode="NEVER" >
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"schema" : "sh",
+	"objectType" : "StoredProcedure",
+	"objectName" : "tdp_SetIdentityInsert",
+	"parameters" : vars.parameters,
+	"database" : "Artemis"
+}]]]></http:query-params>
+		</http:request>
+		<set-variable value='#[output text/plain&#10;---&#10;"@TableName=sh.DocumentSource" ++&#10;"@SetValue=OFF"]' doc:name="parameters" doc:id="63ceb2e7-6828-430d-9733-c3b2318f2371" variableName="parameters" />
+		<http:request method="POST" doc:name="INSERT Data" doc:id="42899038-ef01-42e0-811c-f97b583f0934" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" outputMimeType="text/plain" sendBodyMode="ALWAYS" target="artemisResponse" >
+			<http:body ><![CDATA[#[%dw 2.0
+output application/json
+---
+[
+    {
+        "database": "Artemis",
+        "schema": "sh",
+        "table": "DocumentSource",
+        "value": payload
+    }
+]]]]></http:body>
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"schema" : "dbo",
+	"objectName" : "tdp_Web_API_Insert",
+	"database" : "Artemis_API"
+}]]]></http:query-params>
+		</http:request>
+		<choice doc:name="Is Successful insert?" doc:id="07837522-8af0-42c6-9fe3-b57ae6bf2c72" >
+			<when expression='#[vars.artemisResponse contains("rolled back")]' >
+				<http:request method="GET" doc:name="IDENTITY_INSERT OFF" doc:id="d76529c2-2ab3-455f-98ae-8888bbcb4548" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" sendBodyMode="NEVER" >
+					<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"schema" : "sh",
+	"objectType" : "StoredProcedure",
+	"objectName" : "tdp_SetIdentityInsert",
+	"parameters" : vars.parameters,
+	"database" : "Artemis"
+}]]]></http:query-params>
+				</http:request>
+				<logger level="INFO" doc:name="Logger" doc:id="c11e0fc1-a85a-4561-bf99-c453aaf6dac2" message="#[output application/json&#10;---&#10;{&#10;	Message: vars.artemisResponse&#10;}]" />
+			</when>
+			<otherwise >
+				<http:request method="GET" doc:name="IDENTITY_INSERT OFF" doc:id="b1b50c04-13d8-4cde-bd25-b5d386e0f97e" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" sendBodyMode="NEVER" >
+					<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"schema" : "sh",
+	"objectType" : "StoredProcedure",
+	"objectName" : "tdp_SetIdentityInsert",
+	"parameters" : vars.parameters,
+	"database" : "Artemis"
+}]]]></http:query-params>
+				</http:request>
+				<logger level="INFO" doc:name="Logger" doc:id="fdd9aa52-0fec-4c03-a3e4-6587f0fb662b" message='#[output application/json&#10;---&#10;{&#10;	Message: "sh.DocumentSource Successfully Restored."&#10;}]' />
+			</otherwise>
+		</choice>
+	</flow>
+	<flow name="restore_sh-Documents" doc:id="f8dfbdea-21fc-4621-94f9-37a2b1e91a40" initialState="stopped">
+		<scheduler doc:name="Scheduler" doc:id="f938a5e4-16c5-432a-941f-ae56a4bd6497" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="1" timeUnit="DAYS" />
+			</scheduling-strategy>
+		</scheduler>
+		<smb:file-read doc:name="File Read" doc:id="df630d4f-bc7c-4bf8-8077-65e1bbe39a33" config-ref="SMB_Connector_Atlantis_R" fileName="backup_sh-Documents.json" dirName="CP_Files\Backups\data" />
+		<ee:transform doc:name="payload" doc:id="2e0e82b4-0296-463a-8d9c-97020d1dfb6d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+var data = read(payload,"application/JSON")
+output application/json
+---
+data]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-variable value='#[output text/plain&#10;---&#10;"@TableName=sh.Documents" ++&#10;"@SetValue=ON"]' doc:name="parameters" doc:id="38bba57f-350b-4b8a-8472-3d276c120987" variableName="parameters" />
+		<http:request method="GET" doc:name="IDENTITY_INSERT ON" doc:id="4ff1d8ff-9893-46b7-beac-03e4b588cf51" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" sendBodyMode="NEVER" >
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"schema" : "sh",
+	"objectType" : "StoredProcedure",
+	"objectName" : "tdp_SetIdentityInsert",
+	"parameters" : vars.parameters,
+	"database" : "Artemis"
+}]]]></http:query-params>
+		</http:request>
+		<set-variable value='#[output text/plain&#10;---&#10;"@TableName=sh.Documents" ++&#10;"@SetValue=OFF"]' doc:name="parameters" doc:id="27540e0d-918a-4a7e-812a-29ebb42ba4e2" variableName="parameters" />
+		<http:request method="POST" doc:name="INSERT Data" doc:id="8894e5b3-2775-47bd-8b92-af4de1cc5756" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" outputMimeType="text/plain" sendBodyMode="ALWAYS" target="artemisResponse" >
+			<http:body ><![CDATA[#[%dw 2.0
+output application/json
+---
+[
+    {
+        "database": "Artemis",
+        "schema": "sh",
+        "table": "Documents",
+        "value": payload
+    }
+]]]]></http:body>
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"schema" : "dbo",
+	"objectName" : "tdp_Web_API_Insert",
+	"database" : "Artemis_API"
+}]]]></http:query-params>
+		</http:request>
+		<choice doc:name="Is Successful insert?" doc:id="d92bb27d-4c64-407e-ba66-937407a27486" >
+			<when expression='#[vars.artemisResponse contains("rolled back")]' >
+				<http:request method="GET" doc:name="IDENTITY_INSERT OFF" doc:id="9f162486-92ab-46e4-86bc-2eb06fc4372e" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" sendBodyMode="NEVER" >
+					<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"schema" : "sh",
+	"objectType" : "StoredProcedure",
+	"objectName" : "tdp_SetIdentityInsert",
+	"parameters" : vars.parameters,
+	"database" : "Artemis"
+}]]]></http:query-params>
+				</http:request>
+				<logger level="INFO" doc:name="Logger" doc:id="d3dff0ea-35bc-45ec-99a4-a918acc724b8" message="#[output application/json&#10;---&#10;{&#10;	Message: vars.artemisResponse&#10;}]" />
+			</when>
+			<otherwise >
+				<http:request method="GET" doc:name="IDENTITY_INSERT OFF" doc:id="143ae276-9840-40d7-af08-495c1611ccfc" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" sendBodyMode="NEVER" >
+					<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"schema" : "sh",
+	"objectType" : "StoredProcedure",
+	"objectName" : "tdp_SetIdentityInsert",
+	"parameters" : vars.parameters,
+	"database" : "Artemis"
+}]]]></http:query-params>
+				</http:request>
+				<logger level="INFO" doc:name="Logger" doc:id="193b5025-645a-427d-b679-9a9306de5c78" message='#[output application/json&#10;---&#10;{&#10;	Message: "sh.Documents Successfully Restored."&#10;}]' />
+			</otherwise>
+		</choice>
+	</flow>
+	<flow name="restore_sh-Staging-Counterparties" doc:id="a43555d5-188a-46a8-b655-b94f36c0f8fb" initialState="stopped">
+		<scheduler doc:name="Scheduler" doc:id="e3012a41-cd30-4aff-ab13-d55e01549068" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="1" timeUnit="DAYS" />
+			</scheduling-strategy>
+		</scheduler>
+		<smb:file-read doc:name="File Read" doc:id="9bf0574c-93b1-4556-b920-f4b771d256ef" config-ref="SMB_Connector_Atlantis_R" fileName="backup_sh-Staging-Counterparties.json" dirName="CP_Files\Backups\data" />
+		<ee:transform doc:name="payload" doc:id="0e313ea2-82b2-4f25-8d0c-a13756523838" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+var data = read(payload,"application/JSON")
+output application/json
+---
+data]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="POST" doc:name="INSERT Data" doc:id="373bbf0e-cef9-4259-a3ae-aece729d7445" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" outputMimeType="text/plain" sendBodyMode="ALWAYS" target="artemisResponse" >
+			<http:body ><![CDATA[#[%dw 2.0
+output application/json
+---
+[
+    {
+        "database": "Artemis",
+        "schema": "sh",
+        "table": "Staging_Counterparties",
+        "value": payload
+    }
+]]]]></http:body>
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"schema" : "dbo",
+	"objectName" : "tdp_Web_API_Insert",
+	"database" : "Artemis_API"
+}]]]></http:query-params>
+		</http:request>
+		<choice doc:name="Is Successful insert?" doc:id="743a164e-3fe6-4e9c-a947-c48c0288cdfc" >
+			<when expression='#[vars.artemisResponse contains("rolled back")]' >
+				<logger level="INFO" doc:name="Logger" doc:id="89ebe6d3-01af-4bc7-b1fc-82c693fe559b" message="#[output application/json&#10;---&#10;{&#10;	Message: vars.artemisResponse&#10;}]" />
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="3665350d-dc1b-4f49-8d08-b93aca8678d2" message='#[output application/json&#10;---&#10;{&#10;	Message: "sh.Staging_Counterparties Successfully Restored."&#10;}]' />
+			</otherwise>
+		</choice>
+	</flow>
+	<flow name="restore_erp-tdt-Invoices-Confirm" doc:id="a29c9156-afbd-4179-8238-980a98a0675b" initialState="stopped" >
+		<scheduler doc:name="Scheduler" doc:id="8b281793-4496-469c-bd57-f92559e5247c" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="1" timeUnit="DAYS" />
+			</scheduling-strategy>
+		</scheduler>
+		<smb:file-read doc:name="File Read" doc:id="be800cb1-60f4-412c-8c5d-298813f22486" config-ref="SMB_Connector_Atlantis_R" fileName="backup_InvoicesConfirm.json" dirName="CP_Files\Backups\data" />
+		<ee:transform doc:name="payload" doc:id="7462be09-c055-4162-8a50-34a1c993f154" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+var data = read(payload,"application/JSON")
+output application/json
+---
+data]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="POST" doc:name="INSERT Data" doc:id="0545ce2f-88d8-43f7-93c3-5005efebf9d6" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" outputMimeType="text/plain" sendBodyMode="ALWAYS" target="artemisResponse" >
+			<http:body ><![CDATA[#[%dw 2.0
+output application/json
+---
+[
+    {
+        "database": "Artemis",
+        "schema": "erp",
+        "table": "tdt_Invoices_Confirm",
+        "value": payload
+    }
+]]]]></http:body>
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"schema" : "dbo",
+	"objectName" : "tdp_Web_API_Insert",
+	"database" : "Artemis_API"
+}]]]></http:query-params>
+		</http:request>
+		<choice doc:name="Is Successful insert?" doc:id="d994b48d-1f76-4e7f-a608-c49019b1be79" >
+			<when expression='#[vars.artemisResponse contains("rolled back")]' >
+				<logger level="INFO" doc:name="Logger" doc:id="a788bc5d-e490-472e-ac18-720c2829f2a4" message="#[output application/json&#10;---&#10;{&#10;	Message: vars.artemisResponse&#10;}]" />
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="397baa0a-f065-46f2-b2cc-cc091bbbef9e" message='#[output application/json&#10;---&#10;{&#10;	Message: "erp.tdt_Invoices_Confirm Successfully Restored."&#10;}]' />
+			</otherwise>
+		</choice>
+	</flow>
+</mule>

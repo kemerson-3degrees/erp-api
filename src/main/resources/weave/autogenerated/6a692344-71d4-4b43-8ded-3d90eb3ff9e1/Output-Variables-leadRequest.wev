@@ -1,0 +1,12 @@
+%dw 2.0
+
+type auto_6a692344_71d4_4b43_8ded_3d90eb3ff9e1_Output_Variables_leadRequest = Array<{|  Id: String,   Company: String,   FirstName: String,   LastName: String,   Email: String,   Phone: String | Null,   Lead_Source__c: String | Null,   Status: String | Null,   Product__c: Array<Any> | Null, 
+  RecordTypeId: String | Null, 
+  CurrencyIsoCode: String | Null, 
+  Climate_Portal_Customer_ID__c: Number, 
+  Climate_Portal_Account_ID__c: Number, 
+  Climate_Portal_Artemis_ID__c: Number, 
+  Supplier_REach_Transaction_Date__c: Date, 
+  Products: Array<{|    Name: String,     Volume: Number,     PurchaseOption: String  |}>
+|}>
+

@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:smb="http://www.mulesoft.org/schema/mule/smb"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/smb http://www.mulesoft.org/schema/mule/smb/current/mule-smb.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="backups_erp-tdt-Invoices-Confirm" doc:id="6d6ab0f2-76f6-4340-aa4f-6cc9f53970f8" initialState="stopped">
+		<scheduler doc:name="Scheduler" doc:id="73afbec9-ee86-4b90-b0a9-9f473a379717" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="1" timeUnit="DAYS"/>
+			</scheduling-strategy>
+		</scheduler>
+		<smb:file-delete doc:name="File Delete" doc:id="f95b52ed-a175-4d25-bdc8-bfc682135ecb" config-ref="SMB_Connector_Atlantis_R" fileName="backup_InvoicesConfirm.json" dirName="CP_Files\Backups\data"/>
+		<try doc:name="Try" doc:id="2b5df7ba-31c5-4e67-8a8b-698d188c5fc6" >
+			<http:request method="GET" doc:name="Data" doc:id="911b2714-3339-4b75-b7b4-6afcf78788eb" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" outputMimeType="text/plain" sendBodyMode="NEVER">
+			<http:query-params><![CDATA[#[output application/java
+---
+{
+	"schema" : "erp",
+	"objectName" : "tdt_Invoices_Confirm",
+	"objectType" : "Table",
+	"database" : "Artemis"
+}]]]></http:query-params>
+		</http:request>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="1e3d23cc-afbb-4d57-b575-7f2c222a5850" type="ANY">
+					<logger level="INFO" doc:name="Logger" doc:id="79dec732-8ca0-4139-83ca-b7123e9ff6bf" message="#[output application/json&#10;---&#10;{&#10;	message: vars.artemisResponse&#10;}]"/>
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<ee:transform doc:name="payload" doc:id="63db2b00-9222-406a-90e7-b2ca26037171" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+read(payload default "","application/JSON").Table as Array<Object>]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<smb:file-write doc:name="File Write" doc:id="895b35c1-1d7e-4f93-abb9-cc6b766894da" config-ref="SMB_Connector_Atlantis_R" fileName="backup_InvoicesConfirm.json" dirName="CP_Files\Backups\data" append="true"/>
+		<logger level="INFO" doc:name="Logger" doc:id="4c107ebe-edd9-4f35-9352-3ac887388e74" message='#[output application/json&#10;---&#10;{&#10;	Message: if(!payload) "FAILED: erp.tdt_Invoices_Confirm Not Backed Up" else "SUCCESS: erp.tdt_Invoices_Confirm Backed Up"&#10;}]'/>
+	</flow>
+	<flow name="backups_sh-DocumentSource" doc:id="288e6723-8e9a-49ae-b9dc-c075c4159217" initialState="stopped" >
+		<scheduler doc:name="Scheduler" doc:id="7dc84215-427d-4b47-b963-eb67e8c07c7e" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="1" timeUnit="DAYS" />
+			</scheduling-strategy>
+		</scheduler>
+		<smb:file-delete doc:name="File Delete" doc:id="31d2ea38-25c0-42a5-9bb5-ac904778ef1b" config-ref="SMB_Connector_Atlantis_R" dirName="CP_Files\Backups\data" fileName="backup_sh-DocumentSource.json"/>
+		<try doc:name="Try" doc:id="1da9bd0b-e655-4d4d-be37-6775be700d2e" >
+			<http:request method="GET" doc:name="Data" doc:id="8eb4ee9f-0d2d-482a-ba0e-9291a57a337a" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" outputMimeType="text/plain" sendBodyMode="NEVER" >
+				<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"schema" : "sh",
+	"objectName" : "DocumentSource",
+	"objectType" : "Table",
+	"database" : "Artemis"
+}]]]></http:query-params>
+			</http:request>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="73b92b92-2ca9-4eaa-a403-13b55963019f" type="ANY" >
+					<logger level="INFO" doc:name="Logger" doc:id="961d9302-b3db-47eb-a819-bb575d421ac0" message="#[output application/json&#10;---&#10;{&#10;	message: vars.artemisResponse&#10;}]" />
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<ee:transform doc:name="payload" doc:id="5be6d601-da5a-4734-a600-626760c5769e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+read(payload default "","application/JSON").Table as Array<Object>]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<smb:file-write doc:name="File Write" doc:id="385f4e53-7021-4957-977c-3aa7e99c2660" config-ref="SMB_Connector_Atlantis_R" fileName="backup_sh-DocumentSource.json" dirName="CP_Files\Backups\data" append="true"/>
+		<logger level="INFO" doc:name="Logger" doc:id="6db6129e-9b4e-40f2-97f1-3addb1ae8d6d" message='#[output application/json&#10;---&#10;{&#10;	Message: if(!payload) "FAILED: sh.DocumentSource Not Backed Up" else "SUCCESS: sh.DocumentSource Backed Up"&#10;}]' />
+	</flow>
+	<flow name="backups_sh-DocumentContext" doc:id="db1cd913-5465-4dca-9cba-aa38f93470ad" initialState="stopped" >
+		<scheduler doc:name="Scheduler" doc:id="a74a9807-aaea-4a24-8cea-8de38a407500" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="1" timeUnit="DAYS" />
+			</scheduling-strategy>
+		</scheduler>
+		<smb:file-delete doc:name="File Delete" doc:id="a384f301-fdc4-45a1-8c0c-d74812fe3a88" config-ref="SMB_Connector_Atlantis_R" fileName="backup_sh-DocumentContext.json" dirName="CP_Files\Backups\data"/>
+		<try doc:name="Try" doc:id="17396f18-55b2-449d-802c-3bdeff6eb8d1" >
+			<http:request method="GET" doc:name="Data" doc:id="c6350f5c-c1b1-4e1a-9c41-58c119d32a2d" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" outputMimeType="text/plain" sendBodyMode="NEVER" >
+				<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"schema" : "sh",
+	"objectName" : "DocumentContext",
+	"objectType" : "Table",
+	"database" : "Artemis"
+}]]]></http:query-params>
+			</http:request>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="0b1715de-205d-4631-a40b-4e816bf161ce" type="ANY" >
+					<logger level="INFO" doc:name="Logger" doc:id="fec95b19-e92b-4471-9894-d9f97bde1b05" message="#[output application/json&#10;---&#10;{&#10;	message: vars.artemisResponse&#10;}]" />
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<ee:transform doc:name="payload" doc:id="24f5a564-8842-4acf-b9ac-7e31afc65bc0" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+read(payload default "","application/JSON").Table as Array<Object>]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<smb:file-write doc:name="File Write" doc:id="c04ce611-1ade-45d9-a217-9024dc577e42" config-ref="SMB_Connector_Atlantis_R" fileName='backup_sh-DocumentContext.json' dirName="CP_Files\Backups\data" />
+		<logger level="INFO" doc:name="Logger" doc:id="70cf85f9-750a-409b-98ec-f9f7f27374f7" message='#[output application/json&#10;---&#10;{&#10;	Message: if(!payload) "FAILED: sh.DocumentContext Not Backed Up" else "SUCCESS: sh.DocumentContext Backed Up"&#10;}]' />
+	</flow>
+	<flow name="backups_sh-DocumentType" doc:id="e43cfb84-2a7c-4f5b-a755-ce1b3f1f0a46" initialState="stopped">
+		<scheduler doc:name="Scheduler" doc:id="cd4d6a39-bff7-49e1-841d-67d4c0f705dc">
+			<scheduling-strategy>
+				<fixed-frequency frequency="1" timeUnit="DAYS" />
+			</scheduling-strategy>
+		</scheduler>
+		<smb:file-delete doc:name="File Delete" doc:id="a66729f3-2540-4b72-b6df-736e004872ba" config-ref="SMB_Connector_Atlantis_R" dirName="CP_Files\Backups\data" fileName="backup_sh-DocumentType.json"/>
+		<try doc:name="Try" doc:id="09ee9044-0bf4-42cb-bcdb-7809e0170f13">
+			<http:request method="GET" doc:name="Data" doc:id="efc3e2a6-20c1-413b-90b6-84dd3f29bb4b" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" outputMimeType="text/plain" sendBodyMode="NEVER">
+				<http:query-params><![CDATA[#[output application/java
+---
+{
+	"schema" : "sh",
+	"objectName" : "DocumentType",
+	"objectType" : "Table",
+	"database" : "Artemis"
+}]]]></http:query-params>
+			</http:request>
+			<error-handler>
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="e7553225-bbb5-49fa-a975-7419db2f091d" type="ANY">
+					<logger level="INFO" doc:name="Logger" doc:id="56c492d2-b4af-4042-8d16-00db2121a3d3" message="#[output application/json&#10;---&#10;{&#10;	message: vars.artemisResponse&#10;}]" />
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<ee:transform doc:name="payload" doc:id="5fb861ac-b8cf-4c7a-ab6a-20847612d9c6">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+read(payload default "","application/JSON").Table as Array<Object>]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<smb:file-write doc:name="File Write" doc:id="4cc8b59f-d42d-4a4f-bdd8-b78aa13c4236" config-ref="SMB_Connector_Atlantis_R" fileName="backup_sh-DocumentType.json" dirName="CP_Files\Backups\data" append="true"/>
+		<logger level="INFO" doc:name="Logger" doc:id="e32445d0-7581-4d4a-b771-e64c3b29cb2b" message='#[output application/json&#10;---&#10;{&#10;	Message: if(!payload) "FAILED: sh.DocumentType Not Backed Up" else "SUCCESS: sh.DocumentType Backed Up"&#10;}]' />
+	</flow>
+	<flow name="backups_sh-Documents" doc:id="a489dd17-d4de-4101-9cc6-ebdf46e97a24" initialState="stopped" >
+		<scheduler doc:name="Scheduler" doc:id="fab08f44-8a41-43b3-b87c-31b32dfc07b3" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="1" timeUnit="DAYS" />
+			</scheduling-strategy>
+		</scheduler>
+		<smb:file-delete doc:name="File Delete" doc:id="246cdb91-d302-4c15-8e7c-ac60a13aecf0" config-ref="SMB_Connector_Atlantis_R" dirName="CP_Files\Backups\data" fileName="backup_sh-Documents.json"/>
+		<try doc:name="Try" doc:id="2fc56a1d-05b8-434e-9751-65ea637ae441" >
+			<http:request method="GET" doc:name="Data" doc:id="0a071a42-607c-438e-bb29-d0f99b78b0fa" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" outputMimeType="text/plain" sendBodyMode="NEVER" >
+				<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"schema" : "sh",
+	"objectName" : "Documents",
+	"objectType" : "Table",
+	"database" : "Artemis"
+}]]]></http:query-params>
+			</http:request>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="80b4c309-417a-4659-b5a7-4a2eca8a7009" type="ANY" >
+					<logger level="INFO" doc:name="Logger" doc:id="0291070a-daa4-4a94-a8f5-870a729d429d" message="#[output application/json&#10;---&#10;{&#10;	message: vars.artemisResponse&#10;}]" />
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<ee:transform doc:name="payload" doc:id="f91311b8-eacf-415c-b8fa-76e1ffc5dc9d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+read(payload default "","application/JSON").Table as Array<Object>]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<smb:file-write doc:name="File Write" doc:id="9a5bf2ef-db06-4497-8832-97bc46ab8e88" config-ref="SMB_Connector_Atlantis_R" fileName="backup_sh-Documents.json" dirName="CP_Files\Backups\data" append="true"/>
+		<logger level="INFO" doc:name="Logger" doc:id="2f820ec2-e9ab-45df-8b23-acada7f07c9d" message='#[output application/json&#10;---&#10;{&#10;	Message: if(!payload) "FAILED: sh.Documents Not Backed Up" else "SUCCESS: sh.Documents Backed Up"&#10;}]' />
+	</flow>
+	<flow name="backups_sh-Staging-Counterparties" doc:id="eb132b44-4330-41af-a9ab-52a8565c0b7a" initialState="stopped" >
+		<scheduler doc:name="Scheduler" doc:id="f74f02e2-edee-45d2-8ba5-9bb0f1301082" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="1" timeUnit="DAYS" />
+			</scheduling-strategy>
+		</scheduler>
+		<smb:file-delete doc:name="File Delete" doc:id="750eb535-9bde-4415-85b9-c0b7cb3fa3a0" config-ref="SMB_Connector_Atlantis_R" fileName="backup_sh-Staging-Counterparties.json" dirName="CP_Files\Backups\data" />
+		<try doc:name="Try" doc:id="4dc0f1bf-cd1b-4c61-9113-713537a4075f" >
+			<http:request method="GET" doc:name="Data" doc:id="be4fbba5-26f6-4dd1-8e16-b3ab377b4355" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" outputMimeType="text/plain" sendBodyMode="NEVER" >
+				<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"schema" : "sh",
+	"objectName" : "Staging_Counterparties",
+	"objectType" : "Table",
+	"database" : "Artemis"
+}]]]></http:query-params>
+			</http:request>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="6826e5b8-87de-42e1-9995-0dcdb431142b" type="ANY" >
+					<logger level="INFO" doc:name="Logger" doc:id="ea688221-7eba-47c2-a523-4560a7ab9871" message="#[output application/json&#10;---&#10;{&#10;	message: vars.artemisResponse&#10;}]" />
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<ee:transform doc:name="payload" doc:id="2903594e-edea-4874-84a6-7f295f8712d8" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+read(payload default "","application/JSON").Table as Array<Object>]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<smb:file-write doc:name="File Write" doc:id="18f06f9e-4746-4dda-8386-e115bdea5920" config-ref="SMB_Connector_Atlantis_R" fileName="backup_sh-Staging-Counterparties.json" dirName="CP_Files\Backups\data" append="true" />
+		<logger level="INFO" doc:name="Logger" doc:id="5efec04d-4172-4273-8558-16afb499d92d" message='#[output application/json&#10;---&#10;{&#10;	Message: if(!payload) "FAILED: sh.Documents Not Backed Up" else "SUCCESS: sh.Documents Backed Up"&#10;}]' />
+	</flow>
+</mule>

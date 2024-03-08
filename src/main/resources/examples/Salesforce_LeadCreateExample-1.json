@@ -1,0 +1,16 @@
+{
+  "Company": "Test Company 7251",
+  "FirstName": "John 7251",
+  "LastName": "Smith 7251",
+  "Email": "john.smith7251@example.com",
+  "Phone": "1222333444",
+  "Lead_Source__c": "Supplier REach",
+  "Status": "Qualified",
+  "Product__c": ["Supplier REach"],
+  "RecordTypeId": "012Du0000004N6wIAE",
+  "CurrencyIsoCode": "USD",
+  "Climate_Portal_Customer_ID__c": 7925.0,
+  "Climate_Portal_Account_ID__c": 7925.0,
+  "Climate_Portal_Artemis_ID__c": 7925.0,
+  "Supplier_REach_Transaction_Date__c": "2023-11-08"
+}

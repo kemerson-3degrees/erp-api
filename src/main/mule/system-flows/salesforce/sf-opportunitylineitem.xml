@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="sf-opportunitylineitem_post" doc:id="34a6ffca-a01c-4378-8ef6-18000a11aa37" initialState="stopped">
+		<scheduler doc:name="Scheduler" doc:id="ab83b009-e474-4faf-94c2-1359abc06975" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="1" timeUnit="DAYS"/>
+			</scheduling-strategy>
+		</scheduler>
+		<salesforce:query doc:name="Line Item" doc:id="22f086ad-b9d2-4156-9191-f445fef5b8ca" config-ref="Salesforce_Config" target="lineItemResponse">
+			<salesforce:salesforce-query ><![CDATA[SELECT 
+OpportunityId,
+Product2Id,
+Name,
+Write_In_Product__c,
+Vintage_Year__c,
+Generation_End__c,
+Generation_Start__c,
+Quantity,
+UnitPrice,
+TotalPrice
+FROM
+OpportunityLineItem]]></salesforce:salesforce-query>
+		</salesforce:query>
+		<ee:transform doc:name="payload" doc:id="ff3e7c9f-1305-45c3-ab73-da9375ec81fe" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+vars.lineItemResponse map(item)-> {
+	OpportunityID: item.OpportunityId,
+	OpportunityProductName: item.Name,
+	WriteInProductName: item.Write_In_Product__c,
+	ProductID: item.Product2Id,
+	VintageYear: item.Vintage_Year__c,
+	GenerationStart: item.Generation_Start__c,
+	GenerationEnd: item.Generation_End__c,
+	Quantity: floor(item.Quantity default 0 as Number),
+	UnitPrice: item.UnitPricek default 0,
+	TotalPrice: item.TotalPrice default 0
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="ranges" doc:id="d3f8f5ff-95a3-4db9-9668-8e4f763cff0e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+import * from dw::core::Arrays
+output application/java
+---
+payload divideBy 500]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<foreach doc:name="For Each" doc:id="2b5bedd8-83e7-47f4-87eb-1d0b03c421a1" collection="#[payload]">
+			<try doc:name="Try" doc:id="d08c65a3-51b8-4dcc-b6b3-1de74ad8090b">
+				<http:request method="POST" doc:name="INSERT Line Items" doc:id="0928f560-43cf-4ff8-8504-47b65a87228d" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" outputMimeType="text/plain" sendBodyMode="ALWAYS" target="artemisResponse">
+				<http:body><![CDATA[#[%dw 2.0
+output application/json
+---
+[
+    {
+        "database": "Artemis",
+        "schema": "erp",
+        "table": "Salesforce_Opportunity_LineItem",
+        "value": payload
+    }
+]]]]></http:body>
+				<http:query-params><![CDATA[#[output application/java
+---
+{
+	"schema" : "dbo",
+	"objectName" : "tdp_Web_API_Insert",
+	"database" : "Artemis_API"
+}]]]></http:query-params>
+			</http:request>
+				<logger level="INFO" doc:name="Logger" doc:id="efadf024-ec9b-409c-bcbc-2ffa78458e2f" message="#[vars.artemisResponse]" />
+		</try>
+		</foreach>
+		<logger level="INFO" doc:name="Logger" doc:id="a0b6752f-662f-4a7e-95c5-2decca21f362" />
+	</flow>
+</mule>

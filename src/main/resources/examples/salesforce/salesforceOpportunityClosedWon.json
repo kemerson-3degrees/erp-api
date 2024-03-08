@@ -1,0 +1,15 @@
+{
+    "AccountId": "001d000000FpVnxAAF",
+    "type": "Opportunity",
+    "CloseDate": "2020-03-16",
+    "Name": "Hypertherm 2020 RECs",
+    "Total_Contract_Value__c": "18028.15",
+    "Opportunity_Owner_Name__c": "Brian Harvey",
+    "Case_Safe_ID__c": "0060W000012CN3NQAW",
+    "IsWon": "true",
+    "Artemis_Confirm_ID__c": "14335",
+    "RecordTypeId": "0120W000002AORkQAO",
+    "Consulting_Project_ID__c": null,
+    "Opportunity_Owner_Active__c": "true",
+    "Id": "0060W000012CN3NQAW"
+}

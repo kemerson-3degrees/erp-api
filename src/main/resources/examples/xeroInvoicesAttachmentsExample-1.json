@@ -1,0 +1,19 @@
+[
+  {
+    "invoices": [
+      {
+        "invoice_id": "2325e961-9b19-49bb-bdaf-cea42d96f445",
+        "has_attachments": true,
+        "attachments": [
+          {
+            "attachment_id": "7b46f6ae-93b8-4d97-a209-6f55767214e7",
+            "file_name": "Invoice 24571.pdf",
+            "url": "https://api.xero.com/api.xro/2.0/Invoices/2325e961-9b19-49bb-bdaf-cea42d96f445/Attachments/Invoice%2024571.pdf",
+            "mime_type": "application/pdf",
+            "size": 86552
+          }
+        ]
+      }
+    ]
+  }
+]

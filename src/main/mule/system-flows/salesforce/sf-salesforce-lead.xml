@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule 
+	xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file" 
+	xmlns:smb="http://www.mulesoft.org/schema/mule/smb" 
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" 
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" 
+	xmlns="http://www.mulesoft.org/schema/mule/core" 
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/smb http://www.mulesoft.org/schema/mule/smb/current/mule-smb.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/error-handler-plugin http://www.mulesoft.org/schema/mule/error-handler-plugin/current/mule-error-handler-plugin.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	<flow name="salesforce_lead-id_get" doc:id="b3751e62-444e-4729-91f3-d6eefdedec08" initialState="started">
+		<salesforce:query doc:name="GET Lead Id" doc:id="a6b0225f-ab2f-4657-8b86-3f0513203816" config-ref="Salesforce_Config" target="leadId" targetValue='#[payload[0].Id as String default ""]'>
+			<salesforce:salesforce-query><![CDATA[SELECT Id 
+FROM Lead
+WHERE Email = ':email' AND Lead_Source__c = ':leadSource' AND RecordTypeId = ':recordTypeId']]></salesforce:salesforce-query>
+			<salesforce:parameters ><![CDATA[#[output application/java
+---
+{
+	"recordTypeId" : payload.RecordTypeId,
+	"email" : payload.Email,
+	"leadSource" : payload.Lead_Source__c
+}]]]></salesforce:parameters>
+		</salesforce:query>
+		<set-variable value="#[output application/java&#10;---&#10;{&#10;	Id: vars.leadId,&#10;	Company: payload.Company,&#10;	FirstName: payload.FirstName,&#10;	LastName: payload.LastName,&#10;	Email: payload.Email,&#10;	Phone: payload.Phone,&#10;	Lead_Source__c: payload.Lead_Source__c,&#10;	Status: payload.Status,&#10;	Product__c: payload.Product__c map ( productc , indexOfProductc ) -&gt; productc,&#10;	RecordTypeId: payload.RecordTypeId,&#10;	CurrencyIsoCode: payload.CurrencyIsoCode,&#10;	Climate_Portal_Customer_ID__c: payload.Climate_Portal_Customer_ID__c,&#10;	Climate_Portal_Account_ID__c: payload.Climate_Portal_Account_ID__c,&#10;	Climate_Portal_Artemis_ID__c: payload.Climate_Portal_Artemis_ID__c,&#10;	Supplier_REach_Transaction_Date__c: payload.Supplier_REach_Transaction_Date__c as DateTime as Date&#10;}]" doc:name="Lead Request" doc:id="22b4623f-f94f-4129-afdd-d6b0d0ea87e7" variableName="leadRequest"/>
+		<set-variable value='#[output application/java&#10;---&#10;if(!isEmpty(vars.leadId)) "UPDATED" else "CREATED"]' doc:name="operationType" doc:id="9b51eb18-73a7-449a-b53f-a0c01e809e87" variableName="operationType" />
+		<logger level="INFO" doc:name="LOG INFO" doc:id="98d549b6-99d1-4cc7-a9d4-6a15164bc633" />
+	</flow>
+	<flow name="salesforce_lead-upsert" doc:id="6a692344-71d4-4b43-8ded-3d90eb3ff9e1" >
+		<ee:transform doc:name="Lead Request" doc:id="2a012a60-13f6-4663-8073-d7032d478c77" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[output application/java
+---
+[{
+	Id: vars.leadRequest.Id,
+	Company: vars.leadRequest.Company,
+	Phone: vars.leadRequest.Phone as String,
+	FirstName: vars.leadRequest.FirstName,
+	LastName: vars.leadRequest.LastName,
+	Email: vars.leadRequest.Email,
+	RecordTypeId: vars.leadRequest.RecordTypeId as String,
+	Status: vars.leadRequest.Status as String,
+	CurrencyIsoCode: vars.leadRequest.CurrencyIsoCode as String,
+	Lead_Source__c: vars.leadRequest.Lead_Source__c as String,
+	Product__c: vars.leadRequest.Product__c,
+	Climate_Portal_Customer_ID__c: vars.leadRequest.Climate_Portal_Customer_ID__c,
+	Climate_Portal_Account_ID__c: vars.leadRequest.Climate_Portal_Account_ID__c,
+	Climate_Portal_Artemis_ID__c: vars.leadRequest.Climate_Portal_Artemis_ID__c,
+	Supplier_REach_Transaction_Date__c: vars.leadRequest.Supplier_REach_Transaction_Date__c
+	//Supplier_REach_Transaction_Date__c: 1699481962
+}]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:upsert doc:name="Lead" doc:id="1b829d48-c61f-4462-af81-e32a822d0dd1" config-ref="Salesforce_Config" objectType="Lead" externalIdFieldName="Id" target="salesforceResponse" />
+		<validation:is-true doc:name="Lead Created" doc:id="368e0c08-1097-4cf1-9fd1-4e456b1ec99b" expression="#[vars.salesforceResponse.successful]" message="THE LEAD WAS NOT CREATED">
+			<error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="APP:SALESFORCE_BAD_REQUEST" />
+		</validation:is-true>
+		<set-variable value="#[vars.salesforceResponse.successful]" doc:name="Is Lead Created" doc:id="81270810-809b-4251-a5c9-bb3522629ee1" variableName="isLeadCreated" mimeType="application/java" />
+		<logger level="INFO" doc:name="LOG INFO" doc:id="26a6ceda-a2ac-4e02-b050-4c9bc3232c1c" message='#[output application/json&#10;---&#10;{&#10;	message: "SUCCESS: LEAD CREATED"&#10;}]' />
+	</flow>
+
+</mule>

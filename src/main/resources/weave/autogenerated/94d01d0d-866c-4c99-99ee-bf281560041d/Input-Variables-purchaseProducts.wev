@@ -1,0 +1,6 @@
+%dw 2.0
+
+type auto_94d01d0d_866c_4c99_99ee_bf281560041d_Input_Variables_purchaseProducts = {|
+  Products: Array<{|    Name: String,     Volume: Number,     PurchaseOption: String  |}>
+|} {"typeAlias": "auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Output-Variables-purchaseProducts"}
+

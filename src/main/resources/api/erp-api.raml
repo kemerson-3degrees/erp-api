@@ -1,0 +1,74 @@
+#%RAML 1.0
+title: 3Degrees ERP API
+version: v1
+
+/documents/metadata:
+  get:
+
+/salesforce/lead:
+  post:
+    body:
+      application/json:
+        example: 
+        type: object
+        properties:
+          Company:
+            type: string
+            required: true
+          FirstName: 
+            type: string
+            required: true
+          LastName:
+            type: string
+            required: true
+          Email: 
+            type: string
+            required: true
+          Phone:
+            type: string
+            required: false
+          Lead_Source__c:
+            type: string
+            required: false
+            default: "Supplier REach"
+          Status:
+            type: string
+            required: false
+            default: "Qualified"
+          Product__c:
+            type: array
+            required: false
+            default: ["Supplier REach"]
+          RecordTypeId:
+            type: string
+            required: false
+            default: "012Du0000004N6wIAE"
+          CurrencyIsoCode:
+            type: string
+            required: false
+            default: "USD"
+          Climate_Portal_Customer_ID__c:
+            type: number
+            required: false
+          Climate_Portal_Account_ID__c:
+            type: number
+            required: false
+          Climate_Portal_Artemis_ID__c:
+            type: number
+            required: false
+          Supplier_REach_Transaction_Date__c:
+            type: number
+            required: true
+          Products:
+            type: array
+            items:
+              properties:
+                Name:
+                  type: string
+                  required: true
+                Volume:
+                  type: integer
+                  required: true
+                PurchaseOption:
+                  type: string
+                  required: true

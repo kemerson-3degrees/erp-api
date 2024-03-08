@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:aggregators="http://www.mulesoft.org/schema/mule/aggregators" xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+	xmlns:powershell="http://www.mulesoft.org/schema/mule/powershell" xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting" xmlns:vm="http://www.mulesoft.org/schema/mule/vm" xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:smb="http://www.mulesoft.org/schema/mule/smb" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/smb http://www.mulesoft.org/schema/mule/smb/current/mule-smb.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+http://www.mulesoft.org/schema/mule/powershell http://www.mulesoft.org/schema/mule/powershell/current/mule-powershell.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/aggregators http://www.mulesoft.org/schema/mule/aggregators/current/mule-aggregators.xsd">
+	<vm:config name="VM_Config" doc:name="VM Config" doc:id="cb2546cd-c2a1-4410-aaa1-2fd77fbafa2e" >
+		<vm:queues >
+			<vm:queue queueName="invoices" />
+		</vm:queues>
+	</vm:config>
+	<flow name="documents_metadata_failures" doc:id="9e8a673b-1335-40a5-97f8-f18acd14aa8b" >
+		<vm:listener doc:name="Listener" doc:id="97a8b16b-c01e-4d20-8699-58ec97eecb9c" config-ref="VM_Config" queueName="documentMetadataInsertFailures"/>
+		<ee:transform doc:name="Transform Message" doc:id="5615b733-0a28-470a-9ae2-81deb327852a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<smb:file-write doc:name="File Write" doc:id="34ded0fe-2673-421a-9dc6-2d372237329a" config-ref="SMB_Connector_Atlantis_R" fileName="document_failures.csv" dirName="CP_Files" append="true"/>
+		<logger level="INFO" doc:name="Logger" doc:id="33e7caee-8603-4db7-a38e-6bc93f0016e7" />
+	</flow>
+	<flow name="documents_metadata_post" doc:id="a147c32c-a509-4b01-81d3-adb94125fa48">
+		<http:listener doc:name="Listener" doc:id="c59c0dd1-cc9b-4be6-ae2a-f02c184a9cb1" config-ref="HTTPS_Listener_Default" path="/network-drive/documents/metadata" />
+		<choice doc:name="What Document Location?" doc:id="621aea8c-1285-4c68-af34-97b8c8f42a0a">
+			<when expression='#[attributes.queryParams.location ~= "SH Temp"]'>
+				<flow-ref doc:name="File Metadata" doc:id="d00520dd-9860-445d-a368-6122f184aded" name="climate-portal-metadata_sh-temp_get" />
+				<ee:transform doc:name="payload" doc:id="344f3ded-e064-4103-80bc-ff1d626d88ee">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+(payload as Array<Object>) map(file) -> {
+	DocumentName: file.BaseName,
+	Extension: lower(file.Extension) replace "." with(""),
+	Size: file.Length,
+	CreateDateTime: file.CreationTime,
+	Path: file.DirectoryName,
+	PathFolders: file.DirectoryName splitBy("\\")
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables />
+				</ee:transform>
+				<ee:transform doc:name="Document Metadata" doc:id="d7a48077-b76d-495d-851d-4689641cb736">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+import * from dw::core::Strings
+output application/json
+---
+payload as Array<Object> map(doc) -> {
+	DocumentName: doc.DocumentName,
+	Extension: doc.Extension,
+	MimeType: "application/" ++ doc.Extension as String,
+	Size: doc.Size,
+	CreateDateTime: doc.CreateDateTime,
+	DocumentTypeID: if(doc.PathFolders[sizeOf(doc.PathFolders)-1] ~= "Agreements") 1 
+		else if(doc.PathFolders[sizeOf(doc.PathFolders)-1] ~= "Deliveries") 2
+		else if(doc.PathFolders[sizeOf(doc.PathFolders)-1] ~= "Invoices") 3
+		else 0,
+	CounterpartyID: substring(doc.PathFolders[sizeOf(doc.PathFolders)-4],(doc.PathFolders[sizeOf(doc.PathFolders)-4] lastIndexOf "-")+1,sizeOf(doc.PathFolders[sizeOf(doc.PathFolders)-4])),
+	AgreementID: doc.PathFolders[sizeOf(doc.PathFolders)-3],
+	Context: "Confirm",
+	ContextID: doc.PathFolders[sizeOf(doc.PathFolders)-2],
+	DocumentSource: "NetworkDrive",
+	DocumentSourceLocation: doc.Path,
+	CorrelationID: correlationId
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<when expression='#[attributes.queryParams.location ~= "Confirm Invoices"]'>
+				<flow-ref doc:name="File Metadata" doc:id="55a2cd8b-60f3-458a-a374-37ff36e1d384" name="climate-portal-metadata_invoices-confirm_get" />
+				<ee:transform doc:name="payload" doc:id="fb7b5d59-29ab-4eb2-b0a5-cd8be63e05c8">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+(payload as Array<Object>) map(file) -> {
+	DocumentName: file.BaseName,
+	Extension: lower(file.Extension) replace "." with(""),
+	Size: file.Length,
+	CreateDateTime: file.CreationTime,
+	Path: file.DirectoryName,
+	PathFolders: file.DirectoryName splitBy("\\")
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables />
+				</ee:transform>
+				<ee:transform doc:name="Document Metadata" doc:id="c6362635-8773-4df6-bd3b-5b72549e9c1e">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+import * from dw::core::Strings
+output application/json
+---
+payload as Array<Object> map(doc) -> {
+	DocumentName: doc.DocumentName,
+	Extension: doc.Extension,
+	MimeType: "application/" ++ doc.Extension as String,
+	Size: doc.Size,
+	CreateDateTime: doc.CreateDateTime,
+	DocumentTypeID: 3,
+	CounterpartyID: 0,
+	AgreementID: doc.PathFolders[sizeOf(doc.PathFolders)-3],
+	Context: "Confirm",
+	ContextID: doc.PathFolders[sizeOf(doc.PathFolders)-2],
+	DocumentSource: "NetworkDrive",
+	DocumentSourceLocation: "\\\server2.luna.local\atlantis\CP_Files\documents\confirms\\" ++ doc.Path,
+	CorrelationID: correlationId
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<when expression='attributes.queryParams.location ~= "AutoDir"'>
+				<flow-ref doc:name="File Metadata" doc:id="e2e6187e-427e-4114-88bc-2e6eda27c1c7" name="climate-portal-metadata_autodir_get" />
+				<ee:transform doc:name="payload" doc:id="e3aff9a8-d971-47e9-8d89-842c5e690465">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+(payload  as Array<Object>) map(file) -> {
+	DocumentName: file.BaseName as String,
+	Extension: lower(file.Extension) replace "." with("") as String,
+	Size: file.Length as Number,
+	CreateDateTime: file.CreationTime as String,
+	Path: file.DirectoryName as String,
+	PathFolders: (file.DirectoryName splitBy("\\"))
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables />
+				</ee:transform>
+				<ee:transform doc:name="Document Metadata" doc:id="2e5d95c3-4b4b-4f70-b678-3ca4dd667f04">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+import * from dw::core::Strings
+output application/json
+---
+payload as Array<Object> map(doc) -> {
+	DocumentName: doc.DocumentName,
+	Extension: doc.Extension,
+	MimeType: "application/" ++ doc.Extension as String,
+	Size: doc.Size,
+	CreateDateTime: doc.CreateDateTime,
+	DocumentTypeID: if(doc.PathFolders[sizeOf(doc.PathFolders)-1] ~= "Agreements") 1 
+		else if(doc.PathFolders[sizeOf(doc.PathFolders)-1] ~= "Deliveries") 2
+		else if(doc.PathFolders[sizeOf(doc.PathFolders)-1] ~= "Invoices") 3
+		else 0,
+	CounterpartyID: substring(doc.PathFolders[sizeOf(doc.PathFolders)-4],(doc.PathFolders[sizeOf(doc.PathFolders)-4] lastIndexOf "-")+1,sizeOf(doc.PathFolders[sizeOf(doc.PathFolders)-4])),
+	AgreementID: doc.PathFolders[sizeOf(doc.PathFolders)-3],
+	Context: "Confirm",
+	ContextID: doc.PathFolders[sizeOf(doc.PathFolders)-2],
+	DocumentSource: "NetworkDrive",
+	DocumentSourceLocation: doc.Path,
+	CorrelationID: correlationId
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<when expression='#[attributes.queryParams.location ~= "SH AutoDir"]'>
+				<flow-ref doc:name="File Metadata" doc:id="61d8ce5e-6e31-49ce-a6a1-0e15e3cef8d0" name="climate-portal-metadata_sh-autodir_get" />
+				<ee:transform doc:name="payload" doc:id="aad99ed5-79e5-49c9-8da2-79e2c7c94223" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+(payload  as Array<Object>) map(file) -> {
+	DocumentName: file.BaseName as String,
+	Extension: lower(file.Extension) replace "." with("") as String,
+	Size: file.Length as Number,
+	CreateDateTime: file.CreationTime as String,
+	Path: file.DirectoryName as String,
+	PathFolders: (file.DirectoryName splitBy("\\"))
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables />
+				</ee:transform>
+				<ee:transform doc:name="Document Metadata" doc:id="ff96e027-ca77-48d7-ac7d-a46c459dcccb" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+import * from dw::core::Strings
+output application/json
+---
+payload as Array<Object> map(doc) -> {
+	DocumentName: doc.DocumentName,
+	Extension: doc.Extension,
+	MimeType: "application/" ++ doc.Extension as String,
+	Size: doc.Size,
+	CreateDateTime: doc.CreateDateTime,
+	DocumentTypeID: if(doc.PathFolders[sizeOf(doc.PathFolders)-1] ~= "Agreements") 1 
+		else if(doc.PathFolders[sizeOf(doc.PathFolders)-1] ~= "Deliveries") 2
+		else if(doc.PathFolders[sizeOf(doc.PathFolders)-1] ~= "Invoices") 3
+		else 0,
+	CounterpartyID: substring(doc.PathFolders[sizeOf(doc.PathFolders)-4],(doc.PathFolders[sizeOf(doc.PathFolders)-4] lastIndexOf "-")+1,sizeOf(doc.PathFolders[sizeOf(doc.PathFolders)-4])),
+	AgreementID: doc.PathFolders[sizeOf(doc.PathFolders)-3],
+	Context: "Confirm",
+	ContextID: doc.PathFolders[sizeOf(doc.PathFolders)-2],
+	DocumentSource: "NetworkDrive",
+	DocumentSourceLocation: doc.Path,
+	CorrelationID: correlationId
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise>
+				<logger level="INFO" doc:name="Logger" doc:id="b97c302c-b2a4-4081-8e0f-071ef1862729" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;	message: "NO NETWORK DRIVE LOCATION PROVIDED"&#10;}]' />
+			</otherwise>
+		</choice>
+		<batch:job jobName="document-metadata_job" doc:id="589d7cee-d913-44ed-bfed-4c58af7ae88f" target="result">
+			<batch:process-records>
+				<batch:step name="document-metadata_insert" doc:id="a65b2bca-1c73-4410-b9ec-39f7733e1887" >
+					<set-variable value='#[%dw 2.0&#10;import * from dw::core::Strings&#10;import * from dw::core::Arrays&#10;var path = (payload.DocumentSourceLocation as String) splitBy("\\") filter $ != ""&#10;&#10;fun removeAtPath(path) = &#10;    (path[-1 to 0] map() -&gt; $)&#10;    indexWhere (item) -&gt; (item ~= "Agreements" or item ~= "Deliveries" or item ~= "Attestations" or item ~= "Invoices")  &#10;output application/java&#10;---&#10;payload ++&#10;{Path: slice(path[-1 to 0],removeAtPath(path),sizeOf(path))[-1 to 0]}]' doc:name="path" doc:id="197d6cfc-d97e-453f-9b0d-807544fd34f7" variableName="path" />
+					<ee:transform doc:name="object" doc:id="3c213583-4df3-4a74-a0cb-b2e3d63a4b3a">
+								<ee:message>
+									<ee:set-payload><![CDATA[%dw 2.0
+var doc = vars.path
+import * from dw::core::Strings
+output application/java
+---
+if(doc.DocumentSourceLocation contains "CP_Files")
+{
+	DocumentName: doc.DocumentName,
+	Extension: doc.Extension,
+	MimeType: doc.MimeType,
+	Size: doc.Size,
+	CreateDateTime: doc.CreateDateTime,
+	DocumentTypeID: doc.DocumentTypeID,
+	AgreementID: doc.AgreementID,
+	Context: "Confirm",
+	ContextID: doc.ContextID,
+	DocumentSource: "NetworkDrive",
+	DocumentSourceLocation: doc.DocumentSourceLocation,
+	CorrelationID: correlationId
+}
+else
+{
+	DocumentName: doc.DocumentName,
+	Extension: doc.Extension,
+	MimeType: doc.MimeType,
+	Size: doc.Size,
+	CreateDateTime: doc.CreateDateTime,
+	DocumentTypeID: if(doc.Path[sizeOf(doc.Path)-1] ~= "Agreements") 1 
+		else if(doc.Path[sizeOf(doc.Path)-1] ~= "Attestations" or doc.Path[sizeOf(doc.Path)-1] ~= "Deliveries") 2
+		else if(doc.Path[sizeOf(doc.Path)-1] ~= "Invoices") 3
+		else 0,
+	CounterpartyID: substring(doc.Path[sizeOf(doc.Path)-4],(doc.Path[sizeOf(doc.Path)-4] lastIndexOf "-")+1,sizeOf(doc.Path[sizeOf(doc.Path)-4])),
+	AgreementID: doc.Path[sizeOf(doc.Path)-3],
+	Context: "Confirm",
+	ContextID: doc.Path[sizeOf(doc.Path)-2],
+	DocumentSource: "NetworkDrive",
+	DocumentSourceLocation: doc.DocumentSourceLocation,
+	CorrelationID: correlationId
+}]]></ee:set-payload>
+								</ee:message>
+							</ee:transform>
+					<batch:aggregator doc:name="Batch Aggregator" doc:id="7781afed-eef8-4789-a495-d48596eb345a" size="100">
+						<ee:transform doc:name="payload" doc:id="a4648735-8423-4352-afea-b064c107d215">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+flatten(payload)]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+						<http:request method="POST" doc:name="INSERT Document Metadata" doc:id="579a7eaf-14c6-4b49-8ec3-855ad12f68fc" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" outputMimeType="text/plain" sendBodyMode="ALWAYS" target="artemisResponse">
+							<http:body><![CDATA[#[%dw 2.0
+output application/json
+---
+[
+    {
+        "database": "Artemis",
+        "schema": "erp",
+        "table": "Staging_DocumentMetadata",
+        "value": payload
+    }
+]]]]></http:body>
+							<http:query-params><![CDATA[#[output application/java
+---
+{
+	"schema" : "dbo",
+	"objectName" : "tdp_Web_API_Insert",
+	"database" : "Artemis_API"
+}]]]></http:query-params>
+						</http:request>
+						<logger level="INFO" doc:name="Logger" doc:id="48b5b12a-ff7f-4c9a-ac85-70987ddbeaab" message="#[output application/json&#10;---&#10;{&#10;	message: vars.artemisResponse&#10;}]" />
+					</batch:aggregator>
+				</batch:step>
+				<batch:step name="FAILURES" doc:id="8a134f55-206c-48c7-b9c5-c8fed65c96e7" acceptPolicy="ONLY_FAILURES">
+					<set-payload value="# [Batch::failureExceptionForStep('Batch_Step')]" doc:name="exceptions" doc:id="65000ed0-0f62-45ee-b8ad-9dad71db0ce4" />
+					<foreach doc:name="For Each Exception" doc:id="c2f2027c-d55b-4f18-8c46-729e6a039aa7" collection="#[payload]">
+						<vm:publish queueName="documentMetadataInsertFailures" doc:name="Publish" doc:id="c293b3d3-91ac-40c4-a1b5-22e2bc513247" config-ref="VM_Config" sendCorrelationId="AUTO" correlationId="#[correlationId]" timeout="10"/>
+					</foreach>
+				</batch:step>
+			</batch:process-records>
+			<batch:on-complete >
+				<logger level="INFO" doc:name="Logger" message='#[payload as Object]'/>
+			</batch:on-complete>
+		</batch:job>
+		<ee:transform doc:name="payload" doc:id="a9053501-0019-4405-8489-dbb2170cdf21" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	total: vars.result.result.totalRecords,
+	loaded: vars.result.result.loadedRecords,
+	failed: vars.result.result.failedRecords
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="climate-portal-metadata_autodir_get" doc:id="ee9c4fd4-231f-48a2-9dde-f4332ca3faf9">
+		<smb:file-read doc:name="Files" doc:id="411d0026-ffd8-4cb1-98aa-446067e03dbf" config-ref="SMB_Connector_Atlantis_R" fileName="files_autodir.csv" dirName="CP_Files\files" />
+		<ee:transform doc:name="[FILES] to CSV" doc:id="70a5ce0f-5e9b-44c5-9114-76fec9f85182">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+read(payload.^raw as String | Binary, "application/CSV") ]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="payload" doc:id="95b274fd-30e3-410a-9905-b2d26ccde257">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+(payload as Array<Object>) 
+distinctBy $]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="7d78a444-11a1-49b1-96ad-f3227d1a6979" message='#[output application/json&#10;---&#10;{&#10;	message: "FILE METADATA READ"&#10;}]' />
+	</flow>
+	<flow name="climate-portal-metadata_invoices-confirm_get" doc:id="357faa15-f957-4846-b4c6-c9164d7790a8">
+		<smb:file-read doc:name="Files" doc:id="0f06e6b8-e37b-483d-b11f-962243b9659e" config-ref="SMB_Connector_Atlantis_R" fileName="files_xero_invoices-confirm.csv" dirName="CP_Files\files" />
+		<ee:transform doc:name="[FILES] to CSV" doc:id="3563bdbe-a411-40b3-a790-6ae428a2895f">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+read(payload.^raw as String | Binary, "application/CSV") ]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="payload" doc:id="0794d16f-edb1-4777-845c-7c77809d204c">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+(payload as Array<Object>) 
+distinctBy $]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="18a6a7ef-5bc5-41f2-9593-8e41f670756a" message='#[output application/json&#10;---&#10;{&#10;	message: "FILE METADATA READ"&#10;}]' />
+	</flow>
+	<flow name="climate-portal-metadata_invoices-project_get" doc:id="3ac63e6e-2e18-48ab-80fd-5e6b8be3a641">
+		<smb:file-read doc:name="Files" doc:id="7a20c69a-3d06-486a-b4e7-a5448f1fcc89" config-ref="SMB_Connector_Atlantis_R" fileName="files_xero_invoices-project.csv" dirName="CP_Files\files" />
+		<ee:transform doc:name="[FILES] to CSV" doc:id="0ad54e7b-df99-4b4a-9528-51d804169776">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+read(payload.^raw as String | Binary, "application/CSV") ]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="payload" doc:id="705273ec-fdf6-43a7-acd5-e519079f08d6">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+(payload as Array<Object>) 
+distinctBy $]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="f2897b38-425d-46a6-bb20-e06ac2f84e68" message='#[output application/json&#10;---&#10;{&#10;	message: "FILE METADATA READ"&#10;}]' />
+	</flow>
+	<flow name="climate-portal-metadata_sh-temp_get" doc:id="8c6d4634-dded-41c5-8b56-052cba229f4e" >
+		<smb:file-read doc:name="Files" doc:id="8c04eb98-5c0e-4575-bf6f-b3a7e649a7df" config-ref="SMB_Connector_Atlantis_R" fileName="files_shtemp.csv" dirName="CP_Files\files"/>
+		<ee:transform doc:name="[FILES] to CSV" doc:id="0cca1621-19f0-4f38-b471-4a643fc731e7" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+read(payload.^raw as String | Binary, "application/CSV") ]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="payload" doc:id="8973e231-1091-4f38-8caf-706df2a43c26" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+(payload as Array<Object>) 
+filter $.DirectoryName != "\\server2.luna.local\atlantis\SH Temp\_TEMPORARY ECP-SERVICES DOCS" 
+	or $.DirectoryName != "\\server2.luna.local\atlantis\SH Temp\SH Temp - Shortcut.lnk"  
+distinctBy $]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="93f9ba79-118b-49ca-ad44-c9d8af28e233" message='#[output application/json&#10;---&#10;{&#10;	message: "FILE METADATA READ"&#10;}]'/>
+	</flow>
+	<flow name="climate-portal-metadata_sh-autodir_get" doc:id="db1f8d35-2e5b-4f0d-a0c4-c4bfd5e3bab3" >
+		<smb:file-read doc:name="Files" doc:id="d646e9e1-42fd-4651-9e62-63f38120c92b" config-ref="SMB_Connector_Atlantis_R" fileName="files_sh-autodir.csv" dirName="CP_Files\files" />
+		<ee:transform doc:name="[FILES] to CSV" doc:id="d523b20f-6515-4c23-b7a5-26aa178d5db5" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+read(payload.^raw as String | Binary, "application/CSV") ]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="payload" doc:id="f4bbaed5-2b46-4cab-874d-1c96c049960e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+(payload as Array<Object>) 
+distinctBy $]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="cda6a2c3-c9cf-4955-a53c-13694ad28a3d" message='#[output application/json&#10;---&#10;{&#10;	message: "FILE METADATA READ"&#10;}]' />
+	</flow>
+	<flow name="climate-portal-metadata_other_get" doc:id="a548a69a-9af0-4c05-a260-ae2cb37d386e" >
+		<scheduler doc:name="Scheduler" doc:id="d3a81cf4-440d-45d0-beb1-5ad66e448535" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="1" timeUnit="DAYS"/>
+			</scheduling-strategy>
+		</scheduler>
+		<smb:file-read doc:name="Files" doc:id="e32671b3-f85e-44c3-bef9-4c68a5e623c1" config-ref="SMB_Connector_Atlantis_R" fileName="files_other.csv" dirName="CP_Files\files" />
+		<ee:transform doc:name="[FILES] to CSV" doc:id="01988077-2fe2-48b0-bd30-59d2445173f0" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+read(payload.^raw as String | Binary, "application/CSV") ]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="payload" doc:id="3796e4bf-b429-42fa-9323-d0230516b995" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+import * from dw::core::Arrays
+output application/java
+---
+drop((payload as Array<Object>),1) 
+distinctBy $]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="2648e20e-fb18-4886-af22-2a95d3574f0c" message='#[output application/json&#10;---&#10;{&#10;	message: "FILE METADATA READ"&#10;}]' />
+	</flow>
+</mule>

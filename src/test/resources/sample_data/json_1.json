@@ -1,0 +1,23 @@
+{
+  "company_name": "Ut",
+  "contact_first_name": "aliquip",
+  "contact_last_name": "accusantium",
+  "contact_email_address": "non",
+  "contact_phone_number": "occaecat",
+  "climate_portal_user_id": 3,
+  "climate_portal_company_id": 48,
+  "climate_portal_artemis_id": 37,
+  "created_at": 41,
+  "countries": [
+    {
+      "name": "Claud",
+      "volume": 41,
+      "purchase_option": "ad"
+    },
+    {
+      "name": "Amiee",
+      "volume": 61,
+      "purchase_option": "fugiat"
+    }
+  ]
+}

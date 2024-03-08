@@ -1,0 +1,13 @@
+[
+    {
+        "confirm_id": "CONFIRM_ID",
+        "invoices": [
+            {
+                "invoice_id": "INVOICE_ID",
+                "invoice_number": "INVOICE_NUMBER",
+                "contact_id": "CONTACT_ID",
+                "contact_name": "CONTACT_NAME"
+            }
+        ]
+    }
+]

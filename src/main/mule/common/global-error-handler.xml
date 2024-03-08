@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:cloudhub="http://www.mulesoft.org/schema/mule/cloudhub" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+    xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+    xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/cloudhub http://www.mulesoft.org/schema/mule/cloudhub/current/mule-cloudhub.xsd">
+
+    <error-handler name="global-error-handler">
+		<on-error-propagate type="APIKIT:BAD_REQUEST" enableNotifications="true" logException="true">
+            <set-variable value='${apikit.errors.badRequest.code}' doc:name="httpStatus"
+                doc:id="f788b3a4-a6e4-4ad9-a8db-039a25c227e7" variableName="httpStatus" />
+            <set-variable value="CLIENT ERROR" doc:name="httpStatusType" doc:id="5784f25c-f4c1-4fcf-b275-9411e63c58e3" variableName="httpStatusType" />
+			<set-variable value="#[{&#10;	message: p('apikit.errors.badRequest.description'),&#10;	details: error.description default &quot;&quot;&#10;}]"
+                doc:name="errorDescription" doc:id="ba869a1d-fefa-4db5-b3fd-8d149813a7f9" variableName="errorDescription" />
+            <flow-ref doc:name="Response" doc:id="4a4a0883-dce6-437a-ae9d-f98088e18ebc" name="error_response" />
+			<set-variable value="#[p('apikit.success.ok.code')]" doc:name="httpStatus" doc:id="c49854b3-cf7b-40cf-8d5c-582a64df13de" variableName="httpStatus" />
+        
+</on-error-propagate>
+        <on-error-propagate type="APIKIT:NOT_FOUND" enableNotifications="true" logException="true">
+            <set-variable value='${apikit.errors.notFound.code}' doc:name="httpStatus"
+                doc:id="030b37ce-afd2-4c1b-ba62-af5bed53220a" variableName="httpStatus" />
+            <set-variable value="CLIENT ERROR" doc:name="httpStatusType" doc:id="515efdb4-63c1-48de-89cf-ebd4cddb9d15" variableName="httpStatusType" />
+			<set-variable value="#[{&#10;	message: p('apikit.errors.notFound.description'),&#10;	details: error.description default &quot;&quot;&#10;}]"
+                doc:name="errorDescription" doc:id="82ec31a6-2ce0-485c-9f58-8990114b326f" variableName="errorDescription" />
+            <flow-ref doc:name="Response" doc:id="116d2b36-efa3-4308-8147-811aad3cbbff" name="error_response" />
+			<set-variable value="#[p('apikit.success.ok.code')]" doc:name="httpStatus" doc:id="b0a0f27c-351c-406f-a857-08fcdbde28d6" variableName="httpStatus" />
+        
+
+</on-error-propagate>
+        <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+            <set-variable value='${apikit.errors.methodNotAllowed.code}' doc:name="httpStatus"
+                doc:id="caa6b083-37d9-4b13-93c6-6a521ceef322" variableName="httpStatus" />
+            <set-variable value="CLIENT ERROR" doc:name="httpStatusType" doc:id="9fcf2da9-18a1-4bb2-9918-8ab7ddf2132d" variableName="httpStatusType" />
+			<set-variable
+                value="#[{&#10;	message: p('apikit.errors.methodNotAllowed.description'),&#10;	details: error.description default &quot;&quot;&#10;}]"
+                doc:name="errorDescription" doc:id="820e5bc1-197b-4ca7-8cd3-f1408d44f84f" variableName="errorDescription" />
+            <flow-ref doc:name="Response" doc:id="13555e81-8241-4d61-8628-298408405eeb" name="error_response" />
+			<set-variable value="#[p('apikit.success.ok.code')]" doc:name="httpStatus" doc:id="aef44bb4-e350-4fe3-8155-ff1c6d331706" variableName="httpStatus" />
+        
+</on-error-propagate>
+        <on-error-propagate type="APIKIT:NOT_ACCEPTABLE" enableNotifications="true" logException="true">            
+            <set-variable value='${apikit.errors.notAcceptable.code}' doc:name="httpStatus"
+                doc:id="73dab5f0-4e68-4383-a39d-f415066931af" variableName="httpStatus" />
+            <set-variable value="CLIENT ERROR" doc:name="httpStatusType" doc:id="9f1310d6-1efe-4b67-b497-9f2cf99b766d" variableName="httpStatusType" />
+			<set-variable
+                value="#[{&#10;	message: p('apikit.errors.notAcceptable.description'),&#10;	details: error.description default &quot;&quot;&#10;}]"
+                doc:name="errorDescription" doc:id="f4cd54e9-5e53-4fd1-9ad2-8fd591971092" variableName="errorDescription" />
+            <flow-ref doc:name="Response" doc:id="9e324cfd-c96a-4008-ba3b-f45131aa81a7" name="error_response" />
+			<set-variable value="#[p('apikit.success.ok.code')]" doc:name="httpStatus" doc:id="9b7a0ad5-f852-46b8-a464-73bcbc0b6d4f" variableName="httpStatus" />
+        
+</on-error-propagate>
+        <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">            
+            <set-variable value='${apikit.errors.unsupportedMediaType.code}' doc:name="httpStatus"
+                doc:id="b6e9e94a-6c04-44c4-805b-58ca1dc9de84" variableName="httpStatus" />
+            <set-variable value="CLIENT ERROR" doc:name="httpStatusType" doc:id="d18d9ca7-819d-421f-ac4a-a4675cccac9e" variableName="httpStatusType" />
+			<set-variable
+                value="#[{&#10;	message: p('apikit.errors.unsupportedMediaType.description'),&#10;	details: error.description default &quot;&quot;&#10;}]"
+                doc:name="errorDescription" doc:id="e773d7b5-a52f-4767-bf6e-088b3acc80c9" variableName="errorDescription" />
+            <flow-ref doc:name="Response" doc:id="559e4bb4-7cd7-4cd4-afe0-d1d40c32a595" name="error_response" />
+			<set-variable value="#[p('apikit.success.ok.code')]" doc:name="httpStatus" doc:id="855b40ed-2ef6-47fa-85da-99b0b8c4c549" variableName="httpStatus" />
+        
+</on-error-propagate>
+        <on-error-propagate type="APIKIT:NOT_IMPLEMENTED" enableNotifications="true" logException="true">            
+            <set-variable value='${apikit.errors.notImplemented.code}' doc:name="httpStatus"
+                doc:id="7cdc97ac-fa9c-47d4-b08d-78cf589eec14" variableName="httpStatus" />
+            <set-variable value="CLIENT ERROR" doc:name="httpStatusType" doc:id="14559ac3-684c-4bdf-8c38-66160535b1a0" variableName="httpStatusType" />
+			<set-variable
+                value="#[{&#10;	message: p('apikit.errors.notImplemented.description'),&#10;	details: error.description default &quot;&quot;&#10;}]"
+                doc:name="errorDescription" doc:id="83fb9b74-4cfb-4566-bfb4-7ca5049f5ef4" variableName="errorDescription" />
+            <flow-ref doc:name="Response" doc:id="63fb2aed-3486-48f3-97bf-19e0aa89349c" name="error_response" />
+			<set-variable value="#[p('apikit.success.ok.code')]" doc:name="httpStatus" doc:id="a8511e59-5b6d-4fcf-8aa1-ee7c929db672" variableName="httpStatus" />
+        
+</on-error-propagate>
+        <on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate"
+            doc:id="a5b26554-d99b-4a6d-8d17-66708bce82be" type="EXPRESSION">            
+            <set-variable value="${apikit.errors.expression.code}" doc:name="httpStatus"
+                doc:id="e0967886-3e26-4312-9ca4-c7e505484010" variableName="httpStatus" />
+            <set-variable value="SERVER ERROR" doc:name="httpStatusType" doc:id="ba8f2b8c-25be-45c1-9475-7a42220ec182" variableName="httpStatusType" />
+			<set-variable
+                value="#[{&#10;	message: p('apikit.errors.expression.description'),&#10;	details: error.description default &quot;&quot;&#10;}]"
+                doc:name="errorDescription" doc:id="712de394-073e-4ffa-b703-110f143559c6" variableName="errorDescription" />
+            <flow-ref doc:name="Response" doc:id="cfb9bdff-1ff9-4612-8f0c-aa9c0d3085de" name="error_response" />
+			<set-variable value="#[p('apikit.success.ok.code')]" doc:name="httpStatus" doc:id="7c53f21a-2dc6-40ad-a554-36672f5fe2af" variableName="httpStatus" />
+        
+</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="9db97f5c-b27b-4269-a284-709d9ded6e29" type="APP:SALESFORCE_BAD_REQUEST">
+			<set-variable value="#[p('apikit.errors.badRequest.code')]" doc:name="httpStatus" doc:id="a435942e-7449-426f-9eae-f9e4ad7e9db3" variableName="httpStatus" />
+			<set-variable value="CLIENT ERROR" doc:name="httpStatusType" doc:id="ed2c16f2-824a-43c5-943a-497210ac6dfc" variableName="httpStatusType" />
+			<set-variable value="#[{&#10;	message: p('apikit.errors.badRequest.description'),&#10;	details: &quot;$(vars.salesforceResponse.items[0].statusCode default &quot;&quot;): $(vars.salesforceResponse.items[0].message default &quot;&quot;)&quot;&#10;}]" doc:name="errorDescription" doc:id="96e6d9f2-8bf0-453c-aa55-094eb377c482" variableName="errorDescription" />
+			<flow-ref doc:name="Response" doc:id="7f476877-0774-4975-90bf-654e26761760" name="error_response" />
+			<set-variable value="#[p('apikit.success.ok.code')]" doc:name="httpStatus" doc:id="12c450e0-87ef-4e3c-8e0e-223fb2303954" variableName="httpStatus" />
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="a2353dc7-0043-46f8-a340-942e698529b8" type="APP:PRODUCTS_CSV_NOT_CREATED">
+			<set-variable value="#[p('apikit.errors.default.code')]" doc:name="httpStatus" doc:id="2cb47681-2e9a-4fbb-9eda-be8a3af35c99" variableName="httpStatus" />
+			<set-variable value="SERVER ERROR" doc:name="httpStatusType" doc:id="55777417-be07-4c0b-a614-15cf28dcd80f" variableName="httpStatusType" />
+			<set-variable value="#[{&#10;	message: p('apikit.errors.default.description'),&#10;	details: error.description default &quot;&quot;&#10;}]" doc:name="errorDescription" doc:id="9be15865-ac6e-4d96-a452-cab123853229" variableName="errorDescription" />
+			<flow-ref doc:name="Response" doc:id="746125f8-5d48-4785-aabf-47bd6ef46533" name="error_response" />
+			<set-variable value="#[p('apikit.success.ok.code')]" doc:name="httpStatus" doc:id="65303a64-7704-4f1f-9748-d3c10242ab0c" variableName="httpStatus" />
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="db82d223-4af6-4236-a410-1a63e0a9f7e7" type="APP:PRODUCTS_CSV_NOT_ATTACHED_TO_LEAD">
+			<set-variable value="#[p('apikit.errors.default.code')]" doc:name="httpStatus" doc:id="9db09dc2-fc21-47fa-bbbf-1f501ffef6e0" variableName="httpStatus" />
+			<set-variable value="SERVER ERROR" doc:name="httpStatusType" doc:id="2f76ab0b-e958-44a1-889d-f2986fe1befa" variableName="httpStatusType" />
+			<set-variable value="#[{&#10;	message: p('apikit.errors.default.description'),&#10;	details: error.description default &quot;&quot;&#10;}]" doc:name="errorDescription" doc:id="bbae9583-8258-4b16-951b-4d7bb4d4b5e0" variableName="errorDescription" />
+			<flow-ref doc:name="Response" doc:id="fc8c8b26-85c4-4be3-b1cc-f784f4d5a9a0" name="error_response" />
+			<set-variable value="#[p('apikit.success.ok.code')]" doc:name="httpStatus" doc:id="2346f798-145d-4057-a092-3f5abf6da982" variableName="httpStatus" />
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="f2608732-c872-42ef-be91-c649f07d3f10" type="APP:SALESFORCE_FILE_NOT_CREATED">
+			<set-variable value="#[p('apikit.errors.default.code')]" doc:name="httpStatus" doc:id="0a50d2b2-475c-44ce-bd71-2df285dbc1cf" variableName="httpStatus" />
+			<set-variable value="SERVER ERROR" doc:name="httpStatusType" doc:id="548cdb26-68ee-4971-9c1f-fef824391c89" variableName="httpStatusType" />
+			<set-variable value="#[{&#10;	message: p('apikit.errors.default.description'),&#10;	details: error.description default &quot;&quot;&#10;}]" doc:name="errorDescription" doc:id="a05d008b-3b59-4d28-8039-9126c71d66be" variableName="errorDescription" />
+			<flow-ref doc:name="Response" doc:id="90f09686-e5da-4f7a-88e6-186185002cdf" name="error_response" />
+			<set-variable value="#[p('apikit.success.ok.code')]" doc:name="httpStatus" doc:id="5e4a9132-9f44-4a33-842f-42f5d583db36" variableName="httpStatus" />
+		</on-error-propagate>
+    
+</error-handler>
+    <flow name="error_response" doc:id="cadfe1d4-e82e-483d-91ff-3ce3a6b63a85" >
+		<set-payload value="#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;	'code': vars.httpStatusResponse default p('apikit.errors.default.code'),&#10;	'type': vars.httpStatusType,&#10;	'response': {&#10;		'message': vars.errorDescription.message default &quot;&quot;,&#10;		'details': vars.errorDescription.details default &quot;&quot;&#10;	}&#10;}]" doc:name="Response" doc:id="53b02f8a-d049-4d36-ac6b-c9844a70c5dd" />
+		<logger level="ERROR" doc:name="LOG ERROR RESPONSE" doc:id="dfa08620-e36f-4723-bf99-7797e0e7f1bd" message="#[payload]" />
+	</flow>
+</mule>

@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:aggregators="http://www.mulesoft.org/schema/mule/aggregators" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns:amqp="http://www.mulesoft.org/schema/mule/amqp" xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns:error-handler-plugin="http://www.mulesoft.org/schema/mule/error-handler-plugin" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/error-handler-plugin http://www.mulesoft.org/schema/mule/error-handler-plugin/current/mule-error-handler-plugin.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/amqp http://www.mulesoft.org/schema/mule/amqp/current/mule-amqp.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/aggregators http://www.mulesoft.org/schema/mule/aggregators/current/mule-aggregators.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	
+	<!-- [STUDIO:"erp_changeuser_post"]<flow name="erp_changeuser_post" doc:id="9ef20616-56e0-4768-8e01-0f177bca64f3">
+		<until-successful maxRetries="5" doc:name="Until Successful" doc:id="f3e24422-938f-4617-8572-84f29969d0ed" >
+			<try doc:name="Try" doc:id="a243120c-4fc6-4703-a948-6fe5aca7b14a" >
+				<set-variable value="#[%dw 2.0&#10;output application/json&#10;&#45;&#45;-&#10;(payload flatMap (value, index) -&gt; &#10;'(&quot;' ++ value.id ++ '&quot;,&quot;' ++ value.givenName ++ '&quot;,&quot;' ++ value.surname  ++ '&quot;,&quot;' ++  value.displayName  ++ '&quot;,&quot;' ++ value.userPrincipalName ++ '&quot;)') joinBy(&quot;,&quot;)&#93;" doc:name="Values" doc:id="6e85ad94-c079-4cea-98ec-57f42076579c" variableName="values" mimeType="text/plain" />
+				<http:request method="GET" doc:name="Artemis" doc:id="1d303cb4-ebc8-48e4-aa29-e678d36f6a88" config-ref="HTTP_Request_ArtemisAPI_configuration" path="/UDA" outputMimeType="application/json" sendBodyMode="NEVER">
+					<http:headers><![CDATA[#[output application/java
+&#45;&#45;-
+{
+	"Accept" : "text/plain"
+}&#93;&#93;&#93;></http:headers>
+					<http:query-params><![CDATA[#[output application/json
+&#45;&#45;-
+{
+	"database" : "Artemis_API",
+	"objectType": "StoredProcedure",
+	"schema": "dbo",
+	"objectName": "tdp_Web_API_Insert",
+	"parameters": "@database=Artemis;@schema=erp;@table=tdt_User;@columns=(Id,FirstName,LastName,FullName,EmailAddress);@values=$(vars.values)"
+}&#93;&#93;&#93;></http:query-params>
+				</http:request>
+				<json-logger:logger doc:name="Logger" doc:id="04d27e5e-a356-4032-91b9-758c8a4dd367" config-ref="JSON_Logger_Config" message="SUCCESS"/>
+				<error-handler >
+					<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="9ab5cf07-4cfa-4135-bad9-3f5068efbcee" type="ANY">
+						<error-handler-plugin:on-error doc:name="Process Error" doc:id="3eb7d841-5716-4887-843f-d16eaab4b42e" config-ref="Error_Handler_Plugin_Config"/>
+						<json-logger:logger doc:name="Logger" doc:id="0fcaeaac-37d7-447c-87fa-0b8ed017d30b" config-ref="JSON_Logger_Config" message="FAILURE"/>
+						<set-variable value="#[attributes.httpStatus&#93;" doc:name="HTTP Status" doc:id="d6cfad89-875e-40a0-9ae7-057b39a99449" variableName="http_status"/>
+					</on-error-propagate>
+				</error-handler>
+			</try>
+		</until-successful>
+	</flow> [STUDIO] -->
+<!-- [STUDIO:"erp_document_context_post"]	<sub-flow name="erp_document_context_post" doc:id="608ab7eb-efed-4550-af13-88eacde4d7aa" >
+		<set-variable value='#[output text/plain&#10;&#45;&#45;-&#10;"@Context=$(vars.document_info.Context);" ++&#10;"@ContextID=$(vars.document_info.ContextID);" ++&#10;"@ExternalContext=$(vars.document_info.ExternalContext);" ++&#10;"@ExternalContextID=$(vars.document_info.ExternalContextID);" ++&#10;"@CorrelationID=$(vars.document_info.CorrelationID)"&#93;' doc:name="Parameters" doc:id="bb3b965b-6220-4c17-9e9b-e7457b5a07e7" variableName="parameters" />
+		<until-successful maxRetries="5" doc:name="Until Successful" doc:id="a33ce92a-76aa-4cf3-9797-83228a70aa57">
+			<try doc:name="Try" doc:id="9a148f77-b22a-4492-84d4-1e095f2ba450">
+			<http:request method="GET" doc:name="Artemis" doc:id="dc7d300d-faaa-4716-9fc5-c2b0463d6c22" config-ref="HTTP_Request_ArtemisAPI_configuration" path="/UDA" sendBodyMode="NEVER" outputMimeType="application/json">
+				<http:headers><![CDATA[#[output application/java
+&#45;&#45;-
+{
+	"Accept" : "text/plain"
+}&#93;&#93;&#93;></http:headers>
+				<http:query-params><![CDATA[#[output application/json
+&#45;&#45;-
+{
+	"database" : "Artemis",
+	"objectType": "StoredProcedure",
+	"schema": "erp",
+	"objectName": "tdp_DocumentContext_Insert",
+	"parameters": vars.parameters
+}&#93;&#93;&#93;></http:query-params>
+			</http:request>
+				<ee:transform doc:name="Transform Message" doc:id="3e6d3d19-1385-416a-b17c-d59c87ff18d8" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+&#45;&#45;-
+payload&#93;&#93;></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<choice doc:name="Is POST Successful" doc:id="8bb73a80-7dd3-4020-b634-16dfe081b800" >
+					<when expression="#[!payload.Table[0&#93;.Success&#93;">
+						<logger level="ERROR" doc:name="Logger" doc:id="9b777bee-5af7-4b27-9103-6685cb920edc" message="#[payload&#93;"/>
+					</when>
+					<otherwise >
+						<set-variable value='#[vars.document_info ++ {"DocumentContextID": payload.Table[0&#93;.DocumentContextID as String}&#93;' doc:name="Document Info" doc:id="19bcefb1-8530-42e8-bd6b-4b68011871a5" variableName="document_info" mimeType="application/java" />
+					</otherwise>
+				</choice>
+				<error-handler>
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="3e2a51f2-8213-4208-af93-7129b57a62fa" type="ANY">
+					<error-handler-plugin:on-error doc:name="Process Error" doc:id="08d2d298-7cd2-4e84-a60c-5daea5da9bd3" config-ref="Error_Handler_Plugin_Config" />
+					<json-logger:logger doc:name="Logger" doc:id="95417e4d-e7f0-477e-a63e-2b13885e7218" config-ref="JSON_Logger_Config" message="ERROR" />
+						<set-variable value="#[attributes.httpStatus&#93;" doc:name="HTTP Status" doc:id="9b17f8a1-528b-4b22-adf2-1233b46e9f78" variableName="httpStatus" />
+				</on-error-propagate>
+			</error-handler>
+		</try>
+		</until-successful>
+	</sub-flow> [STUDIO] -->
+<!-- [STUDIO:"erp_document_source_post"]	<sub-flow name="erp_document_source_post" doc:id="eb784428-b41b-4b73-b6f7-5a251b07126f" >
+		<set-variable value='#[output text/plain&#10;&#45;&#45;-&#10;"@DocumentSource=$(vars.document_info.DocumentSource);" ++&#10;"@DocumentSourceLocation=$(vars.document_info.DocumentSourceLocation);" ++&#10;"@CorrelationID=$(vars.document_info.CorrelationID)"&#93;' doc:name="Parameters" doc:id="f4e96caf-fe31-4571-9b9c-b757b620ffc3" variableName="parameters" mimeType="text/plain"/>
+		<until-successful maxRetries="5" doc:name="Until Successful" doc:id="9fd2e8e1-4c4d-4e9a-90ad-d0f91d65ad99">
+			<try doc:name="Try" doc:id="65b3b66e-7ee4-445f-b677-085e87ed9a63">
+				<http:request method="GET" doc:name="Artemis" doc:id="17d34d27-3a85-4253-9b6f-a220f75630a2" config-ref="HTTP_Request_ArtemisAPI_configuration" path="/UDA" sendBodyMode="NEVER" outputMimeType="application/json">
+					<http:headers><![CDATA[#[output application/java
+&#45;&#45;-
+{
+	"Accept" : "text/plain"
+}&#93;&#93;&#93;></http:headers>
+					<http:query-params><![CDATA[#[output application/json
+&#45;&#45;-
+{
+	"database" : "Artemis",
+	"objectType": "StoredProcedure",
+	"schema": "erp",
+	"objectName": "tdp_DocumentSource_Insert",
+	"parameters": vars.parameters
+}&#93;&#93;&#93;></http:query-params>
+				</http:request>
+				<ee:transform doc:name="Transform Message" doc:id="6b594bb8-5106-43f6-a454-00f2bf404a05" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+&#45;&#45;-
+payload&#93;&#93;></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<choice doc:name="Is POST Successful" doc:id="b401c640-75a0-4d75-81fd-8c51342dfaea" >
+					<when expression="#[!payload.Table[0&#93;.Success&#93;" >
+						<logger level="ERROR" doc:name="Logger" doc:id="95e7280a-d4cc-4d64-9971-3d5edaed57f1" message="#[payload&#93;" />
+					</when>
+					<otherwise >
+						<set-variable value='#[vars.document_info ++ {"DocumentSourceID": payload.Table[0&#93;.DocumentSourceID as String}&#93;' doc:name="Document Info" doc:id="a5e63b11-5846-4793-993c-a90ea54f9ffe" variableName="document_info" mimeType="application/java" />
+					</otherwise>
+				</choice>
+				<error-handler>
+					<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="8a4973b2-5058-4744-8e9a-bf65c86f19c6" type="ANY">
+						<error-handler-plugin:on-error doc:name="Process Error" doc:id="686b4fd2-2f7a-4afe-b5f0-79f0e8b3fd4f" config-ref="Error_Handler_Plugin_Config" />
+						<json-logger:logger doc:name="Logger" doc:id="aa4de86d-c365-4843-8693-88b81846eae6" config-ref="JSON_Logger_Config" message="ERROR" />
+						<set-variable value="#[attributes.httpStatus&#93;" doc:name="HTTP Status" doc:id="c630559b-80eb-4748-b22e-d18cde5655b7" variableName="httpStatus" />
+					</on-error-propagate>
+				</error-handler>
+			</try>
+		</until-successful>
+	</sub-flow> [STUDIO] -->
+	<!-- [STUDIO:"erp_document_post"]<sub-flow name="erp_document_post" doc:id="813a0794-f12f-4fd5-bb4d-e8538c2d1669" >
+		<set-variable value='#[output text/plain&#10;&#45;&#45;-&#10;"@Context=$(vars.document_info.Context);" ++&#10;"@ContextID=$(vars.document_info.ContextID);" ++&#10;"@ExternalContext=$(vars.document_info.ExternalContext);" ++&#10;"@ExternalContextPayload=$(vars.document_info.ExternalContextPayload);" ++&#10;"@DocumentSource=$(vars.document_info.DocumentSource);" ++&#10;"@DocumentSourceLocation=$(vars.document_info.DocumentSourceLocation);" ++&#10;"@DocumentName=$(vars.document_info.DocumentName);" ++&#10;"@Extension=$(vars.document_info.Extension);" ++&#10;"@MimeType=$(vars.document_info.MimeType);" ++&#10;"@Size=$(vars.document_info.Size);" ++&#10;"@CorrelationID=$(vars.document_info.CorrelationID)"&#93;' doc:name="Parameters" doc:id="2c563fc7-6aed-4fab-b160-3c3d7676a228" variableName="parameters" />
+		<until-successful maxRetries="5" doc:name="Until Successful" doc:id="96f2c668-12a1-49f2-bace-395393d837e9" >
+			<try doc:name="Try" doc:id="e11ac05e-ad36-4de0-a860-39cadfd1c8e8" >
+				<http:request method="GET" doc:name="Artemis" doc:id="dfaa6278-ca72-42aa-b60b-f42fcb592973" config-ref="HTTP_Request_ArtemisAPI_configuration" path="/UDA" sendBodyMode="NEVER" outputMimeType="application/json">
+					<http:headers><![CDATA[#[output application/java
+&#45;&#45;-
+{
+	"Accept" : "text/plain"
+}&#93;&#93;&#93;></http:headers>
+					<http:query-params><![CDATA[#[output application/json
+&#45;&#45;-
+{
+	"database" : "Artemis",
+	"objectType": "StoredProcedure",
+	"schema": "erp",
+	"objectName": "tdp_Document_Insert",
+	"parameters": vars.parameters
+}&#93;&#93;&#93;></http:query-params>
+				</http:request>
+				<ee:transform doc:name="Transform Message" doc:id="ac2ab09c-ab00-4d4a-a71d-74debb643ec5" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+&#45;&#45;-
+payload&#93;&#93;></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<choice doc:name="Is POST Successful" doc:id="409e2789-23b5-4f62-9983-5517bbd470ab" >
+					<when expression="#[!payload.Table[0&#93;.Success&#93;" >
+						<logger level="ERROR" doc:name="LOG ERROR" doc:id="2e927722-03b3-42fb-8963-6fe26584e396" message="#[payload&#93;" />
+					</when>
+					<otherwise>
+						<logger level="INFO" doc:name="LOG INFO" doc:id="ac9da087-73c1-4c64-8eed-1b80657d5040" message="#[output application/json&#10;&#45;&#45;-&#10;{&#10;	Success: payload.Table[0&#93;.Success,&#10;	Message: vars.document_info&#10;}&#93;"/>
+					</otherwise>
+				</choice>
+				<error-handler >
+					<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="bfaab11c-12a0-458b-b332-991392a7f836" type="ANY" >
+						<error-handler-plugin:on-error doc:name="Process Error" doc:id="722efbc5-c93a-4a10-b832-e37e1afd13b2" config-ref="Error_Handler_Plugin_Config" />
+						<json-logger:logger doc:name="Logger" doc:id="93d2631e-1ee0-4685-a6c0-c95ae3dc821a" config-ref="JSON_Logger_Config" message="ERROR" />
+						<set-variable value="#[attributes.httpStatus&#93;" doc:name="HTTP Status" doc:id="8ae3b386-8ca8-4711-a22a-f37fd7e5f64e" variableName="httpStatus" />
+					</on-error-propagate>
+				</error-handler>
+			</try>
+		</until-successful>
+	</sub-flow> [STUDIO] -->
+	<!-- [STUDIO:"confirm_get"]<flow name="confirm_get" doc:id="9cda35b0-3791-4d8d-9172-dbdb8ed9bb65" >
+		<set-variable value='#["where ConfirmID IN($(vars.confirm_id))"&#93;' doc:name="Filters" doc:id="8af987e6-c395-45d1-a188-4644cadf80a1" variableName="filters" mimeType="text/plain"/>
+		<try doc:name="Try" doc:id="00611e08-8588-4964-a305-c40fe9e0f8ba" >
+			<http:request method="GET" doc:name="Artemis" doc:id="a2753d50-c979-4ebd-bc14-7018a134e59e" outputMimeType="application/json" sendBodyMode="NEVER" config-ref="HTTP_Request_ArtemisAPI_configuration" path="/UDA">
+			<http:headers><![CDATA[#[output application/java
+&#45;&#45;-
+{
+	"Accept" : "text/plain"
+}&#93;&#93;&#93;></http:headers>
+			<http:query-params><![CDATA[#[output application/json
+&#45;&#45;-
+{
+	"database" : "Artemis",
+	"objectType": "Table",
+	"schema": "port",
+	"objectName": "tdt_Confirm",
+	"filters": vars.filters
+}&#93;&#93;&#93;></http:query-params>
+		</http:request>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="feee40c0-9604-4868-b441-c27c3721301e" type="ANY">
+					<error-handler-plugin:on-error doc:name="Process Error" doc:id="f73dad9c-93fd-4e23-8988-4a31ea119f4f" config-ref="Error_Handler_Plugin_Config"/>
+					<json-logger:logger doc:name="Logger" doc:id="dfdd54cf-ea9b-4a13-9d5c-8f76f7665c8d" config-ref="JSON_Logger_Config" message="ERROR"/>
+
+				</on-error-propagate>
+			</error-handler>
+		</try>
+	</flow> [STUDIO] -->
+<!-- [STUDIO:"erp_opportunity_post"]		<flow name="erp_opportunity_post" doc:id="0267d6bf-2edb-4541-962d-98a33bbb39fc" >
+		<set-payload value="#[vars.opportunities&#93;" doc:name="Opportunities" doc:id="de60f2bc-85ab-4d3d-843c-7840c4322ccc" />
+		<batch:job jobName="job" doc:id="80d40485-4c32-4caa-923d-4e22b346af4c" target="result" maxConcurrency="100">
+			<batch:process-records>
+				<batch:step name="Step4" doc:id="10cc0e34-b5d3-4cf7-ba46-92ca3f93cf20" acceptPolicy="ALL">
+					<set-variable value='#[output text/plain&#10;&#45;&#45;-&#10;"@database=Artemis;@schema=erp;@table=tdt_Opportunity;" ++&#10;"@columns=(RecordType,OpportunityID,OpportunityCounterpartyName,ConfirmID,ProjectID,AccountID);" ++&#10;"@values=$(vars.values)"&#93;' doc:name="Parameters" doc:id="0edb8245-f956-403f-8afb-6026b39549ec" variableName="parameters" mimeType="text/plain" />
+					<http:request method="GET" doc:name="Artemis" doc:id="593df7df-665a-43ee-a93e-2b155d411b0b" config-ref="HTTP_Request_ArtemisAPI_configuration" path="/UDA" outputMimeType="text/plain" sendBodyMode="NEVER">
+							<http:headers><![CDATA[#[output application/java
+&#45;&#45;-
+{
+	"Accept" : "text/plain"
+}&#93;&#93;&#93;></http:headers>
+							<http:query-params><![CDATA[#[output application/json
+&#45;&#45;-
+{
+	"database" : "Artemis_API",
+	"objectType": "StoredProcedure",
+	"schema": "dbo",
+	"objectName": "tdp_Web_API_Insert",
+	"parameters": vars.parameters
+}&#93;&#93;&#93;></http:query-params>
+						</http:request>
+				</batch:step>
+			</batch:process-records>
+			<batch:on-complete>
+				<ee:transform doc:name="Transform Message" doc:id="08fe445e-8c0b-46e9-a9b5-dd3b11ffd396">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+&#45;&#45;-
+{
+}&#93;&#93;></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</batch:on-complete>
+		</batch:job>
+	</flow> [STUDIO] -->
+	<flow name="company_services_get" doc:id="8669c515-e796-4e64-a72c-d520bef4f579" >
+		<set-variable value='#[output text/plain&#10;---&#10;"where CounterpartyID IN($(floor(vars.request.CounterpartyID as Number)))"]' doc:name="filters" doc:id="3ca3dc31-a89e-4d4f-bff6-8a63579cb746" variableName="filters"/>
+		<http:request method="GET" doc:name="sh_CompanyServices" doc:id="f787356a-f0d3-4bcc-a3cd-b4151393f93e" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" outputMimeType="application/json" sendBodyMode="NEVER" >
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Accept" : "text/plain"
+}]]]></http:headers>
+			<http:query-params ><![CDATA[#[output application/json
+---
+{
+	"database" : "Artemis",
+	"objectType": "View",
+	"schema": "sh",
+	"objectName": "tdv_CompanyServices",
+	"filters": vars.filters
+}]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="payload" doc:id="57d6be91-aa8a-4254-91f4-089234450e85" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.Table]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	
+</mule>

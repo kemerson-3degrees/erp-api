@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule 
+	xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" 
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file" 
+	xmlns:smb="http://www.mulesoft.org/schema/mule/smb" 
+	
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/smb http://www.mulesoft.org/schema/mule/smb/current/mule-smb.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+		<sub-flow name="saleforce_lead_csv_create" doc:id="d95d7857-8405-47ee-8314-b33dd928ee8f">
+		<ee:transform doc:name="CSV Payload" doc:id="b19245ba-9ab4-41ff-a33e-ad9ad793bc5f">
+			<ee:message>
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/csv header=true
+---
+vars.purchaseProducts]]></ee:set-payload>
+
+			</ee:message>
+			<ee:variables >
+			</ee:variables>
+		
+</ee:transform>
+		<smb:file-write doc:name="Save CSV to Network Drive" doc:id="99793dd3-f99c-441c-844a-927ccba1d07b" fileName='#[vars.fileName ++ ".csv"]' dirName="CP_Files\SupplierREach" config-ref="SMB_Connector_Atlantis_R" target="isProductsCsvFileCreated">
+			<reconnect frequency="30000" />
+		</smb:file-write>
+		<validation:is-true doc:name="Products CSV File Created" doc:id="13ae1431-8e9f-4c04-bf28-b72898286ee8" config-ref="Validation_Config" expression="#[vars.isProductsCsvFileCreated]" message="THE PRODUCTS CSV FILE WAS NOT CREATED">
+				<error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="APP:PRODUCTS_CSV_NOT_CREATED" />
+			</validation:is-true>
+		<try doc:name="Try" doc:id="aa17ff5a-fda2-4813-88f2-ae5e577348c2">
+			<http:request method="GET" doc:name="Artemis" doc:id="6f722b58-2fca-4327-a569-58d8af4ab2db" config-ref="HTTP_Request_ArtemisAPI" path="/Document/List" outputMimeType="text/plain" sendBodyMode="NEVER">
+				<http:headers><![CDATA[#[output application/java
+---
+{
+	"Accept" : "text/plain",
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+				<http:query-params><![CDATA[#[output application/java
+---
+{
+	"Directory" : "\\\server2.luna.local\\Atlantis\\CP_Files\\SupplierREach"
+}]]]></http:query-params>
+			</http:request>
+		
+</try>
+		<ee:transform doc:name="Document List Payload" doc:id="38d386a0-6d5e-464e-95ec-bc610c773978">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	Files: read(payload,"application/JSON") as Array<Object>	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<smb:file-read doc:name="File" doc:id="0469b824-7f8d-45d8-95cc-2a538d423fa3" config-ref="SMB_Connector_Atlantis_R" fileName='#[vars.fileName ++ ".csv"]' dirName="CP_Files\SupplierREach" target="file" />
+		<set-variable value='#[var file = (payload.Files filter ($.FileName replace $.Extension with ("")) == vars.fileName)[0]&#10;output application/json&#10;---&#10;file]' doc:name="File Info" doc:id="6faddef1-afb5-42c6-9ca5-cd75cb2c0ee8" variableName="fileInfo" />
+		<logger level="INFO" doc:name="LOG Success" doc:id="a1be5727-78b1-48f6-ada4-b46cc08e0baf" message='#[output application/json&#10;---&#10;{&#10;	"message": "CSV FILE CREATED"&#10;}]' />
+		<flow-ref doc:name="Attach CSV File to Lead" doc:id="12ce9bf1-82e7-457c-afdb-54507681e5d4" name="salesforce_lead-file_create" />
+	</sub-flow>
+	<sub-flow name="salesforce_lead-file_create" doc:id="5c13589a-478c-4de3-a8ca-e622f6aefb8a">
+		<ee:transform doc:name="Content Version Payload" doc:id="1af453c9-6714-4adf-b2ab-74a2e62f273e">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+import * from dw::core::Binaries
+output application/java
+---
+[{
+	Title: vars.fileName replace vars.leadRequest.Company with("$(vars.leadRequest.Company) | "),
+	VersionData: toBase64(vars.file as Binary),
+	PathOnClient: vars.fileInfo.FileName,
+	TagCsv: "climate-portal,supplier-reach,purchase,products",
+	IsAssetEnabled: true,
+	IsMajorVersion: true,
+	SharingOption: "A",
+	SharingPrivacy: "N"
+}]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:create type="ContentVersion" doc:name="Content Version" doc:id="80bb7639-b8de-438a-a759-4360ed1f0b0e" config-ref="Salesforce_Config" />
+		<salesforce:query doc:name="Content Version" doc:id="4d53db69-fbde-443a-84c3-68989df5f1a9" config-ref="Salesforce_Config" target="contentVersionResponse">
+			<salesforce:salesforce-query><![CDATA[SELECT Id, ContentDocumentId
+FROM ContentVersion
+WHERE Id = ':contentVersionId']]></salesforce:salesforce-query>
+			<salesforce:parameters><![CDATA[#[output application/java
+---
+{
+	contentVersionId : payload.items[0].payload.id as String default ""
+}]]]></salesforce:parameters>
+		</salesforce:query>
+		<validation:is-true doc:name="CSV File Created in Salesforce" doc:id="f53d8041-7035-42d2-88c8-d77cc1526ede" config-ref="Validation_Config" message="THE PRODUCTS CSV FILE WAS NOT CREATED IN SALESFORCE" expression="#[!isEmpty(vars.contentVersionResponse[0].ContentDocumentId)]">
+			<error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="APP:SALESFORCE_FILE_NOT_CREATED" />
+		</validation:is-true>
+		<ee:transform doc:name="Content Document Link payload" doc:id="eba6d378-70fe-4669-8434-11f813405926">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+[{
+	ContentDocumentId: vars.contentVersionResponse[0].ContentDocumentId default "",
+	LinkedEntityId: vars.salesforceResponse.items[0].payload.id default "",
+	ShareType: "V",
+	Visibility: "AllUsers"
+}]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:create type="ContentDocumentLink" doc:name="Content Document Link" doc:id="bec599c0-28a2-4478-94d5-00d77e908197" config-ref="Salesforce_Config" target="contentDocumentLinkResponse" />
+		<set-variable value="#[vars.contentDocumentLinkResponse.successful]" doc:name="isProductsCsvAttachedToLead" doc:id="53a00b60-9966-45b6-9ee9-7c240f850b81" variableName="isProductsCsvAttachedToLead" mimeType="application/java" />
+		<validation:is-true doc:name="Products CSV File Attached To Lead" doc:id="7393a7b5-e4ce-4b43-8cfb-896be2b5af7e" config-ref="Validation_Config" expression="#[vars.isProductsCsvAttachedToLead]" message="THE PRODUCTS CSV FILE WAS NOT ATTACHED TO THE LEAD">
+			<error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="APP:PRODUCTS_CSV_NOT_ATTACHED_TO_LEAD" />
+		</validation:is-true>
+		<logger level="INFO" doc:name="Logger" doc:id="c972171e-9054-4803-b1e2-dea1ced2aa80" message='#[output application/json&#10;---&#10;if(vars.contentDocumentLinkResponse.successful)&#10;{&#10;	message: "CSV FILE ATTACHED TO LEAD"&#10;} else {&#10;	message: vars.contentDocumentLinkResponse.items.payload.errors&#10;}]' />
+	
+</sub-flow>
+	
+	
+	
+</mule>

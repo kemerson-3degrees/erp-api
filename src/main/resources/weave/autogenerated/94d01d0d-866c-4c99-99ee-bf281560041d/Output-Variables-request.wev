@@ -1,0 +1,14 @@
+%dw 2.0
+
+type auto_94d01d0d_866c_4c99_99ee_bf281560041d_Output_Variables_request = {|
+  method: String, 
+  requestUri: String, 
+  headers: {|
+    accept?: String, 
+    "content-type"?: String
+  |}, 
+  uriParameters: {|  |}, 
+  queryParameters: {|  |}, 
+  body?: {|  |}
+|} {"typeAlias": "auto_8bdff4e1-dac0-4727-a0c8-50b47363ef75_Output-Variables-request"}
+

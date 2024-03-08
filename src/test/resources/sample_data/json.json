@@ -1,0 +1,33 @@
+{
+    "company_name": "Test Company",
+    "contact_first_name": "John",
+    "contact_last_name": "Smith",
+    "contact_email_address": "john.smith@example.com",
+    "contact_phone_number": "12223334444",
+    "climate_portal_user_id": 1,
+    "climate_portal_company_id": 4268,
+    "climate_portal_artemis_id": 12345,
+    "created_at": 1699481962,
+    "countries": [
+        {
+          "name": "Poland",
+          "volume": 10500,
+          "purchase_option": "green_power_program"
+        },
+        {
+          "name": "Japan",
+          "volume": 7500,
+          "purchase_option": "eac"
+        },
+        {
+          "name": "Ukraine",
+          "volume": 8354,
+          "purchase_option": "eac"
+        },
+        {
+          "name": "Denmark",
+          "volume": 4362,
+          "purchase_option": "ppa"
+        }
+    ]
+}

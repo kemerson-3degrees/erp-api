@@ -1,0 +1,8 @@
+[{
+    "invoice_id": "INVOICE_ID",
+    "invoice_documents": [
+        {
+            "url": "INVOICE_URL"
+        }
+    ]
+}]

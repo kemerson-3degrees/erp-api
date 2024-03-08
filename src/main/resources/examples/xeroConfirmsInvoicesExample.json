@@ -1,0 +1,134 @@
+[{
+  "confirm_id": 123456,
+  "invoices": [
+    {
+      "Type": "ACCREC",
+      "InvoiceID": "2325e961-9b19-49bb-bdaf-cea42d96f445",
+      "InvoiceNumber": "24571",
+      "Reference": "| Confirm - 27976",
+      "Payments": [
+        {
+          "PaymentID": "241e9d13-36be-419a-9dfb-4e4103aeefba",
+          "Date": "/Date(1671148800000+0000)/",
+          "Amount": 42570.0,
+          "Reference": "",
+          "CurrencyRate": 1.0,
+          "HasAccount": false,
+          "HasValidationErrors": false
+        }
+      ],
+      "Prepayments": [],
+      "Overpayments": [],
+      "AmountDue": 0.0,
+      "AmountPaid": 42570.0,
+      "SentToContact": true,
+      "CurrencyRate": 1.0,
+      "TotalDiscount": 0.0,
+      "IsDiscounted": true,
+      "HasAttachments": true,
+      "HasErrors": false,
+      "Attachments": [
+        {
+          "AttachmentID": "7b46f6ae-93b8-4d97-a209-6f55767214e7",
+          "FileName": "Invoice 24571.pdf",
+          "Url": "https://api.xero.com/api.xro/2.0/Invoices/2325e961-9b19-49bb-bdaf-cea42d96f445/Attachments/Invoice%2024571.pdf",
+          "MimeType": "application/pdf",
+          "ContentLength": 86552
+        }
+      ],
+      "InvoicePaymentServices": [],
+      "Contact": {
+        "ContactID": "8ea9c815-ba35-47f4-9563-20f709564424",
+        "ContactStatus": "ACTIVE",
+        "Name": "Marathon Power, LLC",
+        "EmailAddress": "keith@mecny.com",
+        "BankAccountDetails": "",
+        "Addresses": [
+          {
+            "AddressType": "STREET",
+            "City": "",
+            "Region": "",
+            "PostalCode": "",
+            "Country": ""
+          },
+          {
+            "AddressType": "POBOX",
+            "AddressLine1": "62-01 34th Ave",
+            "City": "Woodside",
+            "Region": "NY",
+            "PostalCode": "11377 USA",
+            "Country": ""
+          }
+        ],
+        "Phones": [
+          {
+            "PhoneType": "DEFAULT",
+            "PhoneNumber": "",
+            "PhoneAreaCode": "",
+            "PhoneCountryCode": ""
+          },
+          {
+            "PhoneType": "DDI",
+            "PhoneNumber": "",
+            "PhoneAreaCode": "",
+            "PhoneCountryCode": ""
+          },
+          {
+            "PhoneType": "FAX",
+            "PhoneNumber": "",
+            "PhoneAreaCode": "",
+            "PhoneCountryCode": ""
+          },
+          {
+            "PhoneType": "MOBILE",
+            "PhoneNumber": "",
+            "PhoneAreaCode": "",
+            "PhoneCountryCode": ""
+          }
+        ],
+        "UpdatedDateUTC": "/Date(1617140580737+0000)/",
+        "ContactGroups": [],
+        "IsSupplier": false,
+        "IsCustomer": true,
+        "SalesTrackingCategories": [],
+        "PurchasesTrackingCategories": [],
+        "ContactPersons": [],
+        "HasValidationErrors": false
+      },
+      "DateString": "2022-12-01T00:00:00",
+      "Date": "/Date(1669852800000+0000)/",
+      "DueDateString": "2022-12-16T00:00:00",
+      "DueDate": "/Date(1671148800000+0000)/",
+      "BrandingThemeID": "c5b91243-3cb5-43da-a625-70639cbaaf21",
+      "Status": "PAID",
+      "LineAmountTypes": "Inclusive",
+      "LineItems": [
+        {
+          "ItemCode": "REC Wholesale",
+          "Description": "REC - NJ Solar - 2022",
+          "UnitAmount": 236.5,
+          "TaxType": "NONE",
+          "TaxAmount": 0.0,
+          "LineAmount": 42570.0,
+          "AccountCode": "02550",
+          "Item": {
+            "ItemID": "c8cf15b4-4d99-4d5e-acbe-87bc2e111f12",
+            "Code": "REC Wholesale"
+          },
+          "Tracking": [],
+          "Quantity": 180.0,
+          "DiscountRate": 0.0,
+          "LineItemID": "e59a1d91-d005-40b8-a148-b606d46a2d91",
+          "DiscountAmount": 0.0,
+          "ValidationErrors": []
+        }
+      ],
+      "SubTotal": 42570.0,
+      "TotalTax": 0.0,
+      "Total": 42570.0,
+      "UpdatedDateUTC": "/Date(1671398326043+0000)/",
+      "CurrencyCode": "USD",
+      "FullyPaidOnDate": "/Date(1671148800000+0000)/"
+    }
+  ]
+}]

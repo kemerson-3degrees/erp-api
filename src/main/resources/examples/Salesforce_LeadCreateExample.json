@@ -1,0 +1,38 @@
+{
+    "Company": "TEST Supplier REach Company",
+    "FirstName": "Jane",
+    "LastName": "Doe",
+    "Email": "jane.doe@supplierreach.com",
+    "Phone": "12223334444",
+    "Lead_Source__c": "Supplier REach",
+    "Status": "Qualified",
+    "Product__c": ["Supplier REach"],
+    "RecordTypeId": "012Du0000004N6wIAE",
+    "CurrencyIsoCode": "USD",
+    "Climate_Portal_Customer_ID__c": 7925.0,
+    "Climate_Portal_Account_ID__c": 7925.0,
+    "Climate_Portal_Artemis_ID__c": 7925.0,
+    "Supplier_REach_Transaction_Date__c": "2023-11-28",
+    "Products": [
+        {
+          "Name": "Poland",
+          "Volume": 10500,
+          "PurchaseOption": "green_power_program"
+        },
+        {
+          "Name": "Japan",
+          "Volume": 7500,
+          "PurchaseOption": "eac"
+        },
+        {
+          "Name": "Ukraine",
+          "Volume": 8354,
+          "PurchaseOption": "eac"
+        },
+        {
+          "Name": "Denmark",
+          "Volume": 4362,
+          "PurchaseOption": "ppa"
+        }
+    ]
+}

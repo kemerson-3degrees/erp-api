@@ -1,0 +1,11 @@
+%dw 2.0
+
+type auto_94d01d0d_866c_4c99_99ee_bf281560041d_Output_Variables_contentVersionResponse = Array<ContentVersion>
+type ContentVersion = {|
+  ContentDocumentId?: String, 
+  Id?: String {"typeId": "Id"}
+|} {"label": "Content Version",
+"typeId": "ContentVersion"}
+
+
+

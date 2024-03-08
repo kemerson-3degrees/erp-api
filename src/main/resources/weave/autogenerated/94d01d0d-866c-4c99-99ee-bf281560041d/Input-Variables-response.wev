@@ -1,0 +1,9 @@
+%dw 2.0
+
+type auto_94d01d0d_866c_4c99_99ee_bf281560041d_Input_Variables_response = {|
+  LeadName: String, 
+  LeadCreated: Boolean, 
+  ProductsCsvCreated: Boolean, 
+  ProductsCsvAttachedToLead: Boolean
+|}
+

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<flow name="sf-productFlow" doc:id="08e02157-b2ac-495b-8819-ad35a8de12d2" initialState="stopped">
+		<scheduler doc:name="Scheduler" doc:id="c8bbf005-1984-4c9f-ab33-7f138fef460f" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="1" timeUnit="DAYS"/>
+			</scheduling-strategy>
+		</scheduler>
+		<salesforce:query doc:name="Product" doc:id="5137880c-6535-414f-905e-f86d6bf7022d" config-ref="Salesforce_Config" target="productResponse" >
+			<salesforce:salesforce-query ><![CDATA[SELECT
+  Id, 
+  Name, 
+  Family,
+  BU_Product_Family__c,
+  Commodity_Product__c,
+  Vintage__c,
+  Green_e__c,
+  Country__c,
+  CurrencyIsoCode,
+  ProductCode,
+  Product_Business_Line__c,
+  IsActive,
+  IsArchived,
+  IsDeleted,
+  LastReferencedDate
+FROM
+  Product2
+]]></salesforce:salesforce-query>
+		</salesforce:query>
+		<ee:transform doc:name="payload" doc:id="460c4b4d-db2a-457f-8283-2c5cfd9d54c0" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+vars.productResponse map(item)-> {
+	ProductID: item.Id,
+	ProductName: item.Name,
+	Family: item.Family,
+	FamilyBU: item.BU_Product_Family__c,
+	IsCommodityProduct: item.Commodity_Product__c,
+	IsGreenE: item.Green_e__c,
+	Vintage: floor(item.Vintage__c default "0"),
+	Country: item.Country__c,
+	CurrencyIsoCode: item.CurrencyIsoCode,
+	ProductCode: item.ProductCode,
+	ProductBusinessLine: item.Product_Business_Line__c,
+	IsActive: item.IsActive,
+	IsArchived: item.IsArchived,
+	IsDeleted: item.IsDeleted
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="ranges" doc:id="3968e3dd-03e2-43f9-b950-8fda13f6c341" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+import * from dw::core::Arrays
+output application/java
+---
+payload divideBy 500]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<foreach doc:name="For Each" doc:id="4033dea0-3461-4289-a926-f756c4bc0ea2" collection="#[payload]" >
+			<try doc:name="Try" doc:id="ce83b6e0-5072-48bf-9534-03983a070007" >
+				<http:request method="POST" doc:name="INSERT Products" doc:id="157a65e3-b617-49de-81c2-4fe167708af0" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" outputMimeType="text/plain" sendBodyMode="ALWAYS" target="artemisResponse" >
+					<http:body ><![CDATA[#[%dw 2.0
+output application/json
+---
+[
+    {
+        "database": "Artemis",
+        "schema": "erp",
+        "table": "Salesforce_Product",
+        "value": payload
+    }
+]]]]></http:body>
+					<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"schema" : "dbo",
+	"objectName" : "tdp_Web_API_Insert",
+	"database" : "Artemis_API"
+}]]]></http:query-params>
+				</http:request>
+				<logger level="INFO" doc:name="Logger" doc:id="5f3ab663-5c0b-4edc-a5ca-e13e04253238" message="#[vars.artemisResponse]"/>
+			</try>
+		</foreach>
+		<logger level="INFO" doc:name="Logger" doc:id="ff7d57dc-3487-4c26-9c26-8fd7043734f6" />
+	</flow>
+</mule>

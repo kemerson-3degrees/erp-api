@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:salesforce-pub-sub="http://www.mulesoft.org/schema/mule/salesforce-pub-sub" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce-pub-sub http://www.mulesoft.org/schema/mule/salesforce-pub-sub/current/mule-salesforce-pub-sub.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<flow name="counterparty_account_id_get" doc:id="43f8e216-3a60-4f2a-ae8b-da6d0c118c95" >
+		<salesforce:query doc:name="Account" doc:id="221553fc-3444-4eec-bf39-d283bfaf77ea" config-ref="Salesforce_Config" target="accountResponse" >
+			<salesforce:salesforce-query ><![CDATA[SELECT Id
+FROM Account
+WHERE Artemis_Counterparty_ID__c = :counterpartyId OR Counterparty_ID__c = ':counterpartyId']]></salesforce:salesforce-query>
+			<salesforce:parameters ><![CDATA[#[output application/java
+---
+{
+	counterpartyId : vars.request.CounterpartyID as String
+}]]]></salesforce:parameters>
+		</salesforce:query>
+		<choice doc:name="Choice" doc:id="dccaf734-d887-4b5f-bd12-844ba00a3a4e" >
+			<when expression="#[sizeOf(vars.accountResponse) &lt;=1]">
+				<ee:transform doc:name="Account Id List" doc:id="0a78877f-623a-4cb1-a8fe-b016b66f77c2" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output text/plain
+---
+vars.accountResponse[0].Id default ""]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Account Id List" doc:id="3b31044b-b15c-4c57-999d-7e0c2c95e390">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output text/plain
+---
+(vars.accountResponse map (item) -> {
+	Id: "'" ++ item.Id as String ++ "'"
+}).Id joinBy(",")]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			</otherwise>
+		</choice>
+	</flow>
+	<flow name="etl_staging_accountl_load" doc:id="34f0e9eb-a26d-4c6e-89f0-dc30691f6a21" initialState="stopped">
+		<scheduler doc:name="Scheduler" doc:id="f1b1f623-aa42-450f-9fce-e2236f81d219" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="1" timeUnit="DAYS"/>
+			</scheduling-strategy>
+		</scheduler>
+		<try doc:name="Try" doc:id="e8f313b4-b5c6-4fec-9940-0fe499b59105" >
+			<salesforce:query doc:name="Account" doc:id="a0a87284-31a3-4a87-a34c-6a555618d219" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query><![CDATA[SELECT Id, Name, Counterparty_ID__c, Artemis_Counterparty_ID__c, EnterpriseID__c, Case_Safe_ID__c, OwnerId, Owner.Name, Account_Owner_Active__c
+FROM Account]]></salesforce:salesforce-query>
+		</salesforce:query>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="aa3614ae-4d8a-4266-9bf9-9efb3eec0fd6" type="ANY">
+					<logger level="INFO" doc:name="Logger" doc:id="d59a0e5f-2b8c-4698-aca9-8b28e46b9718" />
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<ee:transform doc:name="payload" doc:id="3418f1d3-9f1e-4a53-8723-3c14f4a9ffa2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload map(item) -> {
+	AccountID: item.Id,
+	AccountName: item.Name,
+	AccountOwnerID: item.OwnerId,
+	AccountOwnerName: item.Owner.Name,
+	AccountOwnerIsActive: item.Account_Owner_Active__c,
+	AccountCounterpartyID: floor(item.Counterparty_ID__c default 0),
+	CounterpartyID: floor(item.Artemis_Counterparty_ID__c default 0),
+	CaseSafeID: item.Case_Safe_ID__c,
+	EnterpriseID: item.EnterpriseID__c,
+	CorrelationID: correlationId
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="batches" doc:id="06a90666-a009-4dee-8d4c-c52d4afb7085" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+import divideBy from dw::core::Arrays
+output application/json
+---
+payload divideBy 500]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<foreach doc:name="For Each Batch" doc:id="6ee4ecb7-45a2-402c-9385-2a17710113de" collection="#[payload]">
+			<try doc:name="Try" doc:id="f58a3c96-e428-4846-9cef-4735454b751d">
+			<http:request method="POST" doc:name="INSERT erp_Staging_Salesforce_Acount" doc:id="5079eb7e-259a-4faf-8623-a85f2e7c11cf" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" outputMimeType="text/plain" sendBodyMode="ALWAYS" target="artemisResponse">
+				<http:body><![CDATA[#[%dw 2.0
+output application/json
+---
+[
+    {
+        "database": "Artemis",
+        "schema": "erp",
+        "table": "Staging_Salesforce_Account",
+        "value": payload
+    }
+]]]]></http:body>
+				<http:query-params><![CDATA[#[output application/java
+---
+{
+	"schema" : "dbo",
+	"objectName" : "tdp_Web_API_Insert",
+	"database" : "Artemis_API"
+}]]]></http:query-params>
+			</http:request>
+			<logger level="INFO" doc:name="Logger" doc:id="d4d1c818-ccd3-4066-a2a6-c3f6769e4018" message="#[output application/json&#10;---&#10;{&#10;	Message: vars.artemisResponse&#10;}]"/>
+				<error-handler>
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="5d642d4b-dfcd-48f2-a66e-79bda0ee112b">
+					<logger level="INFO" doc:name="Logger" doc:id="0b3a33fc-5479-4773-9a4e-b94d1d806b5e" />
+				</on-error-continue>
+			</error-handler>
+		</try>
+		</foreach>
+		<logger level="INFO" doc:name="Logger" doc:id="06871568-13cc-4b3a-a0b8-f20dd7cb7042" />
+	</flow>
+
+	
+	
+	</mule>

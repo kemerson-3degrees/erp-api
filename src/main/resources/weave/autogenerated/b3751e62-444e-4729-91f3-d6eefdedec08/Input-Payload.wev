@@ -1,0 +1,20 @@
+%dw 2.0
+
+type auto_b3751e62_444e_4729_91f3_d6eefdedec08_Input_Payload = {|
+  Company: String, 
+  FirstName: String, 
+  LastName: String, 
+  Email: String, 
+  Phone?: String, 
+  Lead_Source__c?: String, 
+  Status?: String, 
+  Product__c?: Array<Any>, 
+  RecordTypeId?: String, 
+  CurrencyIsoCode?: String, 
+  Climate_Portal_Customer_ID__c?: Number, 
+  Climate_Portal_Account_ID__c?: Number, 
+  Climate_Portal_Artemis_ID__c?: Number, 
+  Supplier_REach_Transaction_Date__c: Number, 
+  Products: Array<{|    Name: String,     Volume: Number,     PurchaseOption: String  |}>
+|} {"typeAlias": "auto_b3751e62-444e-4729-91f3-d6eefdedec08_Input-Payload"}
+

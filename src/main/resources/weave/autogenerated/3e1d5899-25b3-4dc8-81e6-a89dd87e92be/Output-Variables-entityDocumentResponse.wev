@@ -1,0 +1,8 @@
+%dw 2.0
+
+type auto_3e1d5899_25b3_4dc8_81e6_a89dd87e92be_Output_Variables_entityDocumentResponse = Array<ContentDocumentLink>
+type ContentDocumentLink = {| ContentDocumentId?: String |} {"label": "Content Document Link",
+"typeId": "ContentDocumentLink"}
+
+
+

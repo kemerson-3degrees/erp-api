@@ -1,0 +1,15 @@
+[
+    {
+        "invoice_id": "INVOICE_ID",
+        "has_attachments": true,
+        "attachments": [
+            {
+                "attachment_id": "ATTACHMENT_ID",
+                "file_name": "FILE_NAME",
+                "url": "URL",
+                "mime_type": "MIME_TYPE",
+                "size": "SIZE"
+            }
+        ]
+    }
+]

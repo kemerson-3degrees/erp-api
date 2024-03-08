@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    <apikit:config name="router" api="api\erp-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <flow name="main">
+        <http:listener path="/api/v1/*" config-ref="HTTPS_Listener_Default">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default p('apikit.errors.default.code')]">
+                <http:body><![CDATA[#[output application/json --- payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+          <ee:transform doc:name="Request" doc:id="522804be-84f2-44a7-b7fd-547dc6f33391">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="request"><![CDATA[%dw 2.0
+output application/java
+---
+{
+	method: attributes.method,
+	requestUri: attributes.requestUri,
+	headers: {
+		accept: attributes.headers.accept,
+		'content-type': attributes.headers.'content-type'
+	},
+	uriParameters: attributes.uriParams,
+	queryParameters: attributes.queryParams,
+	body: payload
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+        
+		<apikit:router config-ref="router" />
+		<error-handler ref="global-error-handler" />
+    </flow>
+	<flow name="post:\salesforce\lead:application\json:router" doc:id="2e7cf3b6-c237-479e-9a38-9a2e9ebb0afa">
+		<choice doc:name="Lead Source Type" doc:id="2c8ad9de-7d29-41d3-8683-f68d9fdf9b14">
+			<when expression='#[payload.Lead_Source__c ~= "Supplier REach"]'>
+				<ee:transform doc:name="Climate Portal Supplier REach Purchase" doc:id="56cba20e-080a-4e9b-8de6-f9495f017240">
+					<ee:message>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="purchaseProducts"><![CDATA[%dw 2.0
+output application/java
+---
+payload.Products map ( product ) -> {
+	Name: product.Name,
+	Volume: product.Volume,
+	PurchaseOption: product.PurchaseOption
+}]]></ee:set-variable>
+						<ee:set-variable variableName="fileName"><![CDATA[output application/java
+---
+'SupplierREach_$(payload.Company default "")_$(now() as String {format: "yyyyMMdd_HHmmss"})']]></ee:set-variable>
+						<ee:set-variable variableName="leadName"><![CDATA[output application/java
+---
+"$(payload.FirstName default "") $(payload.LastName default "")"
+	]]></ee:set-variable>
+						<ee:set-variable variableName="request"><![CDATA[%dw 2.0
+import update from dw::util::Values
+output application/java
+---
+vars.request
+	update "queryParameters" with message.attributes.queryParams
+	update "uriParameters" with message.attributes.uriParams
+	update "body" with payload]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<flow-ref doc:name="Get Existing Lead Id" doc:id="d197f7e0-41e9-4696-b185-e98ee55ad629" name="salesforce_lead-id_get" />
+				<flow-ref doc:name="Create or Update Salesforce Lead" doc:id="027bfa47-10e9-44ef-a84c-0454f934d6cc" name="salesforce_lead-upsert" />
+				<flow-ref doc:name="Create and Attach Products CSV File to Lead" doc:id="ed77705b-e0e0-4ddd-b84e-31ead52bf4ab" name="saleforce_lead_csv_create" />
+				<ee:transform doc:name="Entity Info" doc:id="f44dadd1-aed8-4a0c-a007-57959b29c956">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+{
+	"entityType": "Lead",
+	"entityId": vars.salesforceResponse.items[0].id,
+	"entityName": vars.leadName
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<flow-ref doc:name="Response" doc:id="4ded7f86-c2e9-49ba-a24d-18b07ec58c63" name="success_operation_type_response" targetValue="#[output application/json --- payload]"/>
+			</when>
+			<otherwise>
+				<logger level="INFO" doc:name="Logger" doc:id="39ef226e-3111-4e3c-a1e8-3706f85117fa" />
+			</otherwise>
+		</choice>
+		
+    </flow>
+	<flow name="get:\salesforce\documents:router" doc:id="14a93708-3c41-4c04-bc2e-b6c853351b11" >
+		<set-variable value="#[output application/java&#10;---&#10;{&#10;	CounterpartyID: attributes.queryParams.counterpartyId default 0 as String,&#10;	PageSize: attributes.queryParams.pageSize default 100 as String,&#10;	PageNumber: attributes.queryParams.pageNumber default 1 as String&#10;}]" doc:name="request" doc:id="d6b7dfc9-05f7-4cbb-bc23-fea52d2ff692" variableName="request" mimeType="application/java" />
+		<flow-ref doc:name="Flow Reference" doc:id="0085d498-52c5-4438-a20a-a9e7dad011b4" name="opportunity_documents_get"/>
+	</flow>
+</mule>

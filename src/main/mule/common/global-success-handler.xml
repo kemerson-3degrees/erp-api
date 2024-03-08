@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<flow name="success_operation_type_response" doc:id="94d01d0d-866c-4c99-99ee-bf281560041d" >
+		<choice doc:name="Operation Type" doc:id="3048d3cc-d940-490d-8672-6995af736832" >
+			<when expression='#[vars.operationType ~= "UPDATED"]'>
+				<flow-ref doc:name="Update Response" doc:id="dcbefa51-a55b-45c5-a21c-397e8bc90cd7" name="success_update_response"/>
+			</when>
+			<otherwise >
+				<flow-ref doc:name="Create Response" doc:id="ffa11dbb-8505-453e-b079-d7f8835c6e60" name="success_create_response" />
+			</otherwise>
+		</choice>
+	</flow>
+	<flow name="success_create_response" doc:id="8bdff4e1-dac0-4727-a0c8-50b47363ef75" >
+		<set-variable value="#[p('apikit.success.created.code')]" doc:name="httpStatus" doc:id="7698937e-1771-4320-a730-276467760787" variableName="httpStatus" />
+		<set-payload value="#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;    &quot;code&quot;: p('apikit.success.created.code'),&#10;    &quot;type&quot;: p('apikit.success.description'),&#10;    &quot;response&quot;: {&#10;        &quot;message&quot;: p('apikit.success.created.description'),&#10;        &quot;details&quot;: &quot;$(payload.entityName) (id: $(payload.entityId))&quot;&#10;    }&#10;}]" doc:name="Response" doc:id="5e8d603c-ce85-4cc4-8538-2514d1100fbd" />
+		<logger level="INFO" doc:name="LOG RESPONSE" doc:id="00988817-6bbe-418f-8845-624bba01e940" message="#[payload]" />
+	</flow>
+	<flow name="success_update_response" doc:id="b9333a5a-57b1-4f5a-9e9f-9dfde57f91d5" >
+		<set-variable value="#[p('apikit.success.ok.code')]" doc:name="httpStatus" doc:id="8140a264-70cb-4253-9cf6-6eb162423d34" variableName="httpStatus" />
+		<set-payload value="#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;    &quot;code&quot;: p('apikit.success.ok.code'),&#10;    &quot;type&quot;: p('apikit.success.description'),&#10;    &quot;response&quot;: {&#10;        &quot;message&quot;: vars.operationType,&#10;        &quot;details&quot;: &quot;$(payload.entityName) (id: $(payload.entityId))&quot;&#10;    }&#10;}]" doc:name="Response" doc:id="1390bb3f-c6f4-400f-a44c-5557abb95454" />
+		<logger level="INFO" doc:name="LOG RESPONSE" doc:id="a3a0da1b-0590-476d-9d6f-e8ff8bb4dc3c" message="#[payload]" />
+	</flow>
+</mule>

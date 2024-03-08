@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:vm="http://www.mulesoft.org/schema/mule/vm" xmlns:smb="http://www.mulesoft.org/schema/mule/smb"
+	xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
+	xmlns:sftp="http://www.mulesoft.org/schema/mule/sftp" xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns:error-handler-plugin="http://www.mulesoft.org/schema/mule/error-handler-plugin" xmlns:xero-accounting="http://www.mulesoft.org/schema/mule/xero-accounting" xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/xero-accounting http://www.mulesoft.org/schema/mule/xero-accounting/current/mule-xero-accounting.xsd
+http://www.mulesoft.org/schema/mule/error-handler-plugin http://www.mulesoft.org/schema/mule/error-handler-plugin/current/mule-error-handler-plugin.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd
+http://www.mulesoft.org/schema/mule/sftp http://www.mulesoft.org/schema/mule/sftp/current/mule-sftp.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+http://www.mulesoft.org/schema/mule/smb http://www.mulesoft.org/schema/mule/smb/current/mule-smb.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd">
+	<flow name="access_token" doc:id="12bb0d79-580b-4862-8829-b45afc32b3db" initialState="stopped">
+		<set-variable value="" doc:name="access_token" doc:id="93b688fb-8f69-43ca-8b10-49477ee6b95f" variableName="access_token"/>
+	</flow>
+	<flow name="sf-xero_invoice-metadata_get" doc:id="14cb01d2-64db-48f7-963c-e334ba1de76e" initialState="stopped">
+		<scheduler doc:name="Scheduler" doc:id="5895b7da-b52a-44a6-ac52-69ac3da186b6" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="1" timeUnit="DAYS"/>
+			</scheduling-strategy>
+		</scheduler>
+		<http:request method="GET" doc:name="Data" doc:id="92716928-41d5-4331-841c-ffbbd7bdb2f2" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" outputMimeType="text/plain" sendBodyMode="NEVER">
+			<http:query-params><![CDATA[#[output application/java
+---
+{
+	"schema" : "erp",
+	"objectName" : "tdp_XeroConfirmList",
+	"objectType" : "StoredProcedure",
+	"database" : "Artemis"
+}]]]></http:query-params>
+		</http:request>
+		<set-variable value='#[var list = read(payload,"application/JSON") as Object&#10;output application/java&#10;---&#10;[list.Table]]' doc:name="confirms" doc:id="71a7622f-19e3-4355-8f45-6c682d1f3ead" variableName="confirms" mimeType="application/java"/>
+		<foreach doc:name="For Each Confirm" doc:id="b9f5b577-4b89-4577-90c9-688fc2f7f0e9" collection="#[vars.confirms]">
+			<set-variable value="#[output application/java --- payload]" doc:name="confirm_id" doc:id="23503ec9-6736-4996-9fcd-fb3c259416cf" variableName="confirm_id"/>
+			<try doc:name="Try" doc:id="5c45986b-6ba9-4c64-b985-9c6d84902628">
+				<http:request method="GET" doc:name="Invoices" doc:id="63eab107-fb82-4f27-9f93-f9950a649887" url="https://api.xero.com/api.xro/2.0/invoices?Statuses=AUTHORISED,PAID,DRAFT,SUBMITTED" sendCorrelationId="NEVER" sendBodyMode="NEVER" requestStreamingMode="ALWAYS" targetValue="#[payload.Invoices]">
+			<http:headers><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+	"Accept": "application/JSON",
+	"Content-Type": "application/JSON",
+	"xero-tenant-id": "b180b06d-2bc4-44d0-990b-a4f9bd10939d",
+	"Authorization": "Bearer $(vars.access_token)"
+}]]]></http:headers>
+			<http:query-params><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+	where: 'Reference!=null&&Reference.Contains("Confirm")&&Reference.Contains("$(vars.confirm_id)")'
+}]]]></http:query-params>
+				<http:response-validator>
+				<http:success-status-code-validator values="200,404" />
+			</http:response-validator>
+		</http:request>
+				<error-handler>
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="a39986b9-d986-419d-8e8e-513216399233">
+						<logger level="INFO" doc:name="Logger" doc:id="97e5e656-100a-4bc4-bf1a-cabd89b9d75b" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+			<choice doc:name="Has Invoices?" doc:id="3e19e395-d71a-48ce-99c1-2f0a59d92ca0" >
+				<when expression="#[isEmpty(payload.Invoices)]">
+					<try doc:name="Try" doc:id="9978b716-f6e5-47c0-8db8-ce105cc92657" >
+						<http:request method="POST" doc:name="UPDATE HasInvoices Flag" doc:id="e381d4fd-47a2-40c4-b061-d4abcf19aa7f" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" outputMimeType="text/plain" sendBodyMode="ALWAYS" target="artemisResponse">
+							<http:body ><![CDATA[#[%dw 2.0
+output application/json
+---
+[
+    {
+        "database": "Artemis",
+        "schema": "sh",
+        "table": "Staging_Opportunity_ClosedWon",
+        "value": [
+      {
+        "HasInvoices": "0",
+        "whereclause": "ConfirmID=$(vars.confirm_id as String)"
+      }
+    ]
+    }
+]]]]></http:body>
+							<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"schema" : "dbo",
+	"objectName" : "tdp_Web_API_Update",
+	"database" : "Artemis_API"
+}]]]></http:query-params>
+						</http:request>
+					</try>
+					<ee:transform doc:name="message" doc:id="9bc17914-3aac-4d1f-8acf-664c7fec5956">
+						<ee:message>
+							<ee:set-payload><![CDATA[output application/json
+---
+{
+	Message: "CONFIRM $(vars.confirm_id as String) HAS NO INVOICES."
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<logger level="INFO" doc:name="Logger" doc:id="9581fb5e-f217-48c6-98b6-763af9542105" message="#[payload]"/>
+				</when>
+				<otherwise >
+					<ee:transform doc:name="payload" doc:id="5d02bde5-b978-4322-8ffe-20a0d4681206">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+(payload.Invoices as Array<Object>) map(invoice) -> {
+	ConfirmID: vars.confirm_id as Number,
+	InvoiceID: invoice.InvoiceID,
+	InvoiceNumber: invoice.InvoiceNumber,
+	InvoiceDate: invoice.DateString,
+	InvoiceTotal: invoice.Total,
+	DueDate: invoice.DueDateString,
+	Status: invoice.Status,
+	AmountPaid: invoice.AmountPaid,
+	AmountDue: invoice.AmountDue,
+	ContactID: invoice.Contact.ContactID
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+					<try doc:name="Try" doc:id="b229ed30-9bd1-4e3d-bb5f-a02200cd3b43">
+				<http:request method="POST" doc:name="INSERT Invoices" doc:id="a65347fc-ef81-4d94-85e1-f2a288293d28" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" outputMimeType="text/plain" sendBodyMode="ALWAYS" target="artemisResponse">
+				<http:body><![CDATA[#[%dw 2.0
+output application/json
+---
+[
+    {
+        "database": "Artemis",
+        "schema": "erp",
+        "table": "tdt_Invoices_Confirm",
+        "value": payload
+    }
+]]]]></http:body>
+				<http:query-params><![CDATA[#[output application/java
+---
+{
+	"schema" : "dbo",
+	"objectName" : "tdp_Web_API_Insert",
+	"database" : "Artemis_API"
+}]]]></http:query-params>
+			</http:request>
+						<logger level="INFO" doc:name="message" doc:id="68dd74a8-42f7-40c4-bfaf-d890c6eb4140" message="#[output application/json&#10;---&#10;{&#10;	ConfirmID: vars.confirm_id as Number,&#10;	Message: vars.artemisResponse&#10;}]" />
+						<ee:transform doc:name="payload" doc:id="949df69f-fbe9-46b5-9b23-d5ae37353023">
+							<ee:message>
+								<ee:set-payload><![CDATA[%dw 2.0
+output application/csv header=false
+---
+payload]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+						<smb:file-write doc:name="log" doc:id="5402f60c-7dcf-4420-818a-a49d95b559ba" config-ref="SMB_Connector_Atlantis_R" fileName="log_xero-invoice-metadata.csv" dirName="CP_Files\logs" append="true" />
+						<http:request method="POST" doc:name="UPDATE HasInvoices Flag" doc:id="b465c382-9f10-429d-a733-aa51b534137b" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" outputMimeType="text/plain" sendBodyMode="ALWAYS" target="artemisResponse" >
+							<http:body ><![CDATA[#[%dw 2.0
+output application/json
+---
+[
+    {
+        "database": "Artemis",
+        "schema": "sh",
+        "table": "Staging_Opportunity_ClosedWon",
+        "value": [
+      {
+        "HasInvoices": "1",
+        "whereclause": "ConfirmID=$(vars.confirm_id as String)"
+      }
+    ]
+    }
+]]]]></http:body>
+							<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"schema" : "dbo",
+	"objectName" : "tdp_Web_API_Update",
+	"database" : "Artemis_API"
+}]]]></http:query-params>
+						</http:request>
+						<error-handler>
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="6790c0f5-275d-488b-8605-226d3b870f09" type="ANY">
+						<logger level="INFO" doc:name="Logger" doc:id="1a6b96ff-ef2f-4a4d-abf4-2fe6f2760c62" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+					<ee:transform doc:name="wait" doc:id="f604d0c9-f1df-4a01-bab3-a8d608daa01c">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+import * from dw::Runtime
+output application/json
+---
+{ "message" : "WAITING..." } wait 2000]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+				</otherwise>
+			</choice>
+		</foreach>
+	</flow>
+	<flow name="sf-xero_invoice-document_get" doc:id="a362fe03-8968-4be8-a8ed-3e052fd1f364" initialState="stopped">
+		<scheduler doc:name="Scheduler" doc:id="8ddabfb0-930b-4977-a351-0a8858790d20">
+			<scheduling-strategy>
+				<fixed-frequency frequency="1" timeUnit="DAYS" />
+			</scheduling-strategy>
+		</scheduler>
+		<flow-ref doc:name="Access Token" doc:id="02665f9a-e580-4d0a-b3bd-ce073e255a17" name="access_token" />
+		<try doc:name="Try" doc:id="90f545ef-449d-43fc-a87d-14d196f9b54f">
+				<http:request method="GET" doc:name="Download List" doc:id="4f71724f-5b64-4ec2-8d53-55d920df664b" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" outputMimeType="text/plain" sendBodyMode="NEVER" target="documentsResponse" targetValue='#[output application/json --- read(payload,"application/JSON").Table]'>
+					<http:query-params><![CDATA[#[output application/java
+---
+{
+	"schema" : "sh",
+	"objectName" : "tdv_InvoiceDocumentDownloads",
+	"objectType" : "View",
+	"database" : "Artemis"
+}]]]></http:query-params>
+				</http:request>
+			<error-handler>
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="dce8164c-1e6e-4659-9070-92670666d263" type="ANY">
+					<logger level="INFO" doc:name="Logger" doc:id="d5060a9e-186d-4f9a-b378-d13664e1355d" />
+				</on-error-continue>
+			</error-handler>
+			</try>
+		<foreach doc:name="For Each Invoice" doc:id="d292bbb4-552b-4c21-bd55-7600ce079151" collection="#[vars.documentsResponse]">
+			<set-variable value="#[payload]" doc:name="invoice" doc:id="79ab169c-187d-4211-972f-7be930748832" variableName="invoice" />
+			<try doc:name="Try" doc:id="a59d1c7d-44da-4b11-8230-2c404a4d396b">
+			<http:request method="GET" doc:name="Invoice" doc:id="1792ca32-37a3-4d6c-a964-dd36ca80b1c8" url="https://api.xero.com/api.xro/2.0/Invoices/{InvoiceID}" sendCorrelationId="NEVER" sendBodyMode="NEVER" requestStreamingMode="ALWAYS" targetValue="#[payload.Invoices.Attachments]" target="attachmentsResponse">
+				<http:headers><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+	"Accept": "application/JSON",
+	"Content-Type": "application/JSON",
+	"xero-tenant-id": "b180b06d-2bc4-44d0-990b-a4f9bd10939d",
+	"Authorization": "Bearer $(vars.access_token default "")"
+}]]]></http:headers>
+				<http:uri-params><![CDATA[#[output application/java
+---
+{
+	"InvoiceID" : vars.invoice.InvoiceID default ""
+}]]]></http:uri-params>
+					<http:response-validator>
+					<http:success-status-code-validator values="200,404" />
+				</http:response-validator>
+			</http:request>
+				<ee:transform doc:name="result" doc:id="3831cdde-8a6d-4caa-b03a-d40cda334a00">
+					<ee:message>
+						<ee:set-payload><![CDATA[output application/csv header=false
+---
+{
+	confirm_id: vars.invoice.ConfirmID as String default "",
+	document_count: sizeOf(flatten(vars.attachmentsResponse)),
+	run_date: now()
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<smb:file-write doc:name="log" doc:id="b5436330-5171-48a1-bf93-f9232e454d05" config-ref="SMB_Connector_Atlantis_R" fileName="log_xero-invoice-documents.csv" dirName='#["CP_Files//logs"]' append="true">
+				</smb:file-write>
+				<ee:transform doc:name="wait" doc:id="8403e27c-f18b-47da-8403-aaeff1eac85f">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+import * from dw::Runtime
+output application/json
+---
+{ "message" : "WAITING..." } wait 2000]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<choice doc:name="Has Documents" doc:id="9e1b401e-995f-4176-abf1-a90e0f8ce42a" >
+					<when expression="#[isEmpty(flatten(vars.attachmentsResponse))]">
+						<try doc:name="Try" doc:id="2aa4d54a-a91a-4ca0-9285-7bf6ae7864a4" >
+							<http:request method="POST" doc:name="UPDATE HasDocuments Flag" doc:id="fdd324e2-e0c3-4481-9d58-435b631440c3" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" outputMimeType="text/plain" sendBodyMode="ALWAYS" target="artemisResponse" >
+								<http:body ><![CDATA[#[%dw 2.0
+output application/json
+---
+[
+    {
+        "database": "Artemis",
+        "schema": "erp",
+        "table": "tdt_Invoices_Confirm",
+        "value": [
+      {
+        "HasDocuments": "0",
+        "whereclause": "ConfirmID=$(vars.invoice.ConfirmID as String)"
+      }
+    ]
+    }
+]]]]></http:body>
+								<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"schema" : "dbo",
+	"objectName" : "tdp_Web_API_Update",
+	"database" : "Artemis_API"
+}]]]></http:query-params>
+							</http:request>
+						</try>
+						<logger level="INFO" doc:name="Logger" doc:id="4adf39f9-a00a-4d42-ac87-19f124009d14" message='#[output application/json&#10;---&#10;{&#10;	message: "$(vars.invoice.ConfirmID) HAS NO DOCUMENTS"&#10;}]' />
+					</when>
+					<otherwise >
+						<foreach doc:name="For Each" doc:id="7228d546-994b-4f6b-91bd-f162a670e08b" collection="#[flatten(vars.attachmentsResponse)]">
+				<set-variable value="#[payload]" doc:name="attachment" doc:id="3ec694d6-b2ad-42cd-832d-ea56d18cc65e" variableName="attachment" />
+				<try doc:name="Try" doc:id="137ec125-8162-472b-9733-bcc6f105d75b">
+				<http:request method="GET" doc:name="Document" doc:id="8da24662-dcaf-46d3-b5bf-88628e39b743" url="https://api.xero.com/api.xro/2.0/Invoices/{InvoiceID}/Attachments/{AttachmentID}" sendCorrelationId="NEVER" sendBodyMode="NEVER" requestStreamingMode="ALWAYS" target="documentResponse">
+					<http:headers><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+	"Accept": "application/pdf",
+	"Content-Type": "application/pdf",
+	"xero-tenant-id": "b180b06d-2bc4-44d0-990b-a4f9bd10939d",
+	"Authorization": "Bearer $(vars.access_token as String)"
+}]]]></http:headers>
+					<http:uri-params><![CDATA[#[output application/java
+---
+{
+	"AttachmentID" : vars.attachment.AttachmentID as String,
+	"InvoiceID" : vars.invoice.InvoiceID as String
+}]]]></http:uri-params>
+						<http:response-validator>
+						<http:success-status-code-validator values="200,404" />
+					</http:response-validator>
+				</http:request>
+					<error-handler>
+						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="72175802-6f29-4598-81d6-60d6f1111cd6" type="ANY">
+							<logger level="INFO" doc:name="Logger" doc:id="a2db275c-89eb-4a03-a2f2-6696924e23fa" />
+						</on-error-continue>
+					</error-handler>
+			</try>
+					<smb:directory-create doc:name="Agreement Folder" doc:id="6f30c6c3-28c6-4cd7-9fe7-56e117ae5f50" config-ref="SMB_Connector_Atlantis_R" dirName='#["CP_Files//documents//confirms//$(vars.invoice.AgreementID as String)"]' />
+				<smb:directory-create doc:name="Confirm Folder" doc:id="9ef3b5da-d2a0-4a88-9365-c92c7b34f5f2" config-ref="SMB_Connector_Atlantis_R" dirName='#["CP_Files//documents//confirms//$(vars.invoice.AgreementID as String)//$(vars.invoice.ConfirmID as String)"]' />
+				<smb:directory-create doc:name="Invoices Folder" doc:id="8036e9a8-0a0a-4380-90be-6c0c1345412e" config-ref="SMB_Connector_Atlantis_R" dirName='#["CP_Files//documents//confirms//$(vars.invoice.AgreementID as String)//$(vars.invoice.ConfirmID as String)//Invoices"]' />
+							<smb:file-write doc:name="Document" doc:id="c99108a9-e8c4-4e00-a4bc-266e534e0559" config-ref="SMB_Connector_Atlantis_R" fileName="#[vars.attachment.FileName]" dirName='#["CP_Files//documents//confirms//$(vars.invoice.AgreementID as String)//$(vars.invoice.ConfirmID as String)//Invoices"]'>
+					<smb:file-content><![CDATA[#[vars.documentResponse]]]></smb:file-content>
+				</smb:file-write>
+				<try doc:name="Try" doc:id="063c574d-a77e-42d1-ba91-c6b27cee231c">
+								<http:request method="POST" doc:name="UPDATE HasDocuments Flag" doc:id="fd8d2e87-f564-45a7-882f-23fe25aa5d75" config-ref="HTTP_Request_ArtemisAPI" path="/UDA" outputMimeType="text/plain" sendBodyMode="ALWAYS" target="artemisResponse" >
+									<http:body ><![CDATA[#[%dw 2.0
+output application/json
+---
+[
+    {
+        "database": "Artemis",
+        "schema": "erp",
+        "table": "tdt_Invoices_Confirm",
+        "value": [
+      {
+        "HasDocuments": "1",
+        "IsDownloaded": "1",
+        "whereclause": "ConfirmID=$(vars.invoice.ConfirmID as String)"
+      }
+    ]
+    }
+]]]]></http:body>
+									<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"schema" : "dbo",
+	"objectName" : "tdp_Web_API_Update",
+	"database" : "Artemis_API"
+}]]]></http:query-params>
+								</http:request>
+							</try>
+							<ee:transform doc:name="wait" doc:id="0bd8a0d7-50c3-4a79-a4cb-fb1ff8e01e70">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+import * from dw::Runtime
+output application/json
+---
+{ "message" : "WAITING..." } wait 15000]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			</foreach>
+					</otherwise>
+				</choice>
+				<error-handler>
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="909325d8-8311-4be3-a800-830aa55f37f4" type="VALIDATION:EMPTY_COLLECTION">
+						<logger level="INFO" doc:name="Logger" doc:id="79ff57ca-b702-4e95-8ae3-aa1ab3e3d86d" message="#[error.description]"/>
+					</on-error-continue>
+			</error-handler>
+		</try>
+		</foreach>
+	</flow>
+	
+	
+
+
+
+</mule>

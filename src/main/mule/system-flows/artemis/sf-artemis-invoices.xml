@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:smb="http://www.mulesoft.org/schema/mule/smb"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/smb http://www.mulesoft.org/schema/mule/smb/current/mule-smb.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="sf-artemis-invoices_get" doc:id="ffa06b32-9627-4e1c-a384-a7a185ff75a7" initialState="stopped">
+		<scheduler doc:name="Scheduler" doc:id="7c781d1a-526c-49af-b9f4-87f1dc97d641" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="1" timeUnit="DAYS"/>
+			</scheduling-strategy>
+		</scheduler>
+		<smb:file-read doc:name="File Read" doc:id="208e7c31-5a63-47e3-9cc0-76386c0de494" config-ref="SMB_Connector_Atlantis_R" fileName="files_xero_invoices-confirm.csv" dirName="CP_Files\files"/>
+		<ee:transform doc:name="Transform Message" doc:id="4cb2e394-0d49-449c-b118-fd6ffa450f3a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

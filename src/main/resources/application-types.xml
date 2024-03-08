@@ -1,0 +1,2874 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="kvpExample" format="json">
+      <types:shape format="weave" example="examples/kvpExample-1.json"><![CDATA[%dw 2.0
+
+type kvpExample = {|
+  key: String, 
+  value: String
+|} {"example": "{\\\"key\\\":\\\"key_name\\\",\\\"value\\\":\\\"key_value\\\"}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="stringPayload" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="storeXeroAuthPostExample" format="json">
+      <types:shape format="weave" example="examples/storeXeroAuthPostExample.json"><![CDATA[%dw 2.0
+
+type storeXeroAuthPostExample = Array<{|  key: String,   value: String|}> {"example": "[{\\\"key\\\":\\\"grant_type\\\",\\\"value\\\":\\\"refresh_token\\\"},{\\\"key\\\":\\\"scopes\\\",\\\"value\\\":\\\"offline_access accounting.transactions files openid profile email accounting.contacts accounting.settings\\\"},{\\\"key\\\":\\\"tenant_id\\\",\\\"value\\\":\\\"TENANT_ID\\\"},{\\\"key\\\":\\\"client_id\\\",\\\"value\\\":\\\"CLIENT_ID\\\"},{\\\"key\\\":\\\"client_secret\\\",\\\"value\\\":\\\"CLIENT_SECRET\\\"},{\\\"key\\\":\\\"refresh_token\\\",\\\"value\\\":\\\"REFRESH_TOKE\\\"},{\\\"key\\\":\\\"access_token\\\",\\\"value\\\":\\\"ACCESS_TOKEN\\\"}]"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="storeXeroAuthResponseExample" format="json">
+      <types:shape format="weave" example="examples/storeXeroAuthResponseExample.json"><![CDATA[%dw 2.0
+
+type storeXeroAuthResponseExample = {|
+  grant_type: String, 
+  scopes: String, 
+  tenant_id: String, 
+  client_id: String, 
+  client_secret: String, 
+  refresh_token: String, 
+  access_token: String, 
+  expire_time: String
+|} {"example": "{\\\"grant_type\\\":\\\"GRANT_TYPE\\\",\\\"scopes\\\":\\\"SCOPES\\\",\\\"tenant_id\\\":\\\"TENANT_ID\\\",\\\"client_id\\\":\\\"CLIENT_ID\\\",\\\"client_secret\\\":\\\"CLIENT_SECRET\\\",\\\"refresh_token\\\":\\\"REFRESH_TOKEN\\\",\\\"access_token\\\":\\\"ACCESS_TOKEN\\\",\\\"expire_time\\\":\\\"EXPIRE_TIME\\\"}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="xeroAuthHeaderExample" format="json">
+      <types:shape format="weave" example="examples/xeroAuthHeaderExample.json"><![CDATA[%dw 2.0
+
+type xeroAuthHeaderExample = {|
+  tenant_id: String, 
+  access_token: String
+|} {"example": "{\\\"tenant_id\\\":\\\"TENANT_ID\\\",\\\"access_token\\\":\\\"ACCESS_TOKEN\\\"}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="xeroConfirmInvoicesExample" format="json">
+      <types:shape format="weave" example="examples/xeroConfirmInvoicesExample.json"><![CDATA[%dw 2.0
+
+type xeroConfirmInvoicesExample = {|
+  confirm_id: Number {"typeId": "int"}, 
+  invoices: Array<{|    Type: String,     InvoiceID: String,     InvoiceNumber: String,     Reference: String,     Payments: Array<{|      PaymentID: String,       Date: String,       Amount: Number {"typeId": "double"},       Reference: String,       CurrencyRate: Number {"typeId": "double"},       HasAccount: Boolean,       HasValidationErrors: Boolean    |}>, 
+    Prepayments: Array<Any>, 
+    Overpayments: Array<Any>, 
+    AmountDue: Number {"typeId": "double"}, 
+    AmountPaid: Number {"typeId": "double"}, 
+    SentToContact: Boolean, 
+    CurrencyRate: Number {"typeId": "double"}, 
+    TotalDiscount: Number {"typeId": "double"}, 
+    IsDiscounted: Boolean, 
+    HasAttachments: Boolean, 
+    HasErrors: Boolean, 
+    Attachments: Array<{|      AttachmentID: String,       FileName: String,       Url: String,       MimeType: String,       ContentLength: Number {"typeId": "int"}    |}>, 
+    InvoicePaymentServices: Array<Any>, 
+    Contact: {|
+      ContactID: String, 
+      ContactStatus: String, 
+      Name: String, 
+      EmailAddress: String, 
+      BankAccountDetails: String, 
+      Addresses: Array<{|        AddressType: String,         City: String,         Region: String,         PostalCode: String,         Country: String,         AddressLine1: String      |}>, 
+      Phones: Array<{|        PhoneType: String,         PhoneNumber: String,         PhoneAreaCode: String,         PhoneCountryCode: String      |}>, 
+      UpdatedDateUTC: String, 
+      ContactGroups: Array<Any>, 
+      IsSupplier: Boolean, 
+      IsCustomer: Boolean, 
+      SalesTrackingCategories: Array<Any>, 
+      PurchasesTrackingCategories: Array<Any>, 
+      ContactPersons: Array<Any>, 
+      HasValidationErrors: Boolean
+    |}, 
+    DateString: String, 
+    Date: String, 
+    DueDateString: String, 
+    DueDate: String, 
+    BrandingThemeID: String, 
+    Status: String, 
+    LineAmountTypes: String, 
+    LineItems: Array<{|      ItemCode: String,       Description: String,       UnitAmount: Number {"typeId": "double"},       TaxType: String,       TaxAmount: Number {"typeId": "double"},       LineAmount: Number {"typeId": "double"},       AccountCode: String,       Item: {|        ItemID: String,         Code: String      |},       Tracking: Array<Any>, 
+      Quantity: Number {"typeId": "double"}, 
+      DiscountRate: Number {"typeId": "double"}, 
+      LineItemID: String, 
+      DiscountAmount: Number {"typeId": "double"}, 
+      ValidationErrors: Array<Any>
+    |}>, 
+    SubTotal: Number {"typeId": "double"}, 
+    TotalTax: Number {"typeId": "double"}, 
+    Total: Number {"typeId": "double"}, 
+    UpdatedDateUTC: String, 
+    CurrencyCode: String, 
+    FullyPaidOnDate: String
+  |}>
+|} {"example": "{\\\"confirm_id\\\":123456,\\\"invoices\\\":[{\\\"Type\\\":\\\"ACCREC\\\",\\\"InvoiceID\\\":\\\"2325e961-9b19-49bb-bdaf-cea42d96f445\\\",\\\"InvoiceNumber\\\":\\\"24571\\\",\\\"Reference\\\":\\\"| Confirm - 27976\\\",\\\"Payments\\\":[{\\\"PaymentID\\\":\\\"241e9d13-36be-419a-9dfb-4e4103aeefba\\\",\\\"Date\\\":\\\"\\/Date(1671148800000+0000)\\/\\\",\\\"Amount\\\":42570.0,\\\"Reference\\\":\\\"\\\",\\\"CurrencyRate\\\":1.0,\\\"HasAccount\\\":false,\\\"HasValidationErrors\\\":false}],\\\"Prepayments\\\":[],\\\"Overpayments\\\":[],\\\"AmountDue\\\":0.0,\\\"AmountPaid\\\":42570.0,\\\"SentToContact\\\":true,\\\"CurrencyRate\\\":1.0,\\\"TotalDiscount\\\":0.0,\\\"IsDiscounted\\\":true,\\\"HasAttachments\\\":true,\\\"HasErrors\\\":false,\\\"Attachments\\\":[{\\\"AttachmentID\\\":\\\"7b46f6ae-93b8-4d97-a209-6f55767214e7\\\",\\\"FileName\\\":\\\"Invoice 24571.pdf\\\",\\\"Url\\\":\\\"https:\\/\\/api.xero.com\\/api.xro\\/2.0\\/Invoices\\/2325e961-9b19-49bb-bdaf-cea42d96f445\\/Attachments\\/Invoice%2024571.pdf\\\",\\\"MimeType\\\":\\\"application\\/pdf\\\",\\\"ContentLength\\\":86552}],\\\"InvoicePaymentServices\\\":[],\\\"Contact\\\":{\\\"ContactID\\\":\\\"8ea9c815-ba35-47f4-9563-20f709564424\\\",\\\"ContactStatus\\\":\\\"ACTIVE\\\",\\\"Name\\\":\\\"Marathon Power, LLC\\\",\\\"EmailAddress\\\":\\\"keith@mecny.com\\\",\\\"BankAccountDetails\\\":\\\"\\\",\\\"Addresses\\\":[{\\\"AddressType\\\":\\\"STREET\\\",\\\"City\\\":\\\"\\\",\\\"Region\\\":\\\"\\\",\\\"PostalCode\\\":\\\"\\\",\\\"Country\\\":\\\"\\\"},{\\\"AddressType\\\":\\\"POBOX\\\",\\\"AddressLine1\\\":\\\"62-01 34th Ave\\\",\\\"City\\\":\\\"Woodside\\\",\\\"Region\\\":\\\"NY\\\",\\\"PostalCode\\\":\\\"11377 USA\\\",\\\"Country\\\":\\\"\\\"}],\\\"Phones\\\":[{\\\"PhoneType\\\":\\\"DEFAULT\\\",\\\"PhoneNumber\\\":\\\"\\\",\\\"PhoneAreaCode\\\":\\\"\\\",\\\"PhoneCountryCode\\\":\\\"\\\"},{\\\"PhoneType\\\":\\\"DDI\\\",\\\"PhoneNumber\\\":\\\"\\\",\\\"PhoneAreaCode\\\":\\\"\\\",\\\"PhoneCountryCode\\\":\\\"\\\"},{\\\"PhoneType\\\":\\\"FAX\\\",\\\"PhoneNumber\\\":\\\"\\\",\\\"PhoneAreaCode\\\":\\\"\\\",\\\"PhoneCountryCode\\\":\\\"\\\"},{\\\"PhoneType\\\":\\\"MOBILE\\\",\\\"PhoneNumber\\\":\\\"\\\",\\\"PhoneAreaCode\\\":\\\"\\\",\\\"PhoneCountryCode\\\":\\\"\\\"}],\\\"UpdatedDateUTC\\\":\\\"\\/Date(1617140580737+0000)\\/\\\",\\\"ContactGroups\\\":[],\\\"IsSupplier\\\":false,\\\"IsCustomer\\\":true,\\\"SalesTrackingCategories\\\":[],\\\"PurchasesTrackingCategories\\\":[],\\\"ContactPersons\\\":[],\\\"HasValidationErrors\\\":false},\\\"DateString\\\":\\\"2022-12-01T00:00:00\\\",\\\"Date\\\":\\\"\\/Date(1669852800000+0000)\\/\\\",\\\"DueDateString\\\":\\\"2022-12-16T00:00:00\\\",\\\"DueDate\\\":\\\"\\/Date(1671148800000+0000)\\/\\\",\\\"BrandingThemeID\\\":\\\"c5b91243-3cb5-43da-a625-70639cbaaf21\\\",\\\"Status\\\":\\\"PAID\\\",\\\"LineAmountTypes\\\":\\\"Inclusive\\\",\\\"LineItems\\\":[{\\\"ItemCode\\\":\\\"REC Wholesale\\\",\\\"Description\\\":\\\"REC - NJ Solar - 2022\\\",\\\"UnitAmount\\\":236.5,\\\"TaxType\\\":\\\"NONE\\\",\\\"TaxAmount\\\":0.0,\\\"LineAmount\\\":42570.0,\\\"AccountCode\\\":\\\"02550\\\",\\\"Item\\\":{\\\"ItemID\\\":\\\"c8cf15b4-4d99-4d5e-acbe-87bc2e111f12\\\",\\\"Code\\\":\\\"REC Wholesale\\\"},\\\"Tracking\\\":[],\\\"Quantity\\\":180.0,\\\"DiscountRate\\\":0.0,\\\"LineItemID\\\":\\\"e59a1d91-d005-40b8-a148-b606d46a2d91\\\",\\\"DiscountAmount\\\":0.0,\\\"ValidationErrors\\\":[]}],\\\"SubTotal\\\":42570.0,\\\"TotalTax\\\":0.0,\\\"Total\\\":42570.0,\\\"UpdatedDateUTC\\\":\\\"\\/Date(1671398326043+0000)\\/\\\",\\\"CurrencyCode\\\":\\\"USD\\\",\\\"FullyPaidOnDate\\\":\\\"\\/Date(1671148800000+0000)\\/\\\"}]}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="xeroInvoicesPayloadExample" format="json">
+      <types:shape format="weave" example="examples/xeroInvoicesPayloadExample.json"><![CDATA[%dw 2.0
+
+type xeroInvoicesPayloadExample = {|
+  Id: String, 
+  Status: String, 
+  ProviderName: String, 
+  DateTimeUTC: String, 
+  Invoices: Array<{|    Type: String,     InvoiceID: String,     InvoiceNumber: String,     Reference: String,     Payments: Array<{|      PaymentID: String,       Date: String,       Amount: Number {"typeId": "double"},       Reference: String,       CurrencyRate: Number {"typeId": "double"},       HasAccount: Boolean,       HasValidationErrors: Boolean    |}>, 
+    Prepayments: Array<Any>, 
+    Overpayments: Array<Any>, 
+    AmountDue: Number {"typeId": "double"}, 
+    AmountPaid: Number {"typeId": "double"}, 
+    SentToContact: Boolean, 
+    CurrencyRate: Number {"typeId": "double"}, 
+    TotalDiscount: Number {"typeId": "double"}, 
+    IsDiscounted: Boolean, 
+    HasAttachments: Boolean, 
+    HasErrors: Boolean, 
+    Attachments: Array<{|      AttachmentID: String,       FileName: String,       Url: String,       MimeType: String,       ContentLength: Number {"typeId": "int"}    |}>, 
+    InvoicePaymentServices: Array<Any>, 
+    Contact: {|
+      ContactID: String, 
+      ContactStatus: String, 
+      Name: String, 
+      EmailAddress: String, 
+      BankAccountDetails: String, 
+      Addresses: Array<{|        AddressType: String,         City: String,         Region: String,         PostalCode: String,         Country: String,         AddressLine1: String      |}>, 
+      Phones: Array<{|        PhoneType: String,         PhoneNumber: String,         PhoneAreaCode: String,         PhoneCountryCode: String      |}>, 
+      UpdatedDateUTC: String, 
+      ContactGroups: Array<Any>, 
+      IsSupplier: Boolean, 
+      IsCustomer: Boolean, 
+      SalesTrackingCategories: Array<Any>, 
+      PurchasesTrackingCategories: Array<Any>, 
+      ContactPersons: Array<Any>, 
+      HasValidationErrors: Boolean
+    |}, 
+    DateString: String, 
+    Date: String, 
+    DueDateString: String, 
+    DueDate: String, 
+    BrandingThemeID: String, 
+    Status: String, 
+    LineAmountTypes: String, 
+    LineItems: Array<{|      ItemCode: String,       Description: String,       UnitAmount: Number {"typeId": "double"},       TaxType: String,       TaxAmount: Number {"typeId": "double"},       LineAmount: Number {"typeId": "double"},       AccountCode: String,       Item: {|        ItemID: String,         Code: String      |},       Tracking: Array<Any>, 
+      Quantity: Number {"typeId": "double"}, 
+      DiscountRate: Number {"typeId": "double"}, 
+      LineItemID: String, 
+      DiscountAmount: Number {"typeId": "double"}, 
+      ValidationErrors: Array<Any>
+    |}>, 
+    SubTotal: Number {"typeId": "double"}, 
+    TotalTax: Number {"typeId": "double"}, 
+    Total: Number {"typeId": "double"}, 
+    UpdatedDateUTC: String, 
+    CurrencyCode: String, 
+    FullyPaidOnDate: String
+  |}>
+|} {"example": "{\\\"Id\\\":\\\"505fbaa1-7b0a-4ae6-8f19-6d3b064973bd\\\",\\\"Status\\\":\\\"OK\\\",\\\"ProviderName\\\":\\\"3Degrees\\\",\\\"DateTimeUTC\\\":\\\"\\/Date(1673998969573)\\/\\\",\\\"Invoices\\\":[{\\\"Type\\\":\\\"ACCREC\\\",\\\"InvoiceID\\\":\\\"2325e961-9b19-49bb-bdaf-cea42d96f445\\\",\\\"InvoiceNumber\\\":\\\"24571\\\",\\\"Reference\\\":\\\"| Confirm - 27976\\\",\\\"Payments\\\":[{\\\"PaymentID\\\":\\\"241e9d13-36be-419a-9dfb-4e4103aeefba\\\",\\\"Date\\\":\\\"\\/Date(1671148800000+0000)\\/\\\",\\\"Amount\\\":42570.00,\\\"Reference\\\":\\\"\\\",\\\"CurrencyRate\\\":1.0000000000,\\\"HasAccount\\\":false,\\\"HasValidationErrors\\\":false}],\\\"Prepayments\\\":[],\\\"Overpayments\\\":[],\\\"AmountDue\\\":0.00,\\\"AmountPaid\\\":42570.00,\\\"SentToContact\\\":true,\\\"CurrencyRate\\\":1.0000000000,\\\"TotalDiscount\\\":0.00,\\\"IsDiscounted\\\":true,\\\"HasAttachments\\\":true,\\\"HasErrors\\\":false,\\\"Attachments\\\":[{\\\"AttachmentID\\\":\\\"7b46f6ae-93b8-4d97-a209-6f55767214e7\\\",\\\"FileName\\\":\\\"Invoice 24571.pdf\\\",\\\"Url\\\":\\\"https:\\/\\/api.xero.com\\/api.xro\\/2.0\\/Invoices\\/2325e961-9b19-49bb-bdaf-cea42d96f445\\/Attachments\\/Invoice%2024571.pdf\\\",\\\"MimeType\\\":\\\"application\\/pdf\\\",\\\"ContentLength\\\":86552}],\\\"InvoicePaymentServices\\\":[],\\\"Contact\\\":{\\\"ContactID\\\":\\\"8ea9c815-ba35-47f4-9563-20f709564424\\\",\\\"ContactStatus\\\":\\\"ACTIVE\\\",\\\"Name\\\":\\\"Marathon Power, LLC\\\",\\\"EmailAddress\\\":\\\"keith@mecny.com\\\",\\\"BankAccountDetails\\\":\\\"\\\",\\\"Addresses\\\":[{\\\"AddressType\\\":\\\"STREET\\\",\\\"City\\\":\\\"\\\",\\\"Region\\\":\\\"\\\",\\\"PostalCode\\\":\\\"\\\",\\\"Country\\\":\\\"\\\"},{\\\"AddressType\\\":\\\"POBOX\\\",\\\"AddressLine1\\\":\\\"62-01 34th Ave\\\",\\\"City\\\":\\\"Woodside\\\",\\\"Region\\\":\\\"NY\\\",\\\"PostalCode\\\":\\\"11377 USA\\\",\\\"Country\\\":\\\"\\\"}],\\\"Phones\\\":[{\\\"PhoneType\\\":\\\"DEFAULT\\\",\\\"PhoneNumber\\\":\\\"\\\",\\\"PhoneAreaCode\\\":\\\"\\\",\\\"PhoneCountryCode\\\":\\\"\\\"},{\\\"PhoneType\\\":\\\"DDI\\\",\\\"PhoneNumber\\\":\\\"\\\",\\\"PhoneAreaCode\\\":\\\"\\\",\\\"PhoneCountryCode\\\":\\\"\\\"},{\\\"PhoneType\\\":\\\"FAX\\\",\\\"PhoneNumber\\\":\\\"\\\",\\\"PhoneAreaCode\\\":\\\"\\\",\\\"PhoneCountryCode\\\":\\\"\\\"},{\\\"PhoneType\\\":\\\"MOBILE\\\",\\\"PhoneNumber\\\":\\\"\\\",\\\"PhoneAreaCode\\\":\\\"\\\",\\\"PhoneCountryCode\\\":\\\"\\\"}],\\\"UpdatedDateUTC\\\":\\\"\\/Date(1617140580737+0000)\\/\\\",\\\"ContactGroups\\\":[],\\\"IsSupplier\\\":false,\\\"IsCustomer\\\":true,\\\"SalesTrackingCategories\\\":[],\\\"PurchasesTrackingCategories\\\":[],\\\"ContactPersons\\\":[],\\\"HasValidationErrors\\\":false},\\\"DateString\\\":\\\"2022-12-01T00:00:00\\\",\\\"Date\\\":\\\"\\/Date(1669852800000+0000)\\/\\\",\\\"DueDateString\\\":\\\"2022-12-16T00:00:00\\\",\\\"DueDate\\\":\\\"\\/Date(1671148800000+0000)\\/\\\",\\\"BrandingThemeID\\\":\\\"c5b91243-3cb5-43da-a625-70639cbaaf21\\\",\\\"Status\\\":\\\"PAID\\\",\\\"LineAmountTypes\\\":\\\"Inclusive\\\",\\\"LineItems\\\":[{\\\"ItemCode\\\":\\\"REC Wholesale\\\",\\\"Description\\\":\\\"REC - NJ Solar - 2022\\\",\\\"UnitAmount\\\":236.50,\\\"TaxType\\\":\\\"NONE\\\",\\\"TaxAmount\\\":0.00,\\\"LineAmount\\\":42570.00,\\\"AccountCode\\\":\\\"02550\\\",\\\"Item\\\":{\\\"ItemID\\\":\\\"c8cf15b4-4d99-4d5e-acbe-87bc2e111f12\\\",\\\"Code\\\":\\\"REC Wholesale\\\"},\\\"Tracking\\\":[],\\\"Quantity\\\":180.0000,\\\"DiscountRate\\\":0.00,\\\"LineItemID\\\":\\\"e59a1d91-d005-40b8-a148-b606d46a2d91\\\",\\\"DiscountAmount\\\":0.0000,\\\"ValidationErrors\\\":[]}],\\\"SubTotal\\\":42570.00,\\\"TotalTax\\\":0.00,\\\"Total\\\":42570.00,\\\"UpdatedDateUTC\\\":\\\"\\/Date(1671398326043+0000)\\/\\\",\\\"CurrencyCode\\\":\\\"USD\\\",\\\"FullyPaidOnDate\\\":\\\"\\/Date(1671148800000+0000)\\/\\\"}]}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="xeroConfirmsInvoicesExample" format="json">
+      <types:shape format="weave" example="examples/xeroConfirmsInvoicesExample.json"><![CDATA[%dw 2.0
+
+type xeroConfirmsInvoicesExample = Array<{|  confirm_id: Number {"typeId": "int"},   invoices: Array<{|    Type: String,     InvoiceID: String,     InvoiceNumber: String,     Reference: String,     Payments: Array<{|      PaymentID: String,       Date: String,       Amount: Number {"typeId": "double"},       Reference: String,       CurrencyRate: Number {"typeId": "double"},       HasAccount: Boolean,       HasValidationErrors: Boolean    |}>, 
+    Prepayments: Array<Any>, 
+    Overpayments: Array<Any>, 
+    AmountDue: Number {"typeId": "double"}, 
+    AmountPaid: Number {"typeId": "double"}, 
+    SentToContact: Boolean, 
+    CurrencyRate: Number {"typeId": "double"}, 
+    TotalDiscount: Number {"typeId": "double"}, 
+    IsDiscounted: Boolean, 
+    HasAttachments: Boolean, 
+    HasErrors: Boolean, 
+    Attachments: Array<{|      AttachmentID: String,       FileName: String,       Url: String,       MimeType: String,       ContentLength: Number {"typeId": "int"}    |}>, 
+    InvoicePaymentServices: Array<Any>, 
+    Contact: {|
+      ContactID: String, 
+      ContactStatus: String, 
+      Name: String, 
+      EmailAddress: String, 
+      BankAccountDetails: String, 
+      Addresses: Array<{|        AddressType: String,         City: String,         Region: String,         PostalCode: String,         Country: String,         AddressLine1: String      |}>, 
+      Phones: Array<{|        PhoneType: String,         PhoneNumber: String,         PhoneAreaCode: String,         PhoneCountryCode: String      |}>, 
+      UpdatedDateUTC: String, 
+      ContactGroups: Array<Any>, 
+      IsSupplier: Boolean, 
+      IsCustomer: Boolean, 
+      SalesTrackingCategories: Array<Any>, 
+      PurchasesTrackingCategories: Array<Any>, 
+      ContactPersons: Array<Any>, 
+      HasValidationErrors: Boolean
+    |}, 
+    DateString: String, 
+    Date: String, 
+    DueDateString: String, 
+    DueDate: String, 
+    BrandingThemeID: String, 
+    Status: String, 
+    LineAmountTypes: String, 
+    LineItems: Array<{|      ItemCode: String,       Description: String,       UnitAmount: Number {"typeId": "double"},       TaxType: String,       TaxAmount: Number {"typeId": "double"},       LineAmount: Number {"typeId": "double"},       AccountCode: String,       Item: {|        ItemID: String,         Code: String      |},       Tracking: Array<Any>, 
+      Quantity: Number {"typeId": "double"}, 
+      DiscountRate: Number {"typeId": "double"}, 
+      LineItemID: String, 
+      DiscountAmount: Number {"typeId": "double"}, 
+      ValidationErrors: Array<Any>
+    |}>, 
+    SubTotal: Number {"typeId": "double"}, 
+    TotalTax: Number {"typeId": "double"}, 
+    Total: Number {"typeId": "double"}, 
+    UpdatedDateUTC: String, 
+    CurrencyCode: String, 
+    FullyPaidOnDate: String
+  |}>
+|}> {"example": "[{\\\"confirm_id\\\":123456,\\\"invoices\\\":[{\\\"Type\\\":\\\"ACCREC\\\",\\\"InvoiceID\\\":\\\"2325e961-9b19-49bb-bdaf-cea42d96f445\\\",\\\"InvoiceNumber\\\":\\\"24571\\\",\\\"Reference\\\":\\\"| Confirm - 27976\\\",\\\"Payments\\\":[{\\\"PaymentID\\\":\\\"241e9d13-36be-419a-9dfb-4e4103aeefba\\\",\\\"Date\\\":\\\"\\/Date(1671148800000+0000)\\/\\\",\\\"Amount\\\":42570.0,\\\"Reference\\\":\\\"\\\",\\\"CurrencyRate\\\":1.0,\\\"HasAccount\\\":false,\\\"HasValidationErrors\\\":false}],\\\"Prepayments\\\":[],\\\"Overpayments\\\":[],\\\"AmountDue\\\":0.0,\\\"AmountPaid\\\":42570.0,\\\"SentToContact\\\":true,\\\"CurrencyRate\\\":1.0,\\\"TotalDiscount\\\":0.0,\\\"IsDiscounted\\\":true,\\\"HasAttachments\\\":true,\\\"HasErrors\\\":false,\\\"Attachments\\\":[{\\\"AttachmentID\\\":\\\"7b46f6ae-93b8-4d97-a209-6f55767214e7\\\",\\\"FileName\\\":\\\"Invoice 24571.pdf\\\",\\\"Url\\\":\\\"https:\\/\\/api.xero.com\\/api.xro\\/2.0\\/Invoices\\/2325e961-9b19-49bb-bdaf-cea42d96f445\\/Attachments\\/Invoice%2024571.pdf\\\",\\\"MimeType\\\":\\\"application\\/pdf\\\",\\\"ContentLength\\\":86552}],\\\"InvoicePaymentServices\\\":[],\\\"Contact\\\":{\\\"ContactID\\\":\\\"8ea9c815-ba35-47f4-9563-20f709564424\\\",\\\"ContactStatus\\\":\\\"ACTIVE\\\",\\\"Name\\\":\\\"Marathon Power, LLC\\\",\\\"EmailAddress\\\":\\\"keith@mecny.com\\\",\\\"BankAccountDetails\\\":\\\"\\\",\\\"Addresses\\\":[{\\\"AddressType\\\":\\\"STREET\\\",\\\"City\\\":\\\"\\\",\\\"Region\\\":\\\"\\\",\\\"PostalCode\\\":\\\"\\\",\\\"Country\\\":\\\"\\\"},{\\\"AddressType\\\":\\\"POBOX\\\",\\\"AddressLine1\\\":\\\"62-01 34th Ave\\\",\\\"City\\\":\\\"Woodside\\\",\\\"Region\\\":\\\"NY\\\",\\\"PostalCode\\\":\\\"11377 USA\\\",\\\"Country\\\":\\\"\\\"}],\\\"Phones\\\":[{\\\"PhoneType\\\":\\\"DEFAULT\\\",\\\"PhoneNumber\\\":\\\"\\\",\\\"PhoneAreaCode\\\":\\\"\\\",\\\"PhoneCountryCode\\\":\\\"\\\"},{\\\"PhoneType\\\":\\\"DDI\\\",\\\"PhoneNumber\\\":\\\"\\\",\\\"PhoneAreaCode\\\":\\\"\\\",\\\"PhoneCountryCode\\\":\\\"\\\"},{\\\"PhoneType\\\":\\\"FAX\\\",\\\"PhoneNumber\\\":\\\"\\\",\\\"PhoneAreaCode\\\":\\\"\\\",\\\"PhoneCountryCode\\\":\\\"\\\"},{\\\"PhoneType\\\":\\\"MOBILE\\\",\\\"PhoneNumber\\\":\\\"\\\",\\\"PhoneAreaCode\\\":\\\"\\\",\\\"PhoneCountryCode\\\":\\\"\\\"}],\\\"UpdatedDateUTC\\\":\\\"\\/Date(1617140580737+0000)\\/\\\",\\\"ContactGroups\\\":[],\\\"IsSupplier\\\":false,\\\"IsCustomer\\\":true,\\\"SalesTrackingCategories\\\":[],\\\"PurchasesTrackingCategories\\\":[],\\\"ContactPersons\\\":[],\\\"HasValidationErrors\\\":false},\\\"DateString\\\":\\\"2022-12-01T00:00:00\\\",\\\"Date\\\":\\\"\\/Date(1669852800000+0000)\\/\\\",\\\"DueDateString\\\":\\\"2022-12-16T00:00:00\\\",\\\"DueDate\\\":\\\"\\/Date(1671148800000+0000)\\/\\\",\\\"BrandingThemeID\\\":\\\"c5b91243-3cb5-43da-a625-70639cbaaf21\\\",\\\"Status\\\":\\\"PAID\\\",\\\"LineAmountTypes\\\":\\\"Inclusive\\\",\\\"LineItems\\\":[{\\\"ItemCode\\\":\\\"REC Wholesale\\\",\\\"Description\\\":\\\"REC - NJ Solar - 2022\\\",\\\"UnitAmount\\\":236.5,\\\"TaxType\\\":\\\"NONE\\\",\\\"TaxAmount\\\":0.0,\\\"LineAmount\\\":42570.0,\\\"AccountCode\\\":\\\"02550\\\",\\\"Item\\\":{\\\"ItemID\\\":\\\"c8cf15b4-4d99-4d5e-acbe-87bc2e111f12\\\",\\\"Code\\\":\\\"REC Wholesale\\\"},\\\"Tracking\\\":[],\\\"Quantity\\\":180.0,\\\"DiscountRate\\\":0.0,\\\"LineItemID\\\":\\\"e59a1d91-d005-40b8-a148-b606d46a2d91\\\",\\\"DiscountAmount\\\":0.0,\\\"ValidationErrors\\\":[]}],\\\"SubTotal\\\":42570.0,\\\"TotalTax\\\":0.0,\\\"Total\\\":42570.0,\\\"UpdatedDateUTC\\\":\\\"\\/Date(1671398326043+0000)\\/\\\",\\\"CurrencyCode\\\":\\\"USD\\\",\\\"FullyPaidOnDate\\\":\\\"\\/Date(1671148800000+0000)\\/\\\"}]}]"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="stringArrayExample" format="json">
+      <types:shape format="weave" example="examples/stringArrayExample.json"><![CDATA[%dw 2.0
+
+type stringArrayExample = Array<String> {"example": "[\\\"string\\\"]"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="xeroOnlineInvoicesPayloadExample" format="json">
+      <types:shape format="weave" example="examples/xeroOnlineInvoicesPayloadExample.json"><![CDATA[%dw 2.0
+
+type xeroOnlineInvoicesPayloadExample = {|
+  Id: String, 
+  Status: String, 
+  ProviderName: String, 
+  DateTimeUTC: String, 
+  OnlineInvoices: Array<{| OnlineInvoiceUrl: String |}>
+|} {"example": "{\\\"Id\\\":\\\"8ea9e4a5-26b0-4185-bd33-7537ad318f8a\\\",\\\"Status\\\":\\\"OK\\\",\\\"ProviderName\\\":\\\"3D-DEV01\\\",\\\"DateTimeUTC\\\":\\\"\\/Date(1691096235623)\\/\\\",\\\"OnlineInvoices\\\":[{\\\"OnlineInvoiceUrl\\\":\\\"https:\\/\\/in.xero.com\\/jyUFOB3S0drXwfR15BzTq99nTOkQXPRHCQaiLM6V\\\"}]}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="xeroInvoicesDocumentsRequestExample" format="json">
+      <types:shape format="weave" example="examples/xeroInvoiceDocumentsRequestExample-1.json"><![CDATA[%dw 2.0
+
+type xeroInvoicesDocumentsRequestExample = Array<{|  invoice_id: String,   invoice_number: String|}> {"example": "[{\\\"invoice_id\\\":\\\"INVOICE_ID\\\",\\\"invoice_number\\\":\\\"INVOICE_NUMBER\\\"}]"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="xeroInvoiceDocumentsRequestExample" format="json">
+      <types:shape format="weave" example="examples/xeroInvoiceDocumentsRequestExample-2.json"><![CDATA[%dw 2.0
+
+type xeroInvoiceDocumentsRequestExample = {|
+  invoice_id: String, 
+  invoice_number: String
+|} {"example": "{\\\"invoice_id\\\":\\\"INVOICE_ID\\\",\\\"invoice_number\\\":\\\"INVOICE_NUMBER\\\"}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="xeroInvoiceUrlsExample" format="json">
+      <types:shape format="weave" example="examples/xeroInvoicesUrlsExample-1.json"><![CDATA[%dw 2.0
+
+type xeroInvoiceUrlsExample = Array<{|  invoice_id: String,   invoice_number: String,   invoice_documents: Array<{| url: String |}>
+|}> {"example": "[{\\\"invoice_id\\\":\\\"INVOICE_ID\\\",\\\"invoice_number\\\":\\\"INVOICE_NUMBER\\\",\\\"invoice_documents\\\":[{\\\"url\\\":\\\"INVOICE_URL\\\"}]}]"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="confirmListRequestExample" format="json">
+      <types:shape format="weave" example="examples/confirmListRequestExample.json"><![CDATA[%dw 2.0
+
+type confirmListRequestExample = Array<{| confirm_id: String |}> {"example": "[{\\\"confirm_id\\\":\\\"CONFIRM_ID\\\"}]"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="xeroInvoiceDocumentsPayloadExample" format="json">
+      <types:shape format="weave" example="examples/xeroInvoiceDocumentsPayloadExample.json"><![CDATA[%dw 2.0
+
+type xeroInvoiceDocumentsPayloadExample = Array<{|  confirm_id: String,   invoices: Array<{|    invoice_id: String,     invoice_number: String,     contact_id: String,     contact_name: String  |}>
+|}> {"example": "[{\\\"confirm_id\\\":\\\"CONFIRM_ID\\\",\\\"invoices\\\":[{\\\"invoice_id\\\":\\\"INVOICE_ID\\\",\\\"invoice_number\\\":\\\"INVOICE_NUMBER\\\",\\\"contact_id\\\":\\\"CONTACT_ID\\\",\\\"contact_name\\\":\\\"CONTACT_NAME\\\"}]}]"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="xeroInvoicesDocumentsInfoPayloadExample" format="json">
+      <types:shape format="weave" example="examples/xeroInvoicesInfoPayloadExample.json"><![CDATA[%dw 2.0
+
+type xeroInvoicesDocumentsInfoPayloadExample = Array<{|  invoice_id: String,   invoice_number: String,   contact: {|    contact_id: String,     contact_name: String  |},   invoice_documents: Array<{| url: String |}>
+|}> {"example": "[{\\\"invoice_id\\\":\\\"INVOICE_ID\\\",\\\"invoice_number\\\":\\\"INVOICE_NUMBER\\\",\\\"contact\\\":{\\\"contact_id\\\":\\\"CONTACT_ID\\\",\\\"contact_name\\\":\\\"CONTACT_NAME\\\"},\\\"invoice_documents\\\":[{\\\"url\\\":\\\"INVOICE_URL\\\"}]}]"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="xeroAuthTokensExample" format="json">
+      <types:shape format="weave" example="examples/xeroAuthTokensExample.json"><![CDATA[%dw 2.0
+
+type xeroAuthTokensExample = {|
+  access_token: String, 
+  refresh_token: String
+|} {"example": "{\\\"access_token\\\":\\\"ACCESS_TOKEN\\\",\\\"refresh_token\\\":\\\"REFRESH_TOKEN\\\"}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="xeroInvoicesResponsePayloadExample" format="json">
+      <types:shape format="weave" example="examples/xeroInvoicesResponsePayloadExample.json"><![CDATA[%dw 2.0
+
+type xeroInvoicesResponsePayloadExample = Array<{|  Id: String,   Status: String,   ProviderName: String,   DateTimeUTC: String,   Invoices: Array<{|    Type: String,     InvoiceID: String,     InvoiceNumber: String,     Reference: String,     Payments: Array<{|      PaymentID: String,       Date: String,       Amount: Number {"typeId": "double"},       Reference: String,       CurrencyRate: Number {"typeId": "double"},       HasAccount: Boolean,       HasValidationErrors: Boolean    |}>, 
+    Prepayments: Array<Any>, 
+    Overpayments: Array<Any>, 
+    AmountDue: Number {"typeId": "double"}, 
+    AmountPaid: Number {"typeId": "double"}, 
+    SentToContact: Boolean, 
+    CurrencyRate: Number {"typeId": "double"}, 
+    TotalDiscount: Number {"typeId": "double"}, 
+    IsDiscounted: Boolean, 
+    HasAttachments: Boolean, 
+    HasErrors: Boolean, 
+    Attachments: Array<{|      AttachmentID: String,       FileName: String,       Url: String,       MimeType: String,       ContentLength: Number {"typeId": "int"}    |}>, 
+    InvoicePaymentServices: Array<Any>, 
+    Contact: {|
+      ContactID: String, 
+      ContactStatus: String, 
+      Name: String, 
+      EmailAddress: String, 
+      BankAccountDetails: String, 
+      Addresses: Array<{|        AddressType: String,         City: String,         Region: String,         PostalCode: String,         Country: String,         AddressLine1: String      |}>, 
+      Phones: Array<{|        PhoneType: String,         PhoneNumber: String,         PhoneAreaCode: String,         PhoneCountryCode: String      |}>, 
+      UpdatedDateUTC: String, 
+      ContactGroups: Array<Any>, 
+      IsSupplier: Boolean, 
+      IsCustomer: Boolean, 
+      SalesTrackingCategories: Array<Any>, 
+      PurchasesTrackingCategories: Array<Any>, 
+      ContactPersons: Array<Any>, 
+      HasValidationErrors: Boolean
+    |}, 
+    DateString: String, 
+    Date: String, 
+    DueDateString: String, 
+    DueDate: String, 
+    BrandingThemeID: String, 
+    Status: String, 
+    LineAmountTypes: String, 
+    LineItems: Array<{|      ItemCode: String,       Description: String,       UnitAmount: Number {"typeId": "double"},       TaxType: String,       TaxAmount: Number {"typeId": "double"},       LineAmount: Number {"typeId": "double"},       AccountCode: String,       Item: {|        ItemID: String,         Code: String      |},       Tracking: Array<Any>, 
+      Quantity: Number {"typeId": "double"}, 
+      DiscountRate: Number {"typeId": "double"}, 
+      LineItemID: String, 
+      DiscountAmount: Number {"typeId": "double"}, 
+      ValidationErrors: Array<Any>
+    |}>, 
+    SubTotal: Number {"typeId": "double"}, 
+    TotalTax: Number {"typeId": "double"}, 
+    Total: Number {"typeId": "double"}, 
+    UpdatedDateUTC: String, 
+    CurrencyCode: String, 
+    FullyPaidOnDate: String
+  |}>
+|}> {"example": "[{\\\"Id\\\":\\\"505fbaa1-7b0a-4ae6-8f19-6d3b064973bd\\\",\\\"Status\\\":\\\"OK\\\",\\\"ProviderName\\\":\\\"3Degrees\\\",\\\"DateTimeUTC\\\":\\\"\\/Date(1673998969573)\\/\\\",\\\"Invoices\\\":[{\\\"Type\\\":\\\"ACCREC\\\",\\\"InvoiceID\\\":\\\"2325e961-9b19-49bb-bdaf-cea42d96f445\\\",\\\"InvoiceNumber\\\":\\\"24571\\\",\\\"Reference\\\":\\\"| Confirm - 27976\\\",\\\"Payments\\\":[{\\\"PaymentID\\\":\\\"241e9d13-36be-419a-9dfb-4e4103aeefba\\\",\\\"Date\\\":\\\"\\/Date(1671148800000+0000)\\/\\\",\\\"Amount\\\":42570.00,\\\"Reference\\\":\\\"\\\",\\\"CurrencyRate\\\":1.0000000000,\\\"HasAccount\\\":false,\\\"HasValidationErrors\\\":false}],\\\"Prepayments\\\":[],\\\"Overpayments\\\":[],\\\"AmountDue\\\":0.00,\\\"AmountPaid\\\":42570.00,\\\"SentToContact\\\":true,\\\"CurrencyRate\\\":1.0000000000,\\\"TotalDiscount\\\":0.00,\\\"IsDiscounted\\\":true,\\\"HasAttachments\\\":true,\\\"HasErrors\\\":false,\\\"Attachments\\\":[{\\\"AttachmentID\\\":\\\"7b46f6ae-93b8-4d97-a209-6f55767214e7\\\",\\\"FileName\\\":\\\"Invoice 24571.pdf\\\",\\\"Url\\\":\\\"https:\\/\\/api.xero.com\\/api.xro\\/2.0\\/Invoices\\/2325e961-9b19-49bb-bdaf-cea42d96f445\\/Attachments\\/Invoice%2024571.pdf\\\",\\\"MimeType\\\":\\\"application\\/pdf\\\",\\\"ContentLength\\\":86552}],\\\"InvoicePaymentServices\\\":[],\\\"Contact\\\":{\\\"ContactID\\\":\\\"8ea9c815-ba35-47f4-9563-20f709564424\\\",\\\"ContactStatus\\\":\\\"ACTIVE\\\",\\\"Name\\\":\\\"Marathon Power, LLC\\\",\\\"EmailAddress\\\":\\\"keith@mecny.com\\\",\\\"BankAccountDetails\\\":\\\"\\\",\\\"Addresses\\\":[{\\\"AddressType\\\":\\\"STREET\\\",\\\"City\\\":\\\"\\\",\\\"Region\\\":\\\"\\\",\\\"PostalCode\\\":\\\"\\\",\\\"Country\\\":\\\"\\\"},{\\\"AddressType\\\":\\\"POBOX\\\",\\\"AddressLine1\\\":\\\"62-01 34th Ave\\\",\\\"City\\\":\\\"Woodside\\\",\\\"Region\\\":\\\"NY\\\",\\\"PostalCode\\\":\\\"11377 USA\\\",\\\"Country\\\":\\\"\\\"}],\\\"Phones\\\":[{\\\"PhoneType\\\":\\\"DEFAULT\\\",\\\"PhoneNumber\\\":\\\"\\\",\\\"PhoneAreaCode\\\":\\\"\\\",\\\"PhoneCountryCode\\\":\\\"\\\"},{\\\"PhoneType\\\":\\\"DDI\\\",\\\"PhoneNumber\\\":\\\"\\\",\\\"PhoneAreaCode\\\":\\\"\\\",\\\"PhoneCountryCode\\\":\\\"\\\"},{\\\"PhoneType\\\":\\\"FAX\\\",\\\"PhoneNumber\\\":\\\"\\\",\\\"PhoneAreaCode\\\":\\\"\\\",\\\"PhoneCountryCode\\\":\\\"\\\"},{\\\"PhoneType\\\":\\\"MOBILE\\\",\\\"PhoneNumber\\\":\\\"\\\",\\\"PhoneAreaCode\\\":\\\"\\\",\\\"PhoneCountryCode\\\":\\\"\\\"}],\\\"UpdatedDateUTC\\\":\\\"\\/Date(1617140580737+0000)\\/\\\",\\\"ContactGroups\\\":[],\\\"IsSupplier\\\":false,\\\"IsCustomer\\\":true,\\\"SalesTrackingCategories\\\":[],\\\"PurchasesTrackingCategories\\\":[],\\\"ContactPersons\\\":[],\\\"HasValidationErrors\\\":false},\\\"DateString\\\":\\\"2022-12-01T00:00:00\\\",\\\"Date\\\":\\\"\\/Date(1669852800000+0000)\\/\\\",\\\"DueDateString\\\":\\\"2022-12-16T00:00:00\\\",\\\"DueDate\\\":\\\"\\/Date(1671148800000+0000)\\/\\\",\\\"BrandingThemeID\\\":\\\"c5b91243-3cb5-43da-a625-70639cbaaf21\\\",\\\"Status\\\":\\\"PAID\\\",\\\"LineAmountTypes\\\":\\\"Inclusive\\\",\\\"LineItems\\\":[{\\\"ItemCode\\\":\\\"REC Wholesale\\\",\\\"Description\\\":\\\"REC - NJ Solar - 2022\\\",\\\"UnitAmount\\\":236.50,\\\"TaxType\\\":\\\"NONE\\\",\\\"TaxAmount\\\":0.00,\\\"LineAmount\\\":42570.00,\\\"AccountCode\\\":\\\"02550\\\",\\\"Item\\\":{\\\"ItemID\\\":\\\"c8cf15b4-4d99-4d5e-acbe-87bc2e111f12\\\",\\\"Code\\\":\\\"REC Wholesale\\\"},\\\"Tracking\\\":[],\\\"Quantity\\\":180.0000,\\\"DiscountRate\\\":0.00,\\\"LineItemID\\\":\\\"e59a1d91-d005-40b8-a148-b606d46a2d91\\\",\\\"DiscountAmount\\\":0.0000,\\\"ValidationErrors\\\":[]}],\\\"SubTotal\\\":42570.00,\\\"TotalTax\\\":0.00,\\\"Total\\\":42570.00,\\\"UpdatedDateUTC\\\":\\\"\\/Date(1671398326043+0000)\\/\\\",\\\"CurrencyCode\\\":\\\"USD\\\",\\\"FullyPaidOnDate\\\":\\\"\\/Date(1671148800000+0000)\\/\\\"}]}]"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="xeroInvoicesAttachmentsExample" format="json">
+      <types:shape format="weave" example="examples/xeroInvoicesAttachmentsExample-1.json"><![CDATA[%dw 2.0
+
+type xeroInvoicesAttachmentsExample = Array<{|  invoices: Array<{|    invoice_id: String,     has_attachments: Boolean,     attachments: Array<{|      attachment_id: String,       file_name: String,       url: String,       mime_type: String,       size: Number {"typeId": "int"}    |}>
+  |}>
+|}> {"example": "[{\\\"invoices\\\":[{\\\"invoice_id\\\":\\\"2325e961-9b19-49bb-bdaf-cea42d96f445\\\",\\\"has_attachments\\\":true,\\\"attachments\\\":[{\\\"attachment_id\\\":\\\"7b46f6ae-93b8-4d97-a209-6f55767214e7\\\",\\\"file_name\\\":\\\"Invoice 24571.pdf\\\",\\\"url\\\":\\\"https:\\/\\/api.xero.com\\/api.xro\\/2.0\\/Invoices\\/2325e961-9b19-49bb-bdaf-cea42d96f445\\/Attachments\\/Invoice%2024571.pdf\\\",\\\"mime_type\\\":\\\"application\\/pdf\\\",\\\"size\\\":86552}]}]}]"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="AttachmentsPayloadResponseExample" format="json">
+      <types:shape format="weave" example="examples/AttachmentsPayloadResponseExample.json"><![CDATA[%dw 2.0
+
+type AttachmentsPayloadResponseExample = Array<{|  invoice_id: String,   has_attachments: Boolean,   attachments: Array<{|    attachment_id: String,     file_name: String,     url: String,     mime_type: String,     size: String  |}>
+|}> {"example": "[{\\\"invoice_id\\\":\\\"INVOICE_ID\\\",\\\"has_attachments\\\":true,\\\"attachments\\\":[{\\\"attachment_id\\\":\\\"ATTACHMENT_ID\\\",\\\"file_name\\\":\\\"FILE_NAME\\\",\\\"url\\\":\\\"URL\\\",\\\"mime_type\\\":\\\"MIME_TYPE\\\",\\\"size\\\":\\\"SIZE\\\"}]}]"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="InvoicesPayloadResponseExample" format="json">
+      <types:shape format="weave" example="examples/InvoicesPayloadResponseExample.json"><![CDATA[%dw 2.0
+
+type InvoicesPayloadResponseExample = {|
+  Invoices: Array<{|    Type: String,     InvoiceID: String,     InvoiceNumber: String,     Reference: String,     Payments: Array<{|      PaymentID: String,       Date: String,       Amount: Number {"typeId": "double"},       Reference: String,       CurrencyRate: Number {"typeId": "double"},       HasAccount: Boolean,       HasValidationErrors: Boolean    |}>, 
+    Prepayments: Array<Any>, 
+    Overpayments: Array<Any>, 
+    AmountDue: Number {"typeId": "double"}, 
+    AmountPaid: Number {"typeId": "double"}, 
+    SentToContact: Boolean, 
+    CurrencyRate: Number {"typeId": "double"}, 
+    TotalDiscount: Number {"typeId": "double"}, 
+    IsDiscounted: Boolean, 
+    HasAttachments: Boolean, 
+    HasErrors: Boolean, 
+    InvoicePaymentServices: Array<Any>, 
+    Contact: {|
+      ContactID: String, 
+      ContactStatus: String, 
+      Name: String, 
+      EmailAddress: String, 
+      BankAccountDetails: String, 
+      Addresses: Array<{|        AddressType: String,         City: String,         Region: String,         PostalCode: String,         Country: String,         AddressLine1: String      |}>, 
+      Phones: Array<{|        PhoneType: String,         PhoneNumber: String,         PhoneAreaCode: String,         PhoneCountryCode: String      |}>, 
+      UpdatedDateUTC: String, 
+      ContactGroups: Array<Any>, 
+      IsSupplier: Boolean, 
+      IsCustomer: Boolean, 
+      SalesTrackingCategories: Array<Any>, 
+      PurchasesTrackingCategories: Array<Any>, 
+      ContactPersons: Array<Any>, 
+      HasValidationErrors: Boolean
+    |}, 
+    DateString: String, 
+    Date: String, 
+    DueDateString: String, 
+    DueDate: String, 
+    BrandingThemeID: String, 
+    Status: String, 
+    LineAmountTypes: String, 
+    LineItems: Array<{|      ItemCode: String,       Description: String,       UnitAmount: Number {"typeId": "double"},       TaxType: String,       TaxAmount: Number {"typeId": "double"},       LineAmount: Number {"typeId": "double"},       AccountCode: String,       Item: {|        ItemID: String,         Code: String      |},       Tracking: Array<Any>, 
+      Quantity: Number {"typeId": "double"}, 
+      DiscountRate: Number {"typeId": "double"}, 
+      LineItemID: String, 
+      DiscountAmount: Number {"typeId": "double"}, 
+      ValidationErrors: Array<Any>
+    |}>, 
+    SubTotal: Number {"typeId": "double"}, 
+    TotalTax: Number {"typeId": "double"}, 
+    Total: Number {"typeId": "double"}, 
+    UpdatedDateUTC: String, 
+    CurrencyCode: String, 
+    FullyPaidOnDate: String
+  |}>
+|} {"example": "{\\\"Invoices\\\":[{\\\"Type\\\":\\\"ACCREC\\\",\\\"InvoiceID\\\":\\\"2325e961-9b19-49bb-bdaf-cea42d96f445\\\",\\\"InvoiceNumber\\\":\\\"24571\\\",\\\"Reference\\\":\\\"| Confirm - 27976\\\",\\\"Payments\\\":[{\\\"PaymentID\\\":\\\"241e9d13-36be-419a-9dfb-4e4103aeefba\\\",\\\"Date\\\":\\\"\\/Date(1671148800000+0000)\\/\\\",\\\"Amount\\\":42570.00,\\\"Reference\\\":\\\"\\\",\\\"CurrencyRate\\\":1.0000000000,\\\"HasAccount\\\":false,\\\"HasValidationErrors\\\":false}],\\\"Prepayments\\\":[],\\\"Overpayments\\\":[],\\\"AmountDue\\\":0.00,\\\"AmountPaid\\\":42570.00,\\\"SentToContact\\\":true,\\\"CurrencyRate\\\":1.0000000000,\\\"TotalDiscount\\\":0.00,\\\"IsDiscounted\\\":true,\\\"HasAttachments\\\":true,\\\"HasErrors\\\":false,\\\"InvoicePaymentServices\\\":[],\\\"Contact\\\":{\\\"ContactID\\\":\\\"8ea9c815-ba35-47f4-9563-20f709564424\\\",\\\"ContactStatus\\\":\\\"ACTIVE\\\",\\\"Name\\\":\\\"Marathon Power, LLC\\\",\\\"EmailAddress\\\":\\\"keith@mecny.com\\\",\\\"BankAccountDetails\\\":\\\"\\\",\\\"Addresses\\\":[{\\\"AddressType\\\":\\\"STREET\\\",\\\"City\\\":\\\"\\\",\\\"Region\\\":\\\"\\\",\\\"PostalCode\\\":\\\"\\\",\\\"Country\\\":\\\"\\\"},{\\\"AddressType\\\":\\\"POBOX\\\",\\\"AddressLine1\\\":\\\"62-01 34th Ave\\\",\\\"City\\\":\\\"Woodside\\\",\\\"Region\\\":\\\"NY\\\",\\\"PostalCode\\\":\\\"11377 USA\\\",\\\"Country\\\":\\\"\\\"}],\\\"Phones\\\":[{\\\"PhoneType\\\":\\\"DEFAULT\\\",\\\"PhoneNumber\\\":\\\"\\\",\\\"PhoneAreaCode\\\":\\\"\\\",\\\"PhoneCountryCode\\\":\\\"\\\"},{\\\"PhoneType\\\":\\\"DDI\\\",\\\"PhoneNumber\\\":\\\"\\\",\\\"PhoneAreaCode\\\":\\\"\\\",\\\"PhoneCountryCode\\\":\\\"\\\"},{\\\"PhoneType\\\":\\\"FAX\\\",\\\"PhoneNumber\\\":\\\"\\\",\\\"PhoneAreaCode\\\":\\\"\\\",\\\"PhoneCountryCode\\\":\\\"\\\"},{\\\"PhoneType\\\":\\\"MOBILE\\\",\\\"PhoneNumber\\\":\\\"\\\",\\\"PhoneAreaCode\\\":\\\"\\\",\\\"PhoneCountryCode\\\":\\\"\\\"}],\\\"UpdatedDateUTC\\\":\\\"\\/Date(1617140580737+0000)\\/\\\",\\\"ContactGroups\\\":[],\\\"IsSupplier\\\":false,\\\"IsCustomer\\\":true,\\\"SalesTrackingCategories\\\":[],\\\"PurchasesTrackingCategories\\\":[],\\\"ContactPersons\\\":[],\\\"HasValidationErrors\\\":false},\\\"DateString\\\":\\\"2022-12-01T00:00:00\\\",\\\"Date\\\":\\\"\\/Date(1669852800000+0000)\\/\\\",\\\"DueDateString\\\":\\\"2022-12-16T00:00:00\\\",\\\"DueDate\\\":\\\"\\/Date(1671148800000+0000)\\/\\\",\\\"BrandingThemeID\\\":\\\"c5b91243-3cb5-43da-a625-70639cbaaf21\\\",\\\"Status\\\":\\\"PAID\\\",\\\"LineAmountTypes\\\":\\\"Inclusive\\\",\\\"LineItems\\\":[{\\\"ItemCode\\\":\\\"REC Wholesale\\\",\\\"Description\\\":\\\"REC - NJ Solar - 2022\\\",\\\"UnitAmount\\\":236.50,\\\"TaxType\\\":\\\"NONE\\\",\\\"TaxAmount\\\":0.00,\\\"LineAmount\\\":42570.00,\\\"AccountCode\\\":\\\"02550\\\",\\\"Item\\\":{\\\"ItemID\\\":\\\"c8cf15b4-4d99-4d5e-acbe-87bc2e111f12\\\",\\\"Code\\\":\\\"REC Wholesale\\\"},\\\"Tracking\\\":[],\\\"Quantity\\\":180.0000,\\\"DiscountRate\\\":0.00,\\\"LineItemID\\\":\\\"e59a1d91-d005-40b8-a148-b606d46a2d91\\\",\\\"DiscountAmount\\\":0.0000,\\\"ValidationErrors\\\":[]}],\\\"SubTotal\\\":42570.00,\\\"TotalTax\\\":0.00,\\\"Total\\\":42570.00,\\\"UpdatedDateUTC\\\":\\\"\\/Date(1671398326043+0000)\\/\\\",\\\"CurrencyCode\\\":\\\"USD\\\",\\\"FullyPaidOnDate\\\":\\\"\\/Date(1671148800000+0000)\\/\\\"}]}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="salesforceOpportunitiesClosedWon" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: array
+items:
+  properties:
+    OpportunityID: string
+    CaseSafeID: string
+    RecordTypeID: string
+    OpportunityName: string
+    IsWon: boolean
+    CloseDate: string
+    TotalContractValue: number
+    ConfirmID: string
+    ProjectID: string
+    OpportunityOwnerID: string
+    OpportunityOwnerName: string
+    OpportunityOwnerIsActive: boolean
+    AccountID: string
+    CounterpartyName: string
+    CorrelationID: string]]></types:shape>
+    </types:type>
+    <types:type name="erpOpportuntiesClosedWon" format="json">
+      <types:shape format="weave" example="examples/artemis/erpOpportunityClosedWon.json"><![CDATA[%dw 2.0
+
+type erpOpportuntiesClosedWon = {|
+  OpportunityID: String, 
+  OpportunityCaseSafeID: String, 
+  OpportunityName: String, 
+  IsWon: String, 
+  CloseDate: String, 
+  TotalContractValue: String, 
+  OpportunityOwnerName: String, 
+  OpportunityOwnerIsActive: String, 
+  RecordTypeID: String, 
+  AccountID: String, 
+  ConfirmID: String, 
+  ProjectID: Null
+|} {"example": "{\\\"OpportunityID\\\":\\\"0060W00000rgmSRQAY\\\",\\\"OpportunityCaseSafeID\\\":\\\"0060W00000rgmSRQAY\\\",\\\"OpportunityName\\\":\\\"RECs - Colgate-Palmolive 2017\\\",\\\"IsWon\\\":\\\"true\\\",\\\"CloseDate\\\":\\\"2017O07-27\\\",\\\"TotalContractValue\\\":\\\"76000.0\\\",\\\"OpportunityOwnerName\\\":\\\"Dan Kosciak\\\",\\\"OpportunityOwnerIsActive\\\":\\\"true\\\",\\\"RecordTypeID\\\":\\\"0120W000002AORkQAO\\\",\\\"AccountID\\\":\\\"001d000000FpVmIAAV\\\",\\\"ConfirmID\\\":\\\"9202\\\",\\\"ProjectID\\\":null}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="ArtemisDocumentExample" format="json">
+      <types:shape format="weave" example="examples/ArtemisDocumentExample.json"><![CDATA[%dw 2.0
+
+type ArtemisDocumentExample = {|
+  Path: String, 
+  FileName: String, 
+  Extension: String, 
+  MimeType: String, 
+  Size: String, 
+  DateCreated: String, 
+  DateModified: String, 
+  DateLastAccessed: String
+|} {"example": "{\\\"Path\\\":\\\"\\\\\\\\\\\\\\\\server2.luna.local\\\\\\\\Atlantis\\\\\\\\CP_Files\\\\\\\\SupplierREach\\\\\\\\test.csv\\\",\\\"FileName\\\":\\\"test.csv\\\",\\\"Extension\\\":\\\".csv\\\",\\\"MimeType\\\":\\\"application\\/csv\\\",\\\"Size\\\":\\\"115\\\",\\\"DateCreated\\\":\\\"11\\/27\\/2023 5:34:10 PM\\\",\\\"DateModified\\\":\\\"11\\/27\\/2023 5:34:10 PM\\\",\\\"DateLastAccessed\\\":\\\"11\\/27\\/2023 5:34:10 PM\\\"}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="supplierReachLeadCreateResponse" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: object
+properties:
+    LeadName:
+        type: string
+    LeadCreated:
+        type: boolean
+    ProductsCsvCreated:
+        type: boolean
+    ProductsCsvAttachedToLead:
+        type: boolean]]></types:shape>
+    </types:type>
+    <types:type name="climatePortalSupplierReachPurchase" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: object
+properties:
+  Company:
+    type: string
+    required: true
+  FirstName: 
+    type: string
+    required: true
+  LastName:
+    type: string
+    required: true
+  Email: 
+    type: string
+    required: true
+  Phone:
+    type: string
+    required: false
+  Lead_Source__c:
+    type: string
+    required: false
+    default: "Supplier REach"
+  Status:
+    type: string
+    required: false
+    default: "Qualified"
+  Product__c:
+    type: array
+    required: false
+    default: ["Supplier REach"]
+  RecordTypeId:
+    type: string
+    required: false
+    default: "012Du0000004N6wIAE"
+  CurrencyIsoCode:
+    type: string
+    required: false
+    default: "USD"
+  Climate_Portal_Customer_ID__c:
+    type: number
+    required: false
+  Climate_Portal_Account_ID__c:
+    type: number
+    required: false
+  Climate_Portal_Artemis_ID__c:
+    type: number
+    required: false
+  Supplier_REach_Transaction_Date__c:
+    type: number
+    required: true
+  Products:
+    type: array
+    items:
+      properties:
+        Name:
+          type: string
+          required: true
+        Volume:
+          type: integer
+          required: true
+        PurchaseOption:
+          type: string
+          required: true]]></types:shape>
+    </types:type>
+    <types:type name="salesforceSupplerReachLeadRequest" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: object
+properties:
+  Company:
+    type: string
+    required: true
+  FirstName: 
+    type: string
+    required: true
+  LastName:
+    type: string
+    required: true
+  Email: 
+    type: string
+    required: true
+  Phone:
+    type: string
+    required: false
+  Lead_Source__c:
+    type: string
+    required: false
+    default: "Supplier REach"
+  Status:
+    type: string
+    required: false
+    default: "Qualified"
+  Product__c:
+    type: array
+    required: false
+    default: ["Supplier REach"]
+  RecordTypeId:
+    type: string
+    required: false
+    default: "012Du0000004N6wIAE"
+  CurrencyIsoCode:
+    type: string
+    required: false
+    default: "USD"
+  Climate_Portal_Customer_ID__c:
+    type: number
+    required: true
+  Climate_Portal_Account_ID__c:
+    type: number
+    required: true
+  Climate_Portal_Artemis_ID__c:
+    type: number
+    required: true
+  Supplier_REach_Transaction_Date__c:
+    type: date-only
+    required: true
+  Products:
+    type: array
+    items:
+      properties:
+        Name:
+          type: string
+          required: true
+        Volume:
+          type: integer
+          required: true
+        PurchaseOption:
+          type: string
+          required: true]]></types:shape>
+    </types:type>
+    <types:type name="climatePortalMarketplacePurchase" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: object
+properties:
+  Company:
+    type: string
+    required: true
+  FirstName: 
+    type: string
+    required: true
+  LastName:
+    type: string
+    required: true
+  Email: 
+    type: string
+    required: true
+  Phone:
+    type: string
+    required: false
+  Lead_Source__c:
+    type: string
+    required: false
+    default: "Inbound"
+  Status:
+    type: string
+    required: false
+    default: "Qualified"
+  Product__c:
+    type: array
+    required: false
+    default: ["RECs","Carbon"]
+  RecordTypeId:
+    type: string
+    required: false
+    default: "0120W000001USmhQAG"
+  CurrencyIsoCode:
+    type: string
+    required: false
+    default: "USD"
+  Climate_Portal_Customer_ID__c:
+    type: number
+    required: true
+  Climate_Portal_Account_ID__c:
+    type: number
+    required: true
+  Climate_Portal_Artemis_ID__c:
+    type: number
+    required: true
+  Marketplace_Transaction_Date__c:
+    type: number
+    required: true
+  Products:
+    type: array
+    items:
+      properties:
+        Name:
+          type: string
+          required: true
+        Volume:
+          type: integer
+          required: true
+        PurchaseOption:
+          type: string
+          required: true]]></types:shape>
+    </types:type>
+    <types:type name="salesforceMarketplaceLeadRequest" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: object
+properties:
+  Company:
+    type: string
+    required: true
+  FirstName: 
+    type: string
+    required: true
+  LastName:
+    type: string
+    required: true
+  Email: 
+    type: string
+    required: true
+  Phone:
+    type: string
+    required: false
+  Lead_Source__c:
+    type: string
+    required: false
+    default: "Inbound"
+  Status:
+    type: string
+    required: false
+    default: "Qualified"
+  Product__c:
+    type: array
+    required: false
+    default: ["RECs","Carbon"]
+  RecordTypeId:
+    type: string
+    required: false
+    default: "0120W000001USmhQAG"
+  CurrencyIsoCode:
+    type: string
+    required: false
+    default: "USD"
+  Climate_Portal_Customer_ID__c:
+    type: number
+    required: true
+  Climate_Portal_Account_ID__c:
+    type: number
+    required: true
+  Climate_Portal_Artemis_ID__c:
+    type: number
+    required: true
+  Marketplace_Transaction_Date__c:
+    type: date-only
+    required: true
+  Products:
+    type: array
+    items:
+      properties:
+        Name:
+          type: string
+          required: true
+        Volume:
+          type: integer
+          required: true
+        PurchaseOption:
+          type: string
+          required: true]]></types:shape>
+    </types:type>
+    <types:type name="climatePortalSupplierReachPurchaseProducts" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: object
+properties:
+  Products:
+    type: array
+    items:
+      properties:
+        Name:
+          type: string
+          required: true
+        Volume:
+          type: integer
+          required: true
+        PurchaseOption:
+          type: string
+          required: true]]></types:shape>
+    </types:type>
+    <types:type name="PAYLOAD_String" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="artemisApiDocumentList" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: object
+properties:
+    Files:
+        type: array
+        items:
+          properties:
+            Path: string
+            FileName: string
+            Extension: string
+            MimeType: string
+            Size: integer
+            DateCreated: string
+            DateModified: string
+            DateLastAccessed: string]]></types:shape>
+    </types:type>
+    <types:type name="FileInfo" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: object
+properties:
+  FileName: string
+  Extension: string
+  MimeType: string
+  Size: integer
+  Path: string
+  DateCreated: string]]></types:shape>
+    </types:type>
+    <types:type name="PAYLOAD_Boolean" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: boolean]]></types:shape>
+    </types:type>
+    <types:type name="auto_6a692344-71d4-4b43-8ded-3d90eb3ff9e1_Input-Payload" format="json">
+      <types:shape format="weave" example="weave/autogenerated/6a692344-71d4-4b43-8ded-3d90eb3ff9e1/Input-Payload.wev" autogeneratedOrigin="027bfa47-10e9-44ef-a84c-0454f934d6cc"><![CDATA[%dw 2.0
+
+type auto_6a692344_71d4_4b43_8ded_3d90eb3ff9e1_Input_Payload = {
+  Status?: String, 
+  Company: String, 
+  Products: Array<{    Volume: Number,     PurchaseOption: String,     Name: String,     _?: Any  }>, 
+  Email: String, 
+  Lead_Source__c?: String, 
+  Climate_Portal_Artemis_ID__c: Number, 
+  Supplier_REach_Transaction_Date__c: Number, 
+  FirstName: String, 
+  Climate_Portal_Account_ID__c: Number, 
+  CurrencyIsoCode?: String, 
+  Climate_Portal_Customer_ID__c: Number, 
+  Phone?: String, 
+  RecordTypeId?: String, 
+  Product__c?: Array<Any>, 
+  LastName: String, 
+  _?: Any
+}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_6a692344-71d4-4b43-8ded-3d90eb3ff9e1_Input-Attributes" format="java">
+      <types:shape format="weave" example="weave/autogenerated/6a692344-71d4-4b43-8ded-3d90eb3ff9e1/Input-Attributes.wev" autogeneratedOrigin="027bfa47-10e9-44ef-a84c-0454f934d6cc"><![CDATA[%dw 2.0
+
+type auto_6a692344_71d4_4b43_8ded_3d90eb3ff9e1_Input_Attributes = {|
+  clientCertificate?: {|
+    publicKey?: {|  |}, 
+    "type"?: String, 
+    encoded?: Binary
+  |}, 
+  headers: {|  |}, 
+  listenerPath: String, 
+  method: String, 
+  queryParams: {|  |}, 
+  queryString: String, 
+  relativePath: String, 
+  remoteAddress: String, 
+  requestPath: String, 
+  requestUri: String, 
+  scheme: String, 
+  uriParams: {|  |}, 
+  version: String, 
+  localAddress: String
+|}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_6a692344-71d4-4b43-8ded-3d90eb3ff9e1_Input-Variables-outboundHeaders" format="java">
+      <types:shape format="weave" example="weave/autogenerated/6a692344-71d4-4b43-8ded-3d90eb3ff9e1/Input-Variables-outboundHeaders.wev" autogeneratedOrigin="027bfa47-10e9-44ef-a84c-0454f934d6cc"><![CDATA[%dw 2.0
+
+type auto_6a692344_71d4_4b43_8ded_3d90eb3ff9e1_Input_Variables_outboundHeaders = {|  |}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_6a692344-71d4-4b43-8ded-3d90eb3ff9e1_Input-Variables-leadRequest" format="java">
+      <types:shape format="weave" example="weave/autogenerated/6a692344-71d4-4b43-8ded-3d90eb3ff9e1/Input-Variables-leadRequest.wev" autogeneratedOrigin="027bfa47-10e9-44ef-a84c-0454f934d6cc"><![CDATA[%dw 2.0
+
+type auto_6a692344_71d4_4b43_8ded_3d90eb3ff9e1_Input_Variables_leadRequest = Array<{|  Id: String,   Company: String,   FirstName: String,   LastName: String,   Email: String,   Phone: String | Null,   Lead_Source__c: String | Null,   Status: String | Null,   Product__c: Array<Any> | Null, 
+  RecordTypeId: String | Null, 
+  CurrencyIsoCode: String | Null, 
+  Climate_Portal_Customer_ID__c: Number, 
+  Climate_Portal_Account_ID__c: Number, 
+  Climate_Portal_Artemis_ID__c: Number, 
+  Supplier_REach_Transaction_Date__c: Date, 
+  Products: Array<{|    Name: String,     Volume: Number,     PurchaseOption: String  |}>
+|}>
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_6a692344-71d4-4b43-8ded-3d90eb3ff9e1_Input-Variables-httpStatus" format="java">
+      <types:shape format="raml" autogeneratedOrigin="027bfa47-10e9-44ef-a84c-0454f934d6cc"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_6a692344-71d4-4b43-8ded-3d90eb3ff9e1_Input-Variables-leadId" format="java">
+      <types:shape format="raml" autogeneratedOrigin="027bfa47-10e9-44ef-a84c-0454f934d6cc"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_6a692344-71d4-4b43-8ded-3d90eb3ff9e1_Output-Payload" format="java">
+      <types:shape format="weave" example="weave/autogenerated/6a692344-71d4-4b43-8ded-3d90eb3ff9e1/Output-Payload.wev" autogeneratedOrigin="027bfa47-10e9-44ef-a84c-0454f934d6cc"><![CDATA[%dw 2.0
+
+type auto_6a692344_71d4_4b43_8ded_3d90eb3ff9e1_Output_Payload = Any
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_6a692344-71d4-4b43-8ded-3d90eb3ff9e1_Output-Attributes" format="java">
+      <types:shape format="weave" example="weave/autogenerated/6a692344-71d4-4b43-8ded-3d90eb3ff9e1/Output-Attributes.wev" autogeneratedOrigin="027bfa47-10e9-44ef-a84c-0454f934d6cc"><![CDATA[%dw 2.0
+
+type auto_6a692344_71d4_4b43_8ded_3d90eb3ff9e1_Output_Attributes = Null
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_6a692344-71d4-4b43-8ded-3d90eb3ff9e1_Output-Variables-outboundHeaders" format="java">
+      <types:shape format="weave" example="weave/autogenerated/6a692344-71d4-4b43-8ded-3d90eb3ff9e1/Output-Variables-outboundHeaders.wev" autogeneratedOrigin="027bfa47-10e9-44ef-a84c-0454f934d6cc"><![CDATA[%dw 2.0
+
+type auto_6a692344_71d4_4b43_8ded_3d90eb3ff9e1_Output_Variables_outboundHeaders = {|  |}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_6a692344-71d4-4b43-8ded-3d90eb3ff9e1_Output-Variables-leadRequest" format="java">
+      <types:shape format="weave" example="weave/autogenerated/6a692344-71d4-4b43-8ded-3d90eb3ff9e1/Output-Variables-leadRequest.wev" autogeneratedOrigin="027bfa47-10e9-44ef-a84c-0454f934d6cc"><![CDATA[%dw 2.0
+
+type auto_6a692344_71d4_4b43_8ded_3d90eb3ff9e1_Output_Variables_leadRequest = Array<{|  Id: String,   Company: String,   FirstName: String,   LastName: String,   Email: String,   Phone: String | Null,   Lead_Source__c: String | Null,   Status: String | Null,   Product__c: Array<Any> | Null, 
+  RecordTypeId: String | Null, 
+  CurrencyIsoCode: String | Null, 
+  Climate_Portal_Customer_ID__c: Number, 
+  Climate_Portal_Account_ID__c: Number, 
+  Climate_Portal_Artemis_ID__c: Number, 
+  Supplier_REach_Transaction_Date__c: Date, 
+  Products: Array<{|    Name: String,     Volume: Number,     PurchaseOption: String  |}>
+|}>
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_6a692344-71d4-4b43-8ded-3d90eb3ff9e1_Output-Variables-httpStatus" format="java">
+      <types:shape format="raml" autogeneratedOrigin="027bfa47-10e9-44ef-a84c-0454f934d6cc"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_6a692344-71d4-4b43-8ded-3d90eb3ff9e1_Output-Variables-leadId" format="java">
+      <types:shape format="raml" autogeneratedOrigin="027bfa47-10e9-44ef-a84c-0454f934d6cc"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_b3751e62-444e-4729-91f3-d6eefdedec08_Input-Payload" format="java">
+      <types:shape format="weave" example="weave/autogenerated/b3751e62-444e-4729-91f3-d6eefdedec08/Input-Payload.wev" autogeneratedOrigin="d197f7e0-41e9-4696-b185-e98ee55ad629"><![CDATA[%dw 2.0
+
+type auto_b3751e62_444e_4729_91f3_d6eefdedec08_Input_Payload = {|
+  Company: String, 
+  FirstName: String, 
+  LastName: String, 
+  Email: String, 
+  Phone?: String, 
+  Lead_Source__c?: String, 
+  Status?: String, 
+  Product__c?: Array<Any>, 
+  RecordTypeId?: String, 
+  CurrencyIsoCode?: String, 
+  Climate_Portal_Customer_ID__c?: Number, 
+  Climate_Portal_Account_ID__c?: Number, 
+  Climate_Portal_Artemis_ID__c?: Number, 
+  Supplier_REach_Transaction_Date__c: Number, 
+  Products: Array<{|    Name: String,     Volume: Number,     PurchaseOption: String  |}>
+|} {"typeAlias": "auto_b3751e62-444e-4729-91f3-d6eefdedec08_Input-Payload"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_b3751e62-444e-4729-91f3-d6eefdedec08_Input-Attributes" format="java">
+      <types:shape format="weave" example="weave/autogenerated/b3751e62-444e-4729-91f3-d6eefdedec08/Input-Attributes.wev" autogeneratedOrigin="d197f7e0-41e9-4696-b185-e98ee55ad629"><![CDATA[%dw 2.0
+
+type auto_b3751e62_444e_4729_91f3_d6eefdedec08_Input_Attributes = {|
+  clientCertificate?: {|
+    publicKey?: {|  |}, 
+    "type"?: String, 
+    encoded?: Binary
+  |}, 
+  headers: {|  |}, 
+  listenerPath: String, 
+  method: String, 
+  queryParams: {|  |}, 
+  queryString: String, 
+  relativePath: String, 
+  remoteAddress: String, 
+  requestPath: String, 
+  requestUri: String, 
+  scheme: String, 
+  uriParams: {|  |}, 
+  version: String, 
+  localAddress: String
+|}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_b3751e62-444e-4729-91f3-d6eefdedec08_Input-Variables-leadRequest" format="java">
+      <types:shape format="weave" example="weave/autogenerated/b3751e62-444e-4729-91f3-d6eefdedec08/Input-Variables-leadRequest.wev" autogeneratedOrigin="d197f7e0-41e9-4696-b185-e98ee55ad629"><![CDATA[%dw 2.0
+
+type auto_b3751e62_444e_4729_91f3_d6eefdedec08_Input_Variables_leadRequest = Array<{|  Id: String,   Company: String,   FirstName: String,   LastName: String,   Email: String,   Phone: String | Null,   Lead_Source__c: String | Null,   Status: String | Null,   Product__c: Array<Any> | Null, 
+  RecordTypeId: String | Null, 
+  CurrencyIsoCode: String | Null, 
+  Climate_Portal_Customer_ID__c: Number, 
+  Climate_Portal_Account_ID__c: Number, 
+  Climate_Portal_Artemis_ID__c: Number, 
+  Supplier_REach_Transaction_Date__c: Date, 
+  Products: Array<{|    Name: String,     Volume: Number,     PurchaseOption: String  |}>
+|}>
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_b3751e62-444e-4729-91f3-d6eefdedec08_Input-Variables-leadId" format="java">
+      <types:shape format="raml" autogeneratedOrigin="d197f7e0-41e9-4696-b185-e98ee55ad629"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_b3751e62-444e-4729-91f3-d6eefdedec08_Input-Variables-outboundHeaders" format="java">
+      <types:shape format="weave" example="weave/autogenerated/b3751e62-444e-4729-91f3-d6eefdedec08/Input-Variables-outboundHeaders.wev" autogeneratedOrigin="d197f7e0-41e9-4696-b185-e98ee55ad629"><![CDATA[%dw 2.0
+
+type auto_b3751e62_444e_4729_91f3_d6eefdedec08_Input_Variables_outboundHeaders = {|  |}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_b3751e62-444e-4729-91f3-d6eefdedec08_Input-Variables-httpStatus" format="java">
+      <types:shape format="raml" autogeneratedOrigin="d197f7e0-41e9-4696-b185-e98ee55ad629"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_b3751e62-444e-4729-91f3-d6eefdedec08_Output-Payload" format="json">
+      <types:shape format="weave" example="weave/autogenerated/b3751e62-444e-4729-91f3-d6eefdedec08/Output-Payload.wev" autogeneratedOrigin="d197f7e0-41e9-4696-b185-e98ee55ad629"><![CDATA[%dw 2.0
+
+type auto_b3751e62_444e_4729_91f3_d6eefdedec08_Output_Payload = {
+  Status?: String, 
+  Company: String, 
+  Products: Array<{    Volume: Number,     PurchaseOption: String,     Name: String,     _?: Any  }>, 
+  Email: String, 
+  Lead_Source__c?: String, 
+  Climate_Portal_Artemis_ID__c: Number, 
+  Supplier_REach_Transaction_Date__c: Number, 
+  FirstName: String, 
+  Climate_Portal_Account_ID__c: Number, 
+  CurrencyIsoCode?: String, 
+  Climate_Portal_Customer_ID__c: Number, 
+  Phone?: String, 
+  RecordTypeId?: String, 
+  Product__c?: Array<Any>, 
+  LastName: String, 
+  _?: Any
+}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_b3751e62-444e-4729-91f3-d6eefdedec08_Output-Attributes" format="java">
+      <types:shape format="weave" example="weave/autogenerated/b3751e62-444e-4729-91f3-d6eefdedec08/Output-Attributes.wev" autogeneratedOrigin="d197f7e0-41e9-4696-b185-e98ee55ad629"><![CDATA[%dw 2.0
+
+type auto_b3751e62_444e_4729_91f3_d6eefdedec08_Output_Attributes = {|
+  clientCertificate?: {|
+    publicKey?: {|  |}, 
+    "type"?: String, 
+    encoded?: Binary
+  |}, 
+  headers: {|  |}, 
+  listenerPath: String, 
+  method: String, 
+  queryParams: {|  |}, 
+  queryString: String, 
+  relativePath: String, 
+  remoteAddress: String, 
+  requestPath: String, 
+  requestUri: String, 
+  scheme: String, 
+  uriParams: {|  |}, 
+  version: String, 
+  localAddress: String
+|}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_b3751e62-444e-4729-91f3-d6eefdedec08_Output-Variables-outboundHeaders" format="java">
+      <types:shape format="weave" example="weave/autogenerated/b3751e62-444e-4729-91f3-d6eefdedec08/Output-Variables-outboundHeaders.wev" autogeneratedOrigin="d197f7e0-41e9-4696-b185-e98ee55ad629"><![CDATA[%dw 2.0
+
+type auto_b3751e62_444e_4729_91f3_d6eefdedec08_Output_Variables_outboundHeaders = {|  |}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_b3751e62-444e-4729-91f3-d6eefdedec08_Output-Variables-leadRequest" format="java">
+      <types:shape format="weave" example="weave/autogenerated/b3751e62-444e-4729-91f3-d6eefdedec08/Output-Variables-leadRequest.wev" autogeneratedOrigin="d197f7e0-41e9-4696-b185-e98ee55ad629"><![CDATA[%dw 2.0
+
+type auto_b3751e62_444e_4729_91f3_d6eefdedec08_Output_Variables_leadRequest = Array<{|  Id: String,   Company: String,   FirstName: String,   LastName: String,   Email: String,   Phone: String | Null,   Lead_Source__c: String | Null,   Status: String | Null,   Product__c: Array<Any> | Null, 
+  RecordTypeId: String | Null, 
+  CurrencyIsoCode: String | Null, 
+  Climate_Portal_Customer_ID__c: Number, 
+  Climate_Portal_Account_ID__c: Number, 
+  Climate_Portal_Artemis_ID__c: Number, 
+  Supplier_REach_Transaction_Date__c: Date, 
+  Products: Array<{|    Name: String,     Volume: Number,     PurchaseOption: String  |}>
+|}>
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_b3751e62-444e-4729-91f3-d6eefdedec08_Output-Variables-httpStatus" format="java">
+      <types:shape format="raml" autogeneratedOrigin="d197f7e0-41e9-4696-b185-e98ee55ad629"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_b3751e62-444e-4729-91f3-d6eefdedec08_Output-Variables-leadId" format="java">
+      <types:shape format="raml" autogeneratedOrigin="d197f7e0-41e9-4696-b185-e98ee55ad629"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="requestPayload" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: object
+properties:
+    method: string
+    requestUri: string
+    headers: 
+      type: object
+      properties:
+        accept?: string
+        content-type?: string
+    uriParameters: object
+    queryParameters: object
+    body?: object]]></types:shape>
+    </types:type>
+    <types:type name="PAYLOAD_Object" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="supplierReachPurchaseResponse" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: object
+properties:
+    LeadName: string
+    LeadCreated: boolean
+    ProductsCsvCreated: boolean
+    ProductsCsvAttachedToLead: boolean]]></types:shape>
+    </types:type>
+    <types:type name="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Input-Payload" format="csv">
+      <types:shape format="weave" example="weave/autogenerated/5c13589a-478c-4de3-a8ca-e622f6aefb8a/Input-Payload.wev" autogeneratedOrigin="12ce9bf1-82e7-457c-afdb-54507681e5d4"><![CDATA[%dw 2.0
+
+type auto_5c13589a_478c_4de3_a8ca_e622f6aefb8a_Input_Payload = Array<{|  Name: String,   Volume: Number,   PurchaseOption: String|}>
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Input-Attributes" format="java">
+      <types:shape format="weave" example="weave/autogenerated/5c13589a-478c-4de3-a8ca-e622f6aefb8a/Input-Attributes.wev" autogeneratedOrigin="12ce9bf1-82e7-457c-afdb-54507681e5d4"><![CDATA[%dw 2.0
+
+type auto_5c13589a_478c_4de3_a8ca_e622f6aefb8a_Input_Attributes = {|
+  clientCertificate?: {|
+    publicKey?: {|  |}, 
+    "type"?: String, 
+    encoded?: Binary
+  |}, 
+  headers: {|  |}, 
+  listenerPath: String, 
+  method: String, 
+  queryParams: {|  |}, 
+  queryString: String, 
+  relativePath: String, 
+  remoteAddress: String, 
+  requestPath: String, 
+  requestUri: String, 
+  scheme: String, 
+  uriParams: {|  |}, 
+  version: String, 
+  localAddress: String
+|}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Input-Variables-isProductsCsvFileCreated" format="java">
+      <types:shape format="raml" autogeneratedOrigin="12ce9bf1-82e7-457c-afdb-54507681e5d4"><![CDATA[#%RAML 1.0 DataType
+type: boolean]]></types:shape>
+    </types:type>
+    <types:type name="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Input-Variables-fileInfo" format="json">
+      <types:shape format="weave" example="weave/autogenerated/5c13589a-478c-4de3-a8ca-e622f6aefb8a/Input-Variables-fileInfo.wev" autogeneratedOrigin="12ce9bf1-82e7-457c-afdb-54507681e5d4"><![CDATA[%dw 2.0
+
+type auto_5c13589a_478c_4de3_a8ca_e622f6aefb8a_Input_Variables_fileInfo = Null
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Input-Variables-outboundHeaders" format="java">
+      <types:shape format="weave" example="weave/autogenerated/5c13589a-478c-4de3-a8ca-e622f6aefb8a/Input-Variables-outboundHeaders.wev" autogeneratedOrigin="12ce9bf1-82e7-457c-afdb-54507681e5d4"><![CDATA[%dw 2.0
+
+type auto_5c13589a_478c_4de3_a8ca_e622f6aefb8a_Input_Variables_outboundHeaders = {|  |}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Input-Variables-fileName" format="java">
+      <types:shape format="raml" autogeneratedOrigin="12ce9bf1-82e7-457c-afdb-54507681e5d4"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Input-Variables-leadRequest" format="java">
+      <types:shape format="weave" example="weave/autogenerated/5c13589a-478c-4de3-a8ca-e622f6aefb8a/Input-Variables-leadRequest.wev" autogeneratedOrigin="12ce9bf1-82e7-457c-afdb-54507681e5d4"><![CDATA[%dw 2.0
+
+type auto_5c13589a_478c_4de3_a8ca_e622f6aefb8a_Input_Variables_leadRequest = {|
+  Company: String, 
+  FirstName: String, 
+  LastName: String, 
+  Email: String, 
+  Phone: String | Null, 
+  Lead_Source__c: String | Null, 
+  Status: String | Null, 
+  Product__c: Array<Any> | Null, 
+  RecordTypeId: String | Null, 
+  CurrencyIsoCode: String | Null, 
+  Climate_Portal_Customer_ID__c: Number, 
+  Climate_Portal_Account_ID__c: Number, 
+  Climate_Portal_Artemis_ID__c: Number, 
+  Supplier_REach_Transaction_Date__c: Number, 
+  Products: Array<{|    Name: String,     Volume: Number,     PurchaseOption: String  |}>
+|}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Input-Variables-response" format="java">
+      <types:shape format="weave" example="weave/autogenerated/5c13589a-478c-4de3-a8ca-e622f6aefb8a/Input-Variables-response.wev" autogeneratedOrigin="12ce9bf1-82e7-457c-afdb-54507681e5d4"><![CDATA[%dw 2.0
+
+type auto_5c13589a_478c_4de3_a8ca_e622f6aefb8a_Input_Variables_response = {|
+  LeadName: String, 
+  LeadCreated: Boolean, 
+  ProductsCsvCreated: Boolean, 
+  ProductsCsvAttachedToLead: Boolean
+|}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Input-Variables-purchaseProducts" format="java">
+      <types:shape format="weave" example="weave/autogenerated/5c13589a-478c-4de3-a8ca-e622f6aefb8a/Input-Variables-purchaseProducts.wev" autogeneratedOrigin="12ce9bf1-82e7-457c-afdb-54507681e5d4"><![CDATA[%dw 2.0
+
+type auto_5c13589a_478c_4de3_a8ca_e622f6aefb8a_Input_Variables_purchaseProducts = {|
+  Products: Array<{|    Name: String,     Volume: Number,     PurchaseOption: String  |}>
+|} {"typeAlias": "auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Input-Variables-purchaseProducts"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Output-Payload" format="csv">
+      <types:shape format="weave" example="weave/autogenerated/5c13589a-478c-4de3-a8ca-e622f6aefb8a/Output-Payload.wev" autogeneratedOrigin="12ce9bf1-82e7-457c-afdb-54507681e5d4"><![CDATA[%dw 2.0
+
+type auto_5c13589a_478c_4de3_a8ca_e622f6aefb8a_Output_Payload = Null
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Output-Attributes" format="java">
+      <types:shape format="weave" example="weave/autogenerated/5c13589a-478c-4de3-a8ca-e622f6aefb8a/Output-Attributes.wev" autogeneratedOrigin="12ce9bf1-82e7-457c-afdb-54507681e5d4"><![CDATA[%dw 2.0
+
+type auto_5c13589a_478c_4de3_a8ca_e622f6aefb8a_Output_Attributes = {|
+  clientCertificate?: {|
+    publicKey?: {|  |}, 
+    "type"?: String, 
+    encoded?: Binary
+  |}, 
+  headers: {|  |}, 
+  listenerPath: String, 
+  method: String, 
+  queryParams: {|  |}, 
+  queryString: String, 
+  relativePath: String, 
+  remoteAddress: String, 
+  requestPath: String, 
+  requestUri: String, 
+  scheme: String, 
+  uriParams: {|  |}, 
+  version: String, 
+  localAddress: String
+|}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Output-Variables-outboundHeaders" format="java">
+      <types:shape format="weave" example="weave/autogenerated/5c13589a-478c-4de3-a8ca-e622f6aefb8a/Output-Variables-outboundHeaders.wev" autogeneratedOrigin="12ce9bf1-82e7-457c-afdb-54507681e5d4"><![CDATA[%dw 2.0
+
+type auto_5c13589a_478c_4de3_a8ca_e622f6aefb8a_Output_Variables_outboundHeaders = {|  |}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Output-Variables-fileName" format="java">
+      <types:shape format="raml" autogeneratedOrigin="12ce9bf1-82e7-457c-afdb-54507681e5d4"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Output-Variables-leadRequest" format="java">
+      <types:shape format="weave" example="weave/autogenerated/5c13589a-478c-4de3-a8ca-e622f6aefb8a/Output-Variables-leadRequest.wev" autogeneratedOrigin="12ce9bf1-82e7-457c-afdb-54507681e5d4"><![CDATA[%dw 2.0
+
+type auto_5c13589a_478c_4de3_a8ca_e622f6aefb8a_Output_Variables_leadRequest = {|
+  Company: String, 
+  FirstName: String, 
+  LastName: String, 
+  Email: String, 
+  Phone: String | Null, 
+  Lead_Source__c: String | Null, 
+  Status: String | Null, 
+  Product__c: Array<Any> | Null, 
+  RecordTypeId: String | Null, 
+  CurrencyIsoCode: String | Null, 
+  Climate_Portal_Customer_ID__c: Number, 
+  Climate_Portal_Account_ID__c: Number, 
+  Climate_Portal_Artemis_ID__c: Number, 
+  Supplier_REach_Transaction_Date__c: Number, 
+  Products: Array<{|    Name: String,     Volume: Number,     PurchaseOption: String  |}>
+|}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Output-Variables-response" format="java">
+      <types:shape format="weave" example="weave/autogenerated/5c13589a-478c-4de3-a8ca-e622f6aefb8a/Output-Variables-response.wev" autogeneratedOrigin="12ce9bf1-82e7-457c-afdb-54507681e5d4"><![CDATA[%dw 2.0
+
+type auto_5c13589a_478c_4de3_a8ca_e622f6aefb8a_Output_Variables_response = {|
+  LeadName: String, 
+  LeadCreated: Boolean, 
+  ProductsCsvCreated: Boolean, 
+  ProductsCsvAttachedToLead: Boolean
+|}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Output-Variables-isProductsCsvFileCreated" format="java">
+      <types:shape format="raml" autogeneratedOrigin="12ce9bf1-82e7-457c-afdb-54507681e5d4"><![CDATA[#%RAML 1.0 DataType
+type: boolean]]></types:shape>
+    </types:type>
+    <types:type name="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Output-Variables-contentVersionResponse" format="java">
+      <types:shape format="weave" example="weave/autogenerated/5c13589a-478c-4de3-a8ca-e622f6aefb8a/Output-Variables-contentVersionResponse.wev" autogeneratedOrigin="12ce9bf1-82e7-457c-afdb-54507681e5d4"><![CDATA[%dw 2.0
+
+type auto_5c13589a_478c_4de3_a8ca_e622f6aefb8a_Output_Variables_contentVersionResponse = Array<ContentVersion>
+type ContentVersion = {|
+  ContentDocumentId?: String, 
+  Id?: String {"typeId": "Id"}
+|} {"label": "Content Version",
+"typeId": "ContentVersion"}
+
+
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Output-Variables-fileInfo" format="json">
+      <types:shape format="weave" example="weave/autogenerated/5c13589a-478c-4de3-a8ca-e622f6aefb8a/Output-Variables-fileInfo.wev" autogeneratedOrigin="12ce9bf1-82e7-457c-afdb-54507681e5d4"><![CDATA[%dw 2.0
+
+type auto_5c13589a_478c_4de3_a8ca_e622f6aefb8a_Output_Variables_fileInfo = Null
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Output-Variables-purchaseProducts" format="java">
+      <types:shape format="weave" example="weave/autogenerated/5c13589a-478c-4de3-a8ca-e622f6aefb8a/Output-Variables-purchaseProducts.wev" autogeneratedOrigin="12ce9bf1-82e7-457c-afdb-54507681e5d4"><![CDATA[%dw 2.0
+
+type auto_5c13589a_478c_4de3_a8ca_e622f6aefb8a_Output_Variables_purchaseProducts = {|
+  Products: Array<{|    Name: String,     Volume: Number,     PurchaseOption: String  |}>
+|} {"typeAlias": "auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Output-Variables-purchaseProducts"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Output-Variables-isFileAttached" format="java">
+      <types:shape format="weave" example="weave/autogenerated/5c13589a-478c-4de3-a8ca-e622f6aefb8a/Output-Variables-isFileAttached.wev" autogeneratedOrigin="12ce9bf1-82e7-457c-afdb-54507681e5d4"><![CDATA[%dw 2.0
+
+type auto_5c13589a_478c_4de3_a8ca_e622f6aefb8a_Output_Variables_isFileAttached = Boolean {"typeId": "boolean"} | Null
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_b9333a5a-57b1-4f5a-9e9f-9dfde57f91d5_Output-Payload" format="java">
+      <types:shape format="weave" example="weave/autogenerated/b9333a5a-57b1-4f5a-9e9f-9dfde57f91d5/Output-Payload.wev" autogeneratedOrigin="dcbefa51-a55b-45c5-a21c-397e8bc90cd7"><![CDATA[%dw 2.0
+
+type auto_b9333a5a_57b1_4f5a_9e9f_9dfde57f91d5_Output_Payload = Any
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_b9333a5a-57b1-4f5a-9e9f-9dfde57f91d5_Output-Variables-httpStatus" format="java">
+      <types:shape format="raml" autogeneratedOrigin="dcbefa51-a55b-45c5-a21c-397e8bc90cd7"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Input-Payload" format="java">
+      <types:shape format="weave" example="weave/autogenerated/94d01d0d-866c-4c99-99ee-bf281560041d/Input-Payload.wev" autogeneratedOrigin="4ded7f86-c2e9-49ba-a24d-18b07ec58c63"><![CDATA[%dw 2.0
+
+type auto_94d01d0d_866c_4c99_99ee_bf281560041d_Input_Payload = {|
+  entityType: String, 
+  entityId: Null, 
+  entityName: String
+|}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Input-Attributes" format="java">
+      <types:shape format="weave" example="weave/autogenerated/94d01d0d-866c-4c99-99ee-bf281560041d/Input-Attributes.wev" autogeneratedOrigin="4ded7f86-c2e9-49ba-a24d-18b07ec58c63"><![CDATA[%dw 2.0
+
+type auto_94d01d0d_866c_4c99_99ee_bf281560041d_Input_Attributes = {|
+  clientCertificate?: {|
+    publicKey?: {|  |}, 
+    "type"?: String, 
+    encoded?: Binary
+  |}, 
+  headers: {|  |}, 
+  listenerPath: String, 
+  method: String, 
+  queryParams: {|  |}, 
+  queryString: String, 
+  relativePath: String, 
+  remoteAddress: String, 
+  requestPath: String, 
+  requestUri: String, 
+  scheme: String, 
+  uriParams: {|  |}, 
+  version: String, 
+  localAddress: String
+|}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Input-Variables-outboundHeaders" format="java">
+      <types:shape format="weave" example="weave/autogenerated/94d01d0d-866c-4c99-99ee-bf281560041d/Input-Variables-outboundHeaders.wev" autogeneratedOrigin="4ded7f86-c2e9-49ba-a24d-18b07ec58c63"><![CDATA[%dw 2.0
+
+type auto_94d01d0d_866c_4c99_99ee_bf281560041d_Input_Variables_outboundHeaders = {|  |}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Input-Variables-request" format="java">
+      <types:shape format="raml" autogeneratedOrigin="4ded7f86-c2e9-49ba-a24d-18b07ec58c63"><![CDATA[#%RAML 1.0 DataType
+type: object
+properties:
+    method: string
+    requestUri: string
+    headers: 
+      type: object
+      properties:
+        accept?: string
+        content-type?: string
+    uriParameters: object
+    queryParameters: object
+    body?: object]]></types:shape>
+    </types:type>
+    <types:type name="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Input-Variables-fileName" format="java">
+      <types:shape format="raml" autogeneratedOrigin="4ded7f86-c2e9-49ba-a24d-18b07ec58c63"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Input-Variables-contentVersionResponse" format="java">
+      <types:shape format="weave" example="weave/autogenerated/94d01d0d-866c-4c99-99ee-bf281560041d/Input-Variables-contentVersionResponse.wev" autogeneratedOrigin="4ded7f86-c2e9-49ba-a24d-18b07ec58c63"><![CDATA[%dw 2.0
+
+type auto_94d01d0d_866c_4c99_99ee_bf281560041d_Input_Variables_contentVersionResponse = Array<ContentVersion>
+type ContentVersion = {|
+  ContentDocumentId?: String, 
+  Id?: String {"typeId": "Id"}
+|} {"label": "Content Version",
+"typeId": "ContentVersion"}
+
+
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Input-Variables-leadName" format="java">
+      <types:shape format="raml" autogeneratedOrigin="4ded7f86-c2e9-49ba-a24d-18b07ec58c63"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Input-Variables-fileInfo" format="json">
+      <types:shape format="weave" example="weave/autogenerated/94d01d0d-866c-4c99-99ee-bf281560041d/Input-Variables-fileInfo.wev" autogeneratedOrigin="4ded7f86-c2e9-49ba-a24d-18b07ec58c63"><![CDATA[%dw 2.0
+
+type auto_94d01d0d_866c_4c99_99ee_bf281560041d_Input_Variables_fileInfo = Null
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Input-Variables-isFileAttached" format="java">
+      <types:shape format="weave" example="weave/autogenerated/94d01d0d-866c-4c99-99ee-bf281560041d/Input-Variables-isFileAttached.wev" autogeneratedOrigin="4ded7f86-c2e9-49ba-a24d-18b07ec58c63"><![CDATA[%dw 2.0
+
+type auto_94d01d0d_866c_4c99_99ee_bf281560041d_Input_Variables_isFileAttached = Boolean {"typeId": "boolean"} | Null
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Input-Variables-leadRequest" format="java">
+      <types:shape format="weave" example="weave/autogenerated/94d01d0d-866c-4c99-99ee-bf281560041d/Input-Variables-leadRequest.wev" autogeneratedOrigin="4ded7f86-c2e9-49ba-a24d-18b07ec58c63"><![CDATA[%dw 2.0
+
+type auto_94d01d0d_866c_4c99_99ee_bf281560041d_Input_Variables_leadRequest = {|
+  Company: String, 
+  FirstName: String, 
+  LastName: String, 
+  Email: String, 
+  Phone: String | Null, 
+  Lead_Source__c: String | Null, 
+  Status: String | Null, 
+  Product__c: Array<Any> | Null, 
+  RecordTypeId: String | Null, 
+  CurrencyIsoCode: String | Null, 
+  Climate_Portal_Customer_ID__c: Number, 
+  Climate_Portal_Account_ID__c: Number, 
+  Climate_Portal_Artemis_ID__c: Number, 
+  Supplier_REach_Transaction_Date__c: Number, 
+  Products: Array<{|    Name: String,     Volume: Number,     PurchaseOption: String  |}>
+|}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Input-Variables-response" format="java">
+      <types:shape format="weave" example="weave/autogenerated/94d01d0d-866c-4c99-99ee-bf281560041d/Input-Variables-response.wev" autogeneratedOrigin="4ded7f86-c2e9-49ba-a24d-18b07ec58c63"><![CDATA[%dw 2.0
+
+type auto_94d01d0d_866c_4c99_99ee_bf281560041d_Input_Variables_response = {|
+  LeadName: String, 
+  LeadCreated: Boolean, 
+  ProductsCsvCreated: Boolean, 
+  ProductsCsvAttachedToLead: Boolean
+|}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Input-Variables-isProductsCsvFileCreated" format="java">
+      <types:shape format="raml" autogeneratedOrigin="4ded7f86-c2e9-49ba-a24d-18b07ec58c63"><![CDATA[#%RAML 1.0 DataType
+type: boolean]]></types:shape>
+    </types:type>
+    <types:type name="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Input-Variables-httpStatus" format="java">
+      <types:shape format="raml" autogeneratedOrigin="4ded7f86-c2e9-49ba-a24d-18b07ec58c63"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Input-Variables-purchaseProducts" format="java">
+      <types:shape format="weave" example="weave/autogenerated/94d01d0d-866c-4c99-99ee-bf281560041d/Input-Variables-purchaseProducts.wev" autogeneratedOrigin="4ded7f86-c2e9-49ba-a24d-18b07ec58c63"><![CDATA[%dw 2.0
+
+type auto_94d01d0d_866c_4c99_99ee_bf281560041d_Input_Variables_purchaseProducts = {|
+  Products: Array<{|    Name: String,     Volume: Number,     PurchaseOption: String  |}>
+|} {"typeAlias": "auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Output-Variables-purchaseProducts"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Input-Variables-leadId" format="java">
+      <types:shape format="raml" autogeneratedOrigin="4ded7f86-c2e9-49ba-a24d-18b07ec58c63"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Output-Payload" format="java">
+      <types:shape format="weave" example="weave/autogenerated/94d01d0d-866c-4c99-99ee-bf281560041d/Output-Payload.wev" autogeneratedOrigin="4ded7f86-c2e9-49ba-a24d-18b07ec58c63"><![CDATA[%dw 2.0
+
+type auto_94d01d0d_866c_4c99_99ee_bf281560041d_Output_Payload = Any
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Output-Attributes" format="java">
+      <types:shape format="weave" example="weave/autogenerated/94d01d0d-866c-4c99-99ee-bf281560041d/Output-Attributes.wev" autogeneratedOrigin="4ded7f86-c2e9-49ba-a24d-18b07ec58c63"><![CDATA[%dw 2.0
+
+type auto_94d01d0d_866c_4c99_99ee_bf281560041d_Output_Attributes = {|
+  clientCertificate?: {|
+    publicKey?: {|  |}, 
+    "type"?: String, 
+    encoded?: Binary
+  |}, 
+  headers: {|  |}, 
+  listenerPath: String, 
+  method: String, 
+  queryParams: {|  |}, 
+  queryString: String, 
+  relativePath: String, 
+  remoteAddress: String, 
+  requestPath: String, 
+  requestUri: String, 
+  scheme: String, 
+  uriParams: {|  |}, 
+  version: String, 
+  localAddress: String
+|}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Output-Variables-outboundHeaders" format="java">
+      <types:shape format="weave" example="weave/autogenerated/94d01d0d-866c-4c99-99ee-bf281560041d/Output-Variables-outboundHeaders.wev" autogeneratedOrigin="4ded7f86-c2e9-49ba-a24d-18b07ec58c63"><![CDATA[%dw 2.0
+
+type auto_94d01d0d_866c_4c99_99ee_bf281560041d_Output_Variables_outboundHeaders = {|  |}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Output-Variables-request" format="java">
+      <types:shape format="weave" example="weave/autogenerated/94d01d0d-866c-4c99-99ee-bf281560041d/Output-Variables-request.wev" autogeneratedOrigin="4ded7f86-c2e9-49ba-a24d-18b07ec58c63"><![CDATA[%dw 2.0
+
+type auto_94d01d0d_866c_4c99_99ee_bf281560041d_Output_Variables_request = {|
+  method: String, 
+  requestUri: String, 
+  headers: {|
+    accept?: String, 
+    "content-type"?: String
+  |}, 
+  uriParameters: {|  |}, 
+  queryParameters: {|  |}, 
+  body?: {|  |}
+|} {"typeAlias": "auto_8bdff4e1-dac0-4727-a0c8-50b47363ef75_Output-Variables-request"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Output-Variables-fileName" format="java">
+      <types:shape format="raml" autogeneratedOrigin="4ded7f86-c2e9-49ba-a24d-18b07ec58c63"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Output-Variables-contentVersionResponse" format="java">
+      <types:shape format="weave" example="weave/autogenerated/94d01d0d-866c-4c99-99ee-bf281560041d/Output-Variables-contentVersionResponse.wev" autogeneratedOrigin="4ded7f86-c2e9-49ba-a24d-18b07ec58c63"><![CDATA[%dw 2.0
+
+type auto_94d01d0d_866c_4c99_99ee_bf281560041d_Output_Variables_contentVersionResponse = Array<ContentVersion>
+type ContentVersion = {|
+  ContentDocumentId?: String, 
+  Id?: String {"typeId": "Id"}
+|} {"label": "Content Version",
+"typeId": "ContentVersion"}
+
+
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Output-Variables-leadName" format="java">
+      <types:shape format="raml" autogeneratedOrigin="4ded7f86-c2e9-49ba-a24d-18b07ec58c63"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Output-Variables-fileInfo" format="json">
+      <types:shape format="weave" example="weave/autogenerated/94d01d0d-866c-4c99-99ee-bf281560041d/Output-Variables-fileInfo.wev" autogeneratedOrigin="4ded7f86-c2e9-49ba-a24d-18b07ec58c63"><![CDATA[%dw 2.0
+
+type auto_94d01d0d_866c_4c99_99ee_bf281560041d_Output_Variables_fileInfo = Null
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Output-Variables-isFileAttached" format="java">
+      <types:shape format="weave" example="weave/autogenerated/94d01d0d-866c-4c99-99ee-bf281560041d/Output-Variables-isFileAttached.wev" autogeneratedOrigin="4ded7f86-c2e9-49ba-a24d-18b07ec58c63"><![CDATA[%dw 2.0
+
+type auto_94d01d0d_866c_4c99_99ee_bf281560041d_Output_Variables_isFileAttached = Boolean {"typeId": "boolean"} | Null
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Output-Variables-leadRequest" format="java">
+      <types:shape format="weave" example="weave/autogenerated/94d01d0d-866c-4c99-99ee-bf281560041d/Output-Variables-leadRequest.wev" autogeneratedOrigin="4ded7f86-c2e9-49ba-a24d-18b07ec58c63"><![CDATA[%dw 2.0
+
+type auto_94d01d0d_866c_4c99_99ee_bf281560041d_Output_Variables_leadRequest = {|
+  Company: String, 
+  FirstName: String, 
+  LastName: String, 
+  Email: String, 
+  Phone: String | Null, 
+  Lead_Source__c: String | Null, 
+  Status: String | Null, 
+  Product__c: Array<Any> | Null, 
+  RecordTypeId: String | Null, 
+  CurrencyIsoCode: String | Null, 
+  Climate_Portal_Customer_ID__c: Number, 
+  Climate_Portal_Account_ID__c: Number, 
+  Climate_Portal_Artemis_ID__c: Number, 
+  Supplier_REach_Transaction_Date__c: Number, 
+  Products: Array<{|    Name: String,     Volume: Number,     PurchaseOption: String  |}>
+|}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Output-Variables-response" format="java">
+      <types:shape format="weave" example="weave/autogenerated/94d01d0d-866c-4c99-99ee-bf281560041d/Output-Variables-response.wev" autogeneratedOrigin="4ded7f86-c2e9-49ba-a24d-18b07ec58c63"><![CDATA[%dw 2.0
+
+type auto_94d01d0d_866c_4c99_99ee_bf281560041d_Output_Variables_response = {|
+  LeadName: String, 
+  LeadCreated: Boolean, 
+  ProductsCsvCreated: Boolean, 
+  ProductsCsvAttachedToLead: Boolean
+|}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Output-Variables-isProductsCsvFileCreated" format="java">
+      <types:shape format="raml" autogeneratedOrigin="4ded7f86-c2e9-49ba-a24d-18b07ec58c63"><![CDATA[#%RAML 1.0 DataType
+type: boolean]]></types:shape>
+    </types:type>
+    <types:type name="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Output-Variables-httpStatus" format="java">
+      <types:shape format="raml" autogeneratedOrigin="4ded7f86-c2e9-49ba-a24d-18b07ec58c63"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Output-Variables-purchaseProducts" format="java">
+      <types:shape format="weave" example="weave/autogenerated/94d01d0d-866c-4c99-99ee-bf281560041d/Output-Variables-purchaseProducts.wev" autogeneratedOrigin="4ded7f86-c2e9-49ba-a24d-18b07ec58c63"><![CDATA[%dw 2.0
+
+type auto_94d01d0d_866c_4c99_99ee_bf281560041d_Output_Variables_purchaseProducts = {|
+  Products: Array<{|    Name: String,     Volume: Number,     PurchaseOption: String  |}>
+|} {"typeAlias": "auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Output-Variables-purchaseProducts"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Output-Variables-leadId" format="java">
+      <types:shape format="raml" autogeneratedOrigin="4ded7f86-c2e9-49ba-a24d-18b07ec58c63"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_357faa15-f957-4846-b4c6-c9164d7790a8_Input-Payload" format="java">
+      <types:shape format="weave" example="weave/autogenerated/357faa15-f957-4846-b4c6-c9164d7790a8/Input-Payload.wev" autogeneratedOrigin="55a2cd8b-60f3-458a-a374-37ff36e1d384"><![CDATA[%dw 2.0
+
+type auto_357faa15_f957_4846_b4c6_c9164d7790a8_Input_Payload = Any
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_357faa15-f957-4846-b4c6-c9164d7790a8_Input-Attributes" format="java">
+      <types:shape format="weave" example="weave/autogenerated/357faa15-f957-4846-b4c6-c9164d7790a8/Input-Attributes.wev" autogeneratedOrigin="55a2cd8b-60f3-458a-a374-37ff36e1d384"><![CDATA[%dw 2.0
+
+type auto_357faa15_f957_4846_b4c6_c9164d7790a8_Input_Attributes = {|
+  listenerPath: String, 
+  rawRequestPath: String, 
+  relativePath: String, 
+  maskedRequestPath: String, 
+  version: String, 
+  scheme: String, 
+  method: String, 
+  requestUri: String, 
+  rawRequestUri: String, 
+  queryString: String, 
+  localAddress: String, 
+  remoteAddress: String, 
+  clientCertificate?: java_security_cert_Certificate, 
+  queryParams: { _?: String }, 
+  uriParams: { _?: String }, 
+  requestPath: String, 
+  headers: { _?: String }
+|} {"typeAlias": "HttpRequestAttributes",
+"typeId": "org.mule.extension.http.api.HttpRequestAttributes"}
+type java_security_cert_Certificate = {|
+  encoded?: Binary, 
+  publicKey?: java_security_PublicKey, 
+  "type"?: String
+|} {"typeAlias": "Certificate",
+"typeId": "java.security.cert.Certificate"}
+type java_security_PublicKey = {|  |} {"typeAlias": "PublicKey",
+"typeId": "java.security.PublicKey"}
+
+
+
+
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_357faa15-f957-4846-b4c6-c9164d7790a8_Output-Payload" format="java">
+      <types:shape format="weave" example="weave/autogenerated/357faa15-f957-4846-b4c6-c9164d7790a8/Output-Payload.wev" autogeneratedOrigin="55a2cd8b-60f3-458a-a374-37ff36e1d384"><![CDATA[%dw 2.0
+
+type auto_357faa15_f957_4846_b4c6_c9164d7790a8_Output_Payload = Array<{ _?: Any }>
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_357faa15-f957-4846-b4c6-c9164d7790a8_Output-Attributes" format="java">
+      <types:shape format="weave" example="weave/autogenerated/357faa15-f957-4846-b4c6-c9164d7790a8/Output-Attributes.wev" autogeneratedOrigin="55a2cd8b-60f3-458a-a374-37ff36e1d384"><![CDATA[%dw 2.0
+
+type auto_357faa15_f957_4846_b4c6_c9164d7790a8_Output_Attributes = Null
+
+]]></types:shape>
+    </types:type>
+    <types:type name="SalesforceOpportunityLineItem" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: array
+items:
+   properties:
+    OpportunityID: string
+    OpportunityProductName: string
+    WriteInProductName: string
+    ProductID: string
+    VintageYear: number
+    GenerationStart: string
+    GenerationEnd: string
+    Quantity: number
+    UnitPrice: number
+    TotalPrice: number]]></types:shape>
+    </types:type>
+    <types:type name="SalesforceProduct" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: array
+items:
+  properties:
+    ProductID: string
+    ProductName: string
+    Family: string
+    FamilyBU: string
+    IsCommodityProduct: boolean
+    IsGreenE: boolean
+    Vintage: number
+    Country: string 
+    CurrencyIsoCode: string
+    ProductCode: string
+    ProductBusinessLine: string
+    IsActive: boolean
+    IsArchived: boolean
+    IsDeleted: boolean]]></types:shape>
+    </types:type>
+    <types:type name="SalesforceAccount" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: array
+items:
+  properties:
+    AccountID: string
+    AccountName: string
+    AccountOwnerID: string
+    AccountOwnerName: string
+    AccountOwnerIsActive: boolean
+    AccountCounterpartyID: number
+    CounterpartyID: number
+    CaseSafeID: string
+    EnterpriseID: string
+    ]]></types:shape>
+    </types:type>
+    <types:type name="SalesforceEntityDocumentResponse" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: array
+items:
+  properties:
+    ContentDocumentId: string]]></types:shape>
+    </types:type>
+    <types:type name="SalesforceDocumentsResponse" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: array
+items:
+  properties:
+    project_id: number
+    filename: string
+    filesize: number
+    mimetype: string
+    created_at: string
+    document_guid: string
+    document_type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_3e1d5899-25b3-4dc8-81e6-a89dd87e92be_Input-Variables-request" format="java">
+      <types:shape format="weave" example="weave/autogenerated/3e1d5899-25b3-4dc8-81e6-a89dd87e92be/Input-Variables-request.wev" autogeneratedOrigin="0085d498-52c5-4438-a20a-a9e7dad011b4"><![CDATA[%dw 2.0
+
+type auto_3e1d5899_25b3_4dc8_81e6_a89dd87e92be_Input_Variables_request = Any
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_3e1d5899-25b3-4dc8-81e6-a89dd87e92be_Output-Payload" format="java">
+      <types:shape format="raml" autogeneratedOrigin="0085d498-52c5-4438-a20a-a9e7dad011b4"><![CDATA[#%RAML 1.0 DataType
+type: array
+items:
+  properties:
+    project_id: number
+    filename: string
+    filesize: number
+    mimetype: string
+    created_at: string
+    document_guid: string
+    document_type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_3e1d5899-25b3-4dc8-81e6-a89dd87e92be_Output-Attributes" format="java">
+      <types:shape format="weave" example="weave/autogenerated/3e1d5899-25b3-4dc8-81e6-a89dd87e92be/Output-Attributes.wev" autogeneratedOrigin="0085d498-52c5-4438-a20a-a9e7dad011b4"><![CDATA[%dw 2.0
+
+type auto_3e1d5899_25b3_4dc8_81e6_a89dd87e92be_Output_Attributes = Null
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_3e1d5899-25b3-4dc8-81e6-a89dd87e92be_Output-Variables-request" format="java">
+      <types:shape format="weave" example="weave/autogenerated/3e1d5899-25b3-4dc8-81e6-a89dd87e92be/Output-Variables-request.wev" autogeneratedOrigin="0085d498-52c5-4438-a20a-a9e7dad011b4"><![CDATA[%dw 2.0
+
+type auto_3e1d5899_25b3_4dc8_81e6_a89dd87e92be_Output_Variables_request = Any
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_3e1d5899-25b3-4dc8-81e6-a89dd87e92be_Output-Variables-entityDocumentResponse" format="java">
+      <types:shape format="weave" example="weave/autogenerated/3e1d5899-25b3-4dc8-81e6-a89dd87e92be/Output-Variables-entityDocumentResponse.wev" autogeneratedOrigin="0085d498-52c5-4438-a20a-a9e7dad011b4"><![CDATA[%dw 2.0
+
+type auto_3e1d5899_25b3_4dc8_81e6_a89dd87e92be_Output_Variables_entityDocumentResponse = Array<ContentDocumentLink>
+type ContentDocumentLink = {| ContentDocumentId?: String |} {"label": "Content Document Link",
+"typeId": "ContentDocumentLink"}
+
+
+
+]]></types:shape>
+    </types:type>
+    <types:type name="SalesforceAccountOpportunityIdList" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: array
+items:
+  properties:
+    Id: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_8669c515-e796-4e64-a72c-d520bef4f579_Input-Payload" format="java">
+      <types:shape format="weave" example="weave/autogenerated/8669c515-e796-4e64-a72c-d520bef4f579/Input-Payload.wev" autogeneratedOrigin="24448094-c7d4-4359-a64e-7a016cbde3ec"><![CDATA[%dw 2.0
+
+type auto_8669c515_e796_4e64_a72c_d520bef4f579_Input_Payload = Null
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_8669c515-e796-4e64-a72c-d520bef4f579_Input-Variables-request" format="java">
+      <types:shape format="weave" example="weave/autogenerated/8669c515-e796-4e64-a72c-d520bef4f579/Input-Variables-request.wev" autogeneratedOrigin="24448094-c7d4-4359-a64e-7a016cbde3ec"><![CDATA[%dw 2.0
+
+type auto_8669c515_e796_4e64_a72c_d520bef4f579_Input_Variables_request = Any
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_8669c515-e796-4e64-a72c-d520bef4f579_Output-Payload" format="json">
+      <types:shape format="weave" example="weave/autogenerated/8669c515-e796-4e64-a72c-d520bef4f579/Output-Payload.wev" autogeneratedOrigin="24448094-c7d4-4359-a64e-7a016cbde3ec"><![CDATA[%dw 2.0
+
+type auto_8669c515_e796_4e64_a72c_d520bef4f579_Output_Payload = Any
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_8669c515-e796-4e64-a72c-d520bef4f579_Output-Attributes" format="java">
+      <types:shape format="weave" example="weave/autogenerated/8669c515-e796-4e64-a72c-d520bef4f579/Output-Attributes.wev" autogeneratedOrigin="24448094-c7d4-4359-a64e-7a016cbde3ec"><![CDATA[%dw 2.0
+
+type auto_8669c515_e796_4e64_a72c_d520bef4f579_Output_Attributes = {|
+  statusCode: Number, 
+  reasonPhrase: String, 
+  headers: { _?: String }
+|} {"typeAlias": "HttpResponseAttributes",
+"typeId": "org.mule.extension.http.api.HttpResponseAttributes"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_8669c515-e796-4e64-a72c-d520bef4f579_Output-Variables-request" format="java">
+      <types:shape format="weave" example="weave/autogenerated/8669c515-e796-4e64-a72c-d520bef4f579/Output-Variables-request.wev" autogeneratedOrigin="24448094-c7d4-4359-a64e-7a016cbde3ec"><![CDATA[%dw 2.0
+
+type auto_8669c515_e796_4e64_a72c_d520bef4f579_Output_Variables_request = Any
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_8669c515-e796-4e64-a72c-d520bef4f579_Output-Variables-filters" format="java">
+      <types:shape format="weave" example="weave/autogenerated/8669c515-e796-4e64-a72c-d520bef4f579/Output-Variables-filters.wev" autogeneratedOrigin="24448094-c7d4-4359-a64e-7a016cbde3ec"><![CDATA[%dw 2.0
+
+type auto_8669c515_e796_4e64_a72c_d520bef4f579_Output_Variables_filters = Any
+
+]]></types:shape>
+    </types:type>
+    <types:type name="PAYLOAD_Array_String" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="SalesforceRecordIds" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: array
+items:
+  properties:
+    RecordId: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_12bb0d79-580b-4862-8829-b45afc32b3db_Input-Payload" format="java">
+      <types:shape format="weave" example="weave/autogenerated/12bb0d79-580b-4862-8829-b45afc32b3db/Input-Payload.wev" autogeneratedOrigin="02665f9a-e580-4d0a-b3bd-ce073e255a17"><![CDATA[%dw 2.0
+
+type auto_12bb0d79_580b_4862_8829_b45afc32b3db_Input_Payload = {|  |} {"typeAlias": "Object",
+"class": "java.lang.Object",
+"typeId": "java.lang.Object"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_12bb0d79-580b-4862-8829-b45afc32b3db_Output-Payload" format="java">
+      <types:shape format="weave" example="weave/autogenerated/12bb0d79-580b-4862-8829-b45afc32b3db/Output-Payload.wev" autogeneratedOrigin="02665f9a-e580-4d0a-b3bd-ce073e255a17"><![CDATA[%dw 2.0
+
+type auto_12bb0d79_580b_4862_8829_b45afc32b3db_Output_Payload = {|  |} {"typeAlias": "Object",
+"class": "java.lang.Object",
+"typeId": "java.lang.Object"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_12bb0d79-580b-4862-8829-b45afc32b3db_Output-Variables-access_token" format="java">
+      <types:shape format="raml" autogeneratedOrigin="02665f9a-e580-4d0a-b3bd-ce073e255a17"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_db1f8d35-2e5b-4f0d-a0c4-c4bfd5e3bab3_Input-Payload" format="java">
+      <types:shape format="weave" example="weave/autogenerated/db1f8d35-2e5b-4f0d-a0c4-c4bfd5e3bab3/Input-Payload.wev" autogeneratedOrigin="61d8ce5e-6e31-49ce-a6a1-0e15e3cef8d0"><![CDATA[%dw 2.0
+
+type auto_db1f8d35_2e5b_4f0d_a0c4_c4bfd5e3bab3_Input_Payload = Any
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_db1f8d35-2e5b-4f0d-a0c4-c4bfd5e3bab3_Input-Attributes" format="java">
+      <types:shape format="weave" example="weave/autogenerated/db1f8d35-2e5b-4f0d-a0c4-c4bfd5e3bab3/Input-Attributes.wev" autogeneratedOrigin="61d8ce5e-6e31-49ce-a6a1-0e15e3cef8d0"><![CDATA[%dw 2.0
+
+type auto_db1f8d35_2e5b_4f0d_a0c4_c4bfd5e3bab3_Input_Attributes = {|
+  listenerPath: String, 
+  rawRequestPath: String, 
+  relativePath: String, 
+  maskedRequestPath: String, 
+  version: String, 
+  scheme: String, 
+  method: String, 
+  requestUri: String, 
+  rawRequestUri: String, 
+  queryString: String, 
+  localAddress: String, 
+  remoteAddress: String, 
+  clientCertificate?: java_security_cert_Certificate, 
+  queryParams: { _?: String }, 
+  uriParams: { _?: String }, 
+  requestPath: String, 
+  headers: { _?: String }
+|} {"typeAlias": "HttpRequestAttributes",
+"typeId": "org.mule.extension.http.api.HttpRequestAttributes"}
+type java_security_cert_Certificate = {|
+  encoded?: Binary, 
+  publicKey?: java_security_PublicKey, 
+  "type"?: String
+|} {"typeAlias": "Certificate",
+"typeId": "java.security.cert.Certificate"}
+type java_security_PublicKey = {|  |} {"typeAlias": "PublicKey",
+"typeId": "java.security.PublicKey"}
+
+
+
+
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_db1f8d35-2e5b-4f0d-a0c4-c4bfd5e3bab3_Output-Payload" format="java">
+      <types:shape format="weave" example="weave/autogenerated/db1f8d35-2e5b-4f0d-a0c4-c4bfd5e3bab3/Output-Payload.wev" autogeneratedOrigin="61d8ce5e-6e31-49ce-a6a1-0e15e3cef8d0"><![CDATA[%dw 2.0
+
+type auto_db1f8d35_2e5b_4f0d_a0c4_c4bfd5e3bab3_Output_Payload = Array<{ _?: Any }>
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_db1f8d35-2e5b-4f0d-a0c4-c4bfd5e3bab3_Output-Attributes" format="java">
+      <types:shape format="weave" example="weave/autogenerated/db1f8d35-2e5b-4f0d-a0c4-c4bfd5e3bab3/Output-Attributes.wev" autogeneratedOrigin="61d8ce5e-6e31-49ce-a6a1-0e15e3cef8d0"><![CDATA[%dw 2.0
+
+type auto_db1f8d35_2e5b_4f0d_a0c4_c4bfd5e3bab3_Output_Attributes = Null
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#cf30891d-548c-4c13-a19b-c3813b948795">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="stringPayload"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+    <types:operation-declaration>
+      <types:inputs>
+        <types:parameter name="value" type="kvpExample"/>
+      </types:inputs>
+    </types:operation-declaration>
+  </types:enrichment>
+  <types:enrichment select="#5f34d1e7-a0ea-44c3-bba6-d2f50aba89cc">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="kvpExample"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="kvpExample"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#1e7e82ae-e61d-49ba-b739-5cb71fe36c5f">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="kvpExample"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#4dbfd318-040b-442c-a7ea-9644eae7768c">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="kvpExample"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#0e93d0fd-bf03-46a4-ab65-6f03665a1edc">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="xeroAuthHeaderExample"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+    <types:operation-declaration>
+      <types:inputs>
+        <types:parameter name="value" type="xeroAuthHeaderExample"/>
+      </types:inputs>
+    </types:operation-declaration>
+  </types:enrichment>
+  <types:enrichment select="#6ca414bd-5853-4c90-aeef-8fcc4945bed0">
+    <types:operation-declaration>
+      <types:inputs>
+        <types:parameter name="value" type="kvpExample"/>
+      </types:inputs>
+    </types:operation-declaration>
+  </types:enrichment>
+  <types:enrichment select="#46011b07-c3be-4599-8ec9-b1661673a045">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:variables>
+          <types:variable name="Config" type="storeXeroAuthPostExample"/>
+        </types:variables>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#13185eef-36d5-437d-b662-dc786e14fdd7">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="xeroInvoicesPayloadExample"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#77fd2ee6-4a29-47f4-95c8-c47a2706f2db">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:variables>
+          <types:variable name="invoices_attachments" type="xeroInvoicesAttachmentsExample"/>
+          <types:variable name="attachments" type="AttachmentsPayloadResponseExample"/>
+          <types:variable name="invoices" type="xeroInvoicesPayloadExample"/>
+          <types:variable name="confirm_invoices" type="xeroConfirmsInvoicesExample"/>
+        </types:variables>
+      </types:input-event>
+    </types:processor-declaration>
+    <types:operation-declaration>
+      <types:inputs>
+        <types:parameter name="value" type="xeroConfirmInvoicesExample"/>
+      </types:inputs>
+    </types:operation-declaration>
+  </types:enrichment>
+  <types:enrichment select="#a42a73be-d606-4416-ae29-13af343a2427">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="xeroOnlineInvoicesPayloadExample"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+    <types:operation-declaration>
+      <types:inputs>
+        <types:parameter name="value" type="xeroInvoiceUrlsExample"/>
+      </types:inputs>
+    </types:operation-declaration>
+  </types:enrichment>
+  <types:enrichment select="#53698c77-a354-488b-825b-4730f847c679">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="xeroInvoicesDocumentsRequestExample"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+    <types:operation-declaration>
+      <types:inputs>
+        <types:parameter name="value" type="xeroInvoicesDocumentsRequestExample"/>
+      </types:inputs>
+    </types:operation-declaration>
+  </types:enrichment>
+  <types:enrichment select="#11517f4d-3911-4c44-a0c8-454b43f15b9c">
+    <types:operation-declaration>
+      <types:inputs>
+        <types:parameter name="value" type="stringPayload"/>
+      </types:inputs>
+    </types:operation-declaration>
+  </types:enrichment>
+  <types:enrichment select="#2f6b7000-c8d4-4cf8-9729-0d4a26cad8a2">
+    <types:operation-declaration>
+      <types:inputs>
+        <types:parameter name="value" type="xeroInvoiceUrlsExample"/>
+      </types:inputs>
+    </types:operation-declaration>
+  </types:enrichment>
+  <types:enrichment select="#ccd9aec3-c19e-4485-82c0-5b1162c03cd1">
+    <types:operation-declaration>
+      <types:inputs>
+        <types:parameter name="value" type="xeroInvoiceUrlsExample"/>
+      </types:inputs>
+    </types:operation-declaration>
+  </types:enrichment>
+  <types:enrichment select="#cb95e42e-0706-4735-87e9-669731329695">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="xeroConfirmsInvoicesExample"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+    <types:operation-declaration>
+      <types:inputs>
+        <types:parameter name="value" type="xeroConfirmsInvoicesExample"/>
+      </types:inputs>
+    </types:operation-declaration>
+  </types:enrichment>
+  <types:enrichment select="#40fb7971-d83a-4cb5-8549-cfa2ec97c90a">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="confirmListRequestExample"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+    <types:operation-declaration>
+      <types:inputs>
+        <types:parameter name="value" type="confirmListRequestExample"/>
+      </types:inputs>
+    </types:operation-declaration>
+  </types:enrichment>
+  <types:enrichment select="#3f52fed3-16e7-4e9d-a73f-7c30b5ceab39">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="xeroInvoiceUrlsExample"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="xeroInvoicesDocumentsInfoPayloadExample"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#b00bcd75-c540-49d1-80c1-3e4b15c7f2be">
+    <types:operation-declaration>
+      <types:inputs>
+        <types:parameter name="value" type="xeroInvoiceUrlsExample"/>
+      </types:inputs>
+    </types:operation-declaration>
+  </types:enrichment>
+  <types:enrichment select="#3c42440f-d226-4d01-9f48-bcbb00bdc670">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="storeXeroAuthResponseExample"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#8fdda4bf-04eb-410b-84c4-c8c04d53c23e">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="storeXeroAuthResponseExample"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#e511c59b-03f5-40bb-9584-4e0ec7adb7dc">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="storeXeroAuthResponseExample"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#7b0685b8-71fc-4614-9451-d38fa2b51bf0">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="xeroOnlineInvoicesPayloadExample"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+    <types:operation-declaration>
+      <types:inputs>
+        <types:parameter name="value" type="xeroInvoiceUrlsExample"/>
+      </types:inputs>
+    </types:operation-declaration>
+  </types:enrichment>
+  <types:enrichment select="#2f1fe99c-6759-4fdd-93f8-82a35906b7da">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="storeXeroAuthResponseExample"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#fc42735f-5b0d-4f05-9924-17019bce6691">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="storeXeroAuthResponseExample"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#15382f7e-b612-4014-a355-15d516d7f453">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="xeroAuthTokensExample"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#3ef8c538-1387-48cc-9d16-acd29d2bcbd8">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:variables>
+          <types:variable name="xero_auth" type="storeXeroAuthResponseExample"/>
+        </types:variables>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#e5034cd2-f89d-4641-bc54-6b49b497c0c1">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:variables>
+          <types:variable name="xero_auth" type="storeXeroAuthResponseExample"/>
+        </types:variables>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#140ebbe5-250e-4784-825b-88d5c019933c">
+    <types:operation-declaration>
+      <types:inputs>
+        <types:parameter name="value" type="xeroInvoiceUrlsExample"/>
+      </types:inputs>
+    </types:operation-declaration>
+  </types:enrichment>
+  <types:enrichment select="#b1e73fb7-04f4-44b3-aaa8-e00a92b45cb3">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="xeroInvoicesDocumentsInfoPayloadExample"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+    <types:operation-declaration>
+      <types:inputs>
+        <types:parameter name="value" type="xeroInvoicesDocumentsInfoPayloadExample"/>
+      </types:inputs>
+    </types:operation-declaration>
+  </types:enrichment>
+  <types:enrichment select="#697dec8e-9397-4cca-b3d2-66d263f032a2">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="xeroInvoicesPayloadExample"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+    <types:operation-declaration>
+      <types:inputs>
+        <types:parameter name="value" type="xeroInvoicesAttachmentsExample"/>
+      </types:inputs>
+    </types:operation-declaration>
+  </types:enrichment>
+  <types:enrichment select="#2cb8c40c-a53a-48b9-8431-c8359550bac1">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:variables>
+          <types:variable name="current" type="xeroInvoicesAttachmentsExample"/>
+        </types:variables>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#5695da64-e4b6-407e-9e2a-10db88f1a74f">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:variables>
+          <types:variable name="attachments_response" type="xeroInvoicesAttachmentsExample"/>
+        </types:variables>
+      </types:input-event>
+    </types:processor-declaration>
+    <types:operation-declaration>
+      <types:inputs>
+        <types:parameter name="value" type="AttachmentsPayloadResponseExample"/>
+      </types:inputs>
+    </types:operation-declaration>
+  </types:enrichment>
+  <types:enrichment select="#a4d284fa-0755-448d-a9d1-f76b554d5e0c">
+    <types:operation-declaration>
+      <types:inputs>
+        <types:parameter name="value" type="xeroConfirmsInvoicesExample"/>
+      </types:inputs>
+    </types:operation-declaration>
+  </types:enrichment>
+  <types:enrichment select="#8a38be30-9698-498d-8b7b-a415da0f0c42">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="confirmListRequestExample"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#6a7e254f-a774-48f5-a5cf-f18fd14a2ec9">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="salesforceOpportunitiesClosedWon[]"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="oppportunities" type="salesforceOpportunitiesClosedWon[]"/>
+        </types:variables>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#efe3fc57-aa2d-422a-85d7-2c1703dcab17">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="salesforceOpportunitiesClosedWon[]"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="opportunities" type="salesforceOpportunitiesClosedWon[]"/>
+        </types:variables>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#15ecefc8-a80d-4004-bda7-e336418f9e92">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="stringPayload"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#277388f6-9df6-46a9-babc-0745da6d0eea">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="ArtemisDocumentExample[]"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#9ecf50ad-8bce-48b9-bd0d-3afe9e565714">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="supplierReachLeadCreateResponse"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#d29af025-609f-443e-9021-01932233629c">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="climatePortalSupplierReachPurchase"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="climatePortalSupplierReachPurchase"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="purchaseProducts" type="climatePortalSupplierReachPurchaseProducts"/>
+        </types:variables>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#5120d686-62b2-4ce2-9ec1-fb576236db90">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="climatePortalMarketplacePurchase"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="salesforceMarketplaceLeadRequest"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#78d152de-004e-4b31-bee0-319a08b68b6f">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="salesforceSupplerReachLeadRequest"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#38d386a0-6d5e-464e-95ec-bc610c773978">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="PAYLOAD_String"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="PAYLOAD_String"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#6faddef1-afb5-42c6-9ca5-cd75cb2c0ee8">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="artemisApiDocumentList"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+    <types:operation-declaration>
+      <types:inputs>
+        <types:parameter name="value" type="FileInfo"/>
+      </types:inputs>
+    </types:operation-declaration>
+  </types:enrichment>
+  <types:enrichment select="#1af453c9-6714-4adf-b2ab-74a2e62f273e">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:variables>
+          <types:variable name="fileInfo" type="FileInfo"/>
+        </types:variables>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#81270810-809b-4251-a5c9-bb3522629ee1">
+    <types:operation-declaration>
+      <types:inputs>
+        <types:parameter name="value" type="PAYLOAD_Boolean"/>
+      </types:inputs>
+    </types:operation-declaration>
+  </types:enrichment>
+  <types:enrichment select="#2a012a60-13f6-4663-8073-d7032d478c77">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="climatePortalMarketplacePurchase[]"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#6a692344-71d4-4b43-8ded-3d90eb3ff9e1">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="auto_6a692344-71d4-4b43-8ded-3d90eb3ff9e1_Input-Payload"/>
+          <types:attributes type="auto_6a692344-71d4-4b43-8ded-3d90eb3ff9e1_Input-Attributes"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="outboundHeaders" type="auto_6a692344-71d4-4b43-8ded-3d90eb3ff9e1_Input-Variables-outboundHeaders"/>
+          <types:variable name="leadRequest" type="auto_6a692344-71d4-4b43-8ded-3d90eb3ff9e1_Input-Variables-leadRequest"/>
+          <types:variable name="httpStatus" type="auto_6a692344-71d4-4b43-8ded-3d90eb3ff9e1_Input-Variables-httpStatus"/>
+          <types:variable name="leadId" type="auto_6a692344-71d4-4b43-8ded-3d90eb3ff9e1_Input-Variables-leadId"/>
+        </types:variables>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="auto_6a692344-71d4-4b43-8ded-3d90eb3ff9e1_Output-Payload"/>
+          <types:attributes type="auto_6a692344-71d4-4b43-8ded-3d90eb3ff9e1_Output-Attributes"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="outboundHeaders" type="auto_6a692344-71d4-4b43-8ded-3d90eb3ff9e1_Output-Variables-outboundHeaders"/>
+          <types:variable name="leadRequest" type="auto_6a692344-71d4-4b43-8ded-3d90eb3ff9e1_Output-Variables-leadRequest"/>
+          <types:variable name="httpStatus" type="auto_6a692344-71d4-4b43-8ded-3d90eb3ff9e1_Output-Variables-httpStatus"/>
+          <types:variable name="leadId" type="auto_6a692344-71d4-4b43-8ded-3d90eb3ff9e1_Output-Variables-leadId"/>
+        </types:variables>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#b3751e62-444e-4729-91f3-d6eefdedec08">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="auto_b3751e62-444e-4729-91f3-d6eefdedec08_Input-Payload"/>
+          <types:attributes type="auto_b3751e62-444e-4729-91f3-d6eefdedec08_Input-Attributes"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="outboundHeaders" type="auto_b3751e62-444e-4729-91f3-d6eefdedec08_Input-Variables-outboundHeaders"/>
+          <types:variable name="leadRequest" type="auto_b3751e62-444e-4729-91f3-d6eefdedec08_Input-Variables-leadRequest"/>
+          <types:variable name="httpStatus" type="auto_b3751e62-444e-4729-91f3-d6eefdedec08_Input-Variables-httpStatus"/>
+          <types:variable name="leadId" type="auto_b3751e62-444e-4729-91f3-d6eefdedec08_Input-Variables-leadId"/>
+        </types:variables>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="auto_b3751e62-444e-4729-91f3-d6eefdedec08_Output-Payload"/>
+          <types:attributes type="auto_b3751e62-444e-4729-91f3-d6eefdedec08_Output-Attributes"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="outboundHeaders" type="auto_b3751e62-444e-4729-91f3-d6eefdedec08_Output-Variables-outboundHeaders"/>
+          <types:variable name="leadRequest" type="auto_b3751e62-444e-4729-91f3-d6eefdedec08_Output-Variables-leadRequest"/>
+          <types:variable name="httpStatus" type="auto_b3751e62-444e-4729-91f3-d6eefdedec08_Output-Variables-httpStatus"/>
+          <types:variable name="leadId" type="auto_b3751e62-444e-4729-91f3-d6eefdedec08_Output-Variables-leadId"/>
+        </types:variables>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#22b4623f-f94f-4129-afdd-d6b0d0ea87e7">
+    <types:operation-declaration>
+      <types:inputs>
+        <types:parameter name="value" type="climatePortalSupplierReachPurchase"/>
+      </types:inputs>
+    </types:operation-declaration>
+  </types:enrichment>
+  <types:enrichment select="#56cba20e-080a-4e9b-8de6-f9495f017240">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="climatePortalSupplierReachPurchase"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:variables>
+          <types:variable name="request" type="requestPayload"/>
+          <types:variable name="purchaseProducts" type="climatePortalSupplierReachPurchaseProducts"/>
+        </types:variables>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#522804be-84f2-44a7-b7fd-547dc6f33391">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:variables>
+          <types:variable name="request" type="requestPayload"/>
+        </types:variables>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#dc9be18e-84a8-4d0a-ab1e-582340f67658">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="supplierReachPurchaseResponse"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#5c13589a-478c-4de3-a8ca-e622f6aefb8a">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Input-Payload"/>
+          <types:attributes type="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Input-Attributes"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="outboundHeaders" type="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Input-Variables-outboundHeaders"/>
+          <types:variable name="fileName" type="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Input-Variables-fileName"/>
+          <types:variable name="leadRequest" type="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Input-Variables-leadRequest"/>
+          <types:variable name="isProductsCsvFileCreated" type="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Input-Variables-isProductsCsvFileCreated"/>
+          <types:variable name="response" type="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Input-Variables-response"/>
+          <types:variable name="fileInfo" type="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Input-Variables-fileInfo"/>
+          <types:variable name="purchaseProducts" type="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Input-Variables-purchaseProducts"/>
+        </types:variables>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Output-Payload"/>
+          <types:attributes type="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Output-Attributes"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="outboundHeaders" type="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Output-Variables-outboundHeaders"/>
+          <types:variable name="fileName" type="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Output-Variables-fileName"/>
+          <types:variable name="leadRequest" type="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Output-Variables-leadRequest"/>
+          <types:variable name="response" type="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Output-Variables-response"/>
+          <types:variable name="isProductsCsvFileCreated" type="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Output-Variables-isProductsCsvFileCreated"/>
+          <types:variable name="contentVersionResponse" type="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Output-Variables-contentVersionResponse"/>
+          <types:variable name="fileInfo" type="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Output-Variables-fileInfo"/>
+          <types:variable name="purchaseProducts" type="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Output-Variables-purchaseProducts"/>
+          <types:variable name="isFileAttached" type="auto_5c13589a-478c-4de3-a8ca-e622f6aefb8a_Output-Variables-isFileAttached"/>
+        </types:variables>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#b9333a5a-57b1-4f5a-9e9f-9dfde57f91d5">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="auto_b9333a5a-57b1-4f5a-9e9f-9dfde57f91d5_Output-Payload"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="httpStatus" type="auto_b9333a5a-57b1-4f5a-9e9f-9dfde57f91d5_Output-Variables-httpStatus"/>
+        </types:variables>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#94d01d0d-866c-4c99-99ee-bf281560041d">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Input-Payload"/>
+          <types:attributes type="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Input-Attributes"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="outboundHeaders" type="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Input-Variables-outboundHeaders"/>
+          <types:variable name="request" type="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Input-Variables-request"/>
+          <types:variable name="fileName" type="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Input-Variables-fileName"/>
+          <types:variable name="contentVersionResponse" type="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Input-Variables-contentVersionResponse"/>
+          <types:variable name="leadName" type="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Input-Variables-leadName"/>
+          <types:variable name="fileInfo" type="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Input-Variables-fileInfo"/>
+          <types:variable name="isFileAttached" type="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Input-Variables-isFileAttached"/>
+          <types:variable name="leadRequest" type="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Input-Variables-leadRequest"/>
+          <types:variable name="response" type="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Input-Variables-response"/>
+          <types:variable name="isProductsCsvFileCreated" type="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Input-Variables-isProductsCsvFileCreated"/>
+          <types:variable name="httpStatus" type="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Input-Variables-httpStatus"/>
+          <types:variable name="purchaseProducts" type="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Input-Variables-purchaseProducts"/>
+          <types:variable name="leadId" type="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Input-Variables-leadId"/>
+        </types:variables>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Output-Payload"/>
+          <types:attributes type="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Output-Attributes"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="outboundHeaders" type="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Output-Variables-outboundHeaders"/>
+          <types:variable name="request" type="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Output-Variables-request"/>
+          <types:variable name="fileName" type="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Output-Variables-fileName"/>
+          <types:variable name="contentVersionResponse" type="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Output-Variables-contentVersionResponse"/>
+          <types:variable name="leadName" type="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Output-Variables-leadName"/>
+          <types:variable name="fileInfo" type="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Output-Variables-fileInfo"/>
+          <types:variable name="isFileAttached" type="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Output-Variables-isFileAttached"/>
+          <types:variable name="leadRequest" type="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Output-Variables-leadRequest"/>
+          <types:variable name="response" type="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Output-Variables-response"/>
+          <types:variable name="isProductsCsvFileCreated" type="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Output-Variables-isProductsCsvFileCreated"/>
+          <types:variable name="httpStatus" type="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Output-Variables-httpStatus"/>
+          <types:variable name="purchaseProducts" type="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Output-Variables-purchaseProducts"/>
+          <types:variable name="leadId" type="auto_94d01d0d-866c-4c99-99ee-bf281560041d_Output-Variables-leadId"/>
+        </types:variables>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#357faa15-f957-4846-b4c6-c9164d7790a8">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="auto_357faa15-f957-4846-b4c6-c9164d7790a8_Input-Payload"/>
+          <types:attributes type="auto_357faa15-f957-4846-b4c6-c9164d7790a8_Input-Attributes"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="auto_357faa15-f957-4846-b4c6-c9164d7790a8_Output-Payload"/>
+          <types:attributes type="auto_357faa15-f957-4846-b4c6-c9164d7790a8_Output-Attributes"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#ff3e7c9f-1305-45c3-ab73-da9375ec81fe">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="SalesforceOpportunityLineItem"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#460c4b4d-db2a-457f-8283-2c5cfd9d54c0">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="SalesforceProduct"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#3968e3dd-03e2-43f9-b950-8fda13f6c341">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="SalesforceProduct"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#b3104324-bfc6-4a27-9ba2-ad4c92783c7d">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="salesforceOpportunitiesClosedWon"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#3418f1d3-9f1e-4a53-8723-3c14f4a9ffa2">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="SalesforceAccount"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#a90721f4-7bf2-47d4-8a9a-b0dc5ea17c4d">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="SalesforceEntityDocumentResponse"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#f95fe133-a4bb-422d-a2ac-0cafae38a95c">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="SalesforceDocumentsResponse"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#959c9517-353e-4ab7-8117-e3833fa147b6">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="SalesforceDocumentsResponse"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#3e1d5899-25b3-4dc8-81e6-a89dd87e92be">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:variables>
+          <types:variable name="request" type="auto_3e1d5899-25b3-4dc8-81e6-a89dd87e92be_Input-Variables-request"/>
+        </types:variables>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="auto_3e1d5899-25b3-4dc8-81e6-a89dd87e92be_Output-Payload"/>
+          <types:attributes type="auto_3e1d5899-25b3-4dc8-81e6-a89dd87e92be_Output-Attributes"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="request" type="auto_3e1d5899-25b3-4dc8-81e6-a89dd87e92be_Output-Variables-request"/>
+          <types:variable name="entityDocumentResponse" type="auto_3e1d5899-25b3-4dc8-81e6-a89dd87e92be_Output-Variables-entityDocumentResponse"/>
+        </types:variables>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#27e5a2c5-2009-4c71-a09a-d64b870da389">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="SalesforceAccountOpportunityIdList"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#8905a8c5-6476-40a0-b74d-71770b7114fd">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="SalesforceEntityDocumentResponse"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#8669c515-e796-4e64-a72c-d520bef4f579">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="auto_8669c515-e796-4e64-a72c-d520bef4f579_Input-Payload"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="request" type="auto_8669c515-e796-4e64-a72c-d520bef4f579_Input-Variables-request"/>
+        </types:variables>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="auto_8669c515-e796-4e64-a72c-d520bef4f579_Output-Payload"/>
+          <types:attributes type="auto_8669c515-e796-4e64-a72c-d520bef4f579_Output-Attributes"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="request" type="auto_8669c515-e796-4e64-a72c-d520bef4f579_Output-Variables-request"/>
+          <types:variable name="filters" type="auto_8669c515-e796-4e64-a72c-d520bef4f579_Output-Variables-filters"/>
+        </types:variables>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#57d6be91-aa8a-4254-91f4-089234450e85">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="PAYLOAD_String"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#12bb0d79-580b-4862-8829-b45afc32b3db">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="auto_12bb0d79-580b-4862-8829-b45afc32b3db_Input-Payload"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="auto_12bb0d79-580b-4862-8829-b45afc32b3db_Output-Payload"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="access_token" type="auto_12bb0d79-580b-4862-8829-b45afc32b3db_Output-Variables-access_token"/>
+        </types:variables>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#db1f8d35-2e5b-4f0d-a0c4-c4bfd5e3bab3">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="auto_db1f8d35-2e5b-4f0d-a0c4-c4bfd5e3bab3_Input-Payload"/>
+          <types:attributes type="auto_db1f8d35-2e5b-4f0d-a0c4-c4bfd5e3bab3_Input-Attributes"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="auto_db1f8d35-2e5b-4f0d-a0c4-c4bfd5e3bab3_Output-Payload"/>
+          <types:attributes type="auto_db1f8d35-2e5b-4f0d-a0c4-c4bfd5e3bab3_Output-Attributes"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

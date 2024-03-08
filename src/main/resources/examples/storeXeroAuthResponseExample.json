@@ -1,0 +1,10 @@
+{
+    "grant_type": "GRANT_TYPE",
+    "scopes": "SCOPES",
+    "tenant_id": "TENANT_ID",
+    "client_id": "CLIENT_ID",
+    "client_secret": "CLIENT_SECRET",
+    "refresh_token": "REFRESH_TOKEN",
+    "access_token": "ACCESS_TOKEN",
+    "expire_time": "EXPIRE_TIME"
+}
